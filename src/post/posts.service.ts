@@ -2,10 +2,11 @@ import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Post } from './posts.types';
-import { Blog } from 'src/blogs/blog.types';
+import { Blog, MappedBlogType } from 'src/blogs/blog.types';
 import { PostRepository } from './posts.repo';
 import { BlogRepository } from 'src/blogs/blog.repo';
 import { createPostDTO } from 'src/blogs/blog.types';
+import { PostLikesRepository } from 'src/postLikes/postLikes.repo';
 
 @Injectable()
 export class PostsService {
@@ -13,12 +14,11 @@ export class PostsService {
     @InjectModel(Post.name) private postModel: Model<Post>,
     private postRepository: PostRepository,
     private blogRepository: BlogRepository,
+    private postLikesRepository: PostLikesRepository,
   ) {}
 
   async createPost(blogId: number, reqData: createPostDTO) {
-    const currentBlog: Blog = await this.blogRepository.findById(blogId);
-                                    // console.log("currentBlog")
-                                    // console.log(currentBlog)
+    const currentBlog = await this.blogRepository.findById(blogId);
     if (!currentBlog) {
       return null;
     }
@@ -27,25 +27,58 @@ export class PostsService {
       shortDescription: reqData.shortDescription,
       content: reqData.content,
       blogName: currentBlog.name,
-      // @ts-ignore
       blogId: currentBlog.id,
       createdAt: new Date(),
     };
-    // нужно в репозитории
-    const createdPost = new this.postModel(newPost);
-    createdPost.save();
-    return createdPost;
+    const extendedLikesInfo = {
+      dislikesCount: 0,
+      likesCount: 0,
+      myStatus: 'None',
+      newestLikes: [],
+    };
+    const createdPost = await this.postRepository.create(newPost);
+    return { ...createdPost, extendedLikesInfo: extendedLikesInfo };
   }
 
-  // async findAll(): Promise<any> {
-  //   const createdBlog = this.blogModel.find();
-  //   return createdBlog;
-  // }
+  // !!!!!!!!!!!!!!!!!найти лайки и присоединить их к посту!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  async composePostById(postId: string): Promise<any> {
+    const post = await this.postRepository.findById(postId);
+    if (!post) {
+      return null;
+    }
+    const postLikes = await this.postLikesRepository.findAllByPostId(postId);
+    const newestLikes = await this.postLikesRepository.findNewestLikes(
+      postId,
+      'like',
+    );
+    // console.log("currentBlog")
+    // console.log(currentBlog)
+    const extendedLikesInfo = {
+      likesCount: 0,
+      dislikesCount: 0,
+      myStatus: 'None',
+      newestLikes: newestLikes,
+      // newestLikes: [
+      //   {
+      //     addedAt: '2024-03-29T14:00:11.476Z',
+      //     userId: 'string',
+      //     login: 'string',
+      //   },
+      // ],
+    };
 
-  // async findOne(id: number): Promise<any> {
-  //   const createdBlog = this.blogModel.find({ _id: id });
-  //   return createdBlog;
-  // }
+    // console.log('post');
+    // console.log(post);
+    // console.log('postLikes');
+    // console.log(postLikes);
+    // const postLikes = await this.likesRepository.findLikesPosts(postId);
+    return { ...post, extendedLikesInfo: extendedLikesInfo };
+  }
+
+  async findAll(): Promise<any> {
+    const allPosts = this.postRepository.findAll();
+    return allPosts;
+  }
 
   // async deleteAll(): Promise<any> {
   //   const isDeleted = await this.blogModel.deleteMany();

@@ -1,3 +1,4 @@
+// BlogEntity
 export class Blog {
   constructor(
     public name: string,
@@ -7,7 +8,7 @@ export class Blog {
     public isMembership: boolean,
   ) {}
 
-  static mapper(blog) {
+  static mapper(blog): MappedBlogType {
     return {
       id: blog._id.toString(),
       name: blog.name,
@@ -33,4 +34,13 @@ export class createPostDTO {
     public shortDescription: string,
     public content: string,
   ) {}
+}
+
+export interface MappedBlogType {
+  id: string;
+  name: string;
+  description: string;
+  websiteUrl: string;
+  createdAt: Date;
+  isMembership: boolean;
 }

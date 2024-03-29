@@ -8,22 +8,17 @@ export class Post {
     public createdAt: Date,
   ) {}
 
-  // static mapper(obj) {
-  //   return {
-  //     id: obj._id,
-  //     name: obj.name,
-  //     description: obj.description,
-  //     websiteUrl: obj.websiteUrl,
-  //     createdAt: obj.createdAt,
-  //     isMembership: obj.isMembership,
-  //   };
-  // }
-  // }
-
-  // export class BlogDto {
-  //   constructor(
-  //     public name: string,
-  //     public description: string,
-  //     public websiteUrl: string,
-  //   ) {}
+  static mapper(post) {
+    return {
+      id: post._id.toString(),
+      title: post.title,
+      shortDescription: post.shortDescription,
+      content: post.content,
+      blogName: post.blogName,
+      blogId: post.blogId,
+      createdAt: post.createdAt,
+      isMembership: post.isMembership,
+    };
+  }
 }
+

@@ -8,33 +8,31 @@ import {
   Put,
   Query,
   Delete,
+  NotFoundException,
+  Res,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
+import { Response } from 'express';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
 
-  @Post(':id/posts')
-  @HttpCode(201)
-  async createPost(
-    @Param('id') userId: number,
-    @Body() reqBody: any,
-  ): Promise<any> {
+  // @Post(':id/posts')
+  // @HttpCode(201)
+  // async createPost(
+  //   @Param('id') userId: number,
+  //   @Body() reqBody: any,
+  // ): Promise<any> {
 
-    const createPostModel = {
-      title: reqBody.title,
-      shortDescription: reqBody.shortDescription,
-      content: reqBody.content,
-    };
-
-    // const createdPost = await this.postsService.create(userId, createPostModel);
-    // const mappedCreatedBlog = Blog.mapper(createdBlog);
-    // return mappedCreatedBlog;
-
-    return "createdPost";
-  }
+  //   const createPostModel = {
+  //     title: reqBody.title,
+  //     shortDescription: reqBody.shortDescription,
+  //     content: reqBody.content,
+  //   };
+  //   return "createdPost";
+  // }
 
   // @Post()
   // @HttpCode(201)
@@ -55,22 +53,26 @@ export class PostsController {
   //   return
   // } 
 
-  // @Get(':id')
-  // async findOne(@Param('id') userId: number) {
-  //   // const userIdNumber = +userId; ?????
-  //   const blog = await this.blogsService.findOne(userId);
-  //   const resultBlog = Blog.mapper(blog[0]);
-  //   return resultBlog;
-  // }
+  @Get(':id')
+  async findOne(
+    @Param('id') postId: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const post = await this.postsService.composePostById(postId);
+    if (!post) {
+      res.sendStatus(404)
+      //throw new NotFoundException()
+      //return new Error("404");
+    }
+    return post;
+  }
 
-  // @Get()
-  // findSpecific(@Query() query: { id: number }): any {
-  //   // const userIdNumber = +userId; ?????
-  //   return this.blogsService.findOne(query.id);
-  // }
+  @Get()
+  async getAll() {
+    const allPost = await this.postsService.findAll();
+    return allPost;
+  }
 
-  // @Get()
-  // findAll(): any {
-  //   return this.blogsService.findAll();
-  // }
+
+
 }
