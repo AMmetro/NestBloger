@@ -1,3 +1,5 @@
+import { SortDirection } from 'mongodb';
+
 export class Post {
   constructor(
     public title: string,
@@ -21,4 +23,11 @@ export class Post {
     };
   }
 }
+
+export type postsSortDataType = {
+  sortBy: string;
+  sortDirection: SortDirection;
+  pageNumber: number;
+  pageSize: number;
+};
 

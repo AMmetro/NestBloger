@@ -1,17 +1,39 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import { PostLike } from './postsLikes.schema';
+import { PostLikeMoongoose } from './postsLikes.schema';
 
 @Injectable()
 export class PostLikesRepository {
   constructor(
-    @InjectModel(PostLike.name) private postLikesModel: Model<PostLike>,
+    @InjectModel(PostLikeMoongoose.name)
+    private postLikesModel: Model<PostLikeMoongoose>,
   ) {}
 
-  async findAllByPostId(postId: string): Promise<PostLike | null> {
+  async findAllByPostId(postId: string): Promise<PostLikeMoongoose | null> {
     try {
       const postLikes = await this.postLikesModel.findById(postId);
+      // console.log("post")
+      // console.log(post)
+      if (!postLikes) {
+        return null;
+      }
+      // return PostClass.mapper(post);
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  async findLike(
+    postId: string,
+    userId: string,
+  ): Promise<PostLikeMoongoose | null> {
+    try {
+      const postLikes = await this.postLikesModel.findOne({
+        postId: postId,
+        userId: userId,
+      });
       // console.log("post")
       // console.log(post)
       if (!postLikes) {
@@ -37,12 +59,27 @@ export class PostLikesRepository {
         .limit(3)
         .lean();
 
-      console.log('newestLikes');
-      console.log(newestLikes);
       if (!newestLikes) {
         return null;
       }
       return newestLikes;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  async countPostLikes(postId: string, myStatus: string): Promise<any | null> {
+    try {
+      const likesCount = await this.postLikesModel.countDocuments({
+        postId: postId,
+        myStatus: myStatus,
+      });
+
+      // if (!newestLikes) {
+      //   return null;
+      // }
+      return likesCount;
     } catch (e) {
       console.log(e);
       return null;

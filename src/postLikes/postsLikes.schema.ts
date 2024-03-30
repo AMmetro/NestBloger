@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
-export type PostLikeDocument = HydratedDocument<PostLike>;
+export type PostLikeDocument = HydratedDocument<PostLikeMoongoose>;
 
 @Schema()
-export class PostLike {
+export class PostLikeMoongoose {
   @Prop({ required: true })
   postId: string;
   @Prop({ required: true })
@@ -15,4 +15,4 @@ export class PostLike {
   addedAt: Date;
 }
 
-export const PostLikeSchema = SchemaFactory.createForClass(PostLike);
+export const PostLikeSchema = SchemaFactory.createForClass(PostLikeMoongoose);

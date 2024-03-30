@@ -1,4 +1,3 @@
-// BlogEntity
 export class Blog {
   constructor(
     public name: string,
