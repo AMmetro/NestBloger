@@ -92,10 +92,22 @@ export class UsersRepository {
     }
   }
 
+  async deleteUserById(userId: string): Promise<any> {
+    try {
+      const isDelete = await this.userModel.deleteOne({
+        _id: new ObjectId(userId),
+      });
+      return isDelete;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
   async deleteAll(): Promise<any> {
     try {
-      const post = await this.userModel.deleteMany();
-      return post;
+      const isDelete = await this.userModel.deleteMany();
+      return isDelete;
     } catch (e) {
       console.log(e);
       return null;

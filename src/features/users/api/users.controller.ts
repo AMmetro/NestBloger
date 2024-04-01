@@ -91,11 +91,17 @@ export class UsersController {
       res.sendStatus(404);
       return;
     }
-    // const isDeleted = await this.usersRepository.deleteUserById(userId);
-    // if (isDeleted === null) {
-    //   res.sendStatus(404);
-    //   return;
-    // }
+    const isUser = await this.usersRepository.getById(userId);
+    if (!isUser) {
+      res.sendStatus(404);
+      return;
+    }
+    const isDeleted = await this.usersRepository.deleteUserById(userId);
+    if (isDeleted === null) {
+      res.sendStatus(404);
+      return;
+    }
+    return isDeleted;
   }
 
   // @Get()
