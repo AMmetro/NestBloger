@@ -4,11 +4,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { BlogMongoose } from './blogs.schema';
 import { BlogDto } from './blog.types';
 import { PostRepository } from 'src/post/posts.repo';
-import { OutputBasicSortQueryType } from 'src/utils/sortQeryUtils';
 import { BlogRepository } from './blog.repo';
-import { PostLikesRepository } from 'src/postLikes/postLikes.repo';
 import { PostLikesServices } from 'src/postLikes/postLikes.service';
 import { SortDirection } from 'mongodb';
+import { PostsService } from 'src/post/posts.service';
+import { OutputBasicSortQueryType } from 'src/base/utils/sortQeryUtils';
+import { PostLikesRepository } from 'src/features/postLikes/infrastructure/postLikes.repo';
 
 type SortDataType = {
   searchNameTerm?: string | null;
@@ -26,6 +27,7 @@ export class BlogsService {
     private blogRepository: BlogRepository,
     private postLikesRepository: PostLikesRepository,
     private postLikesServices: PostLikesServices,
+    private postsService: PostsService,
   ) {}
 
   async findAll(sortData: SortDataType): Promise<any> {
@@ -59,39 +61,40 @@ export class BlogsService {
       blogId,
     );
 
+    const postsWithLikes = await this.postsService.addLikesToPosts(
+      blogPostsWithPagination.items,
+      null,
+    );
     // ----------------перенести в пост сервис ?----------------------------------------------------
 
-    const postsWithLikes = await Promise.all(
-      blogPostsWithPagination.items.map(async (post) => {
-        const newestLikes = await this.postLikesRepository.findNewestLikes(
-          post.postId,
-          'like',
-        );
-        // const newestLikesWithUser =
-        //   await newestLikesServices.addUserDataToLike(newestLikes);
-        const countLikes = await this.postLikesServices.countPostLikes(
-          post.id,
-          userId,
-        );
-        const extendedLikesInfo = {
-          likesCount: countLikes.likesCount,
-          dislikesCount: countLikes.dislikesCount,
-          myStatus: countLikes.myStatus,
-          // newestLikes: newestLikesWithUser,
-          newestLikes: newestLikes,
-        };
-        return { ...post, extendedLikesInfo: extendedLikesInfo };
-      }),
-    );
-    // console.log('postsWithLikes');
-    // console.log(postsWithLikes);
+    // const postsWithLikes = await Promise.all(
+    //   blogPostsWithPagination.items.map(async (post) => {
+    //     const newestLikes = await this.postLikesRepository.findNewestLikes(
+    //       post.postId,
+    //       'like',
+    //     );
+    //     // const newestLikesWithUser =
+    //     //   await newestLikesServices.addUserDataToLike(newestLikes);
+    //     const countLikes = await this.postLikesServices.countPostLikes(
+    //       post.id,
+    //       userId,
+    //     );
+    //     const extendedLikesInfo = {
+    //       likesCount: countLikes.likesCount,
+    //       dislikesCount: countLikes.dislikesCount,
+    //       myStatus: countLikes.myStatus,
+    //       // newestLikes: newestLikesWithUser,
+    //       newestLikes: newestLikes,
+    //     };
+    //     return { ...post, extendedLikesInfo: extendedLikesInfo };
+    //   }),
+    // );
+
     return { ...blogPostsWithPagination, items: postsWithLikes };
   }
 
   async findOne(id: string): Promise<any> {
     const createdBlog = this.blogModel.findById(id);
-    // console.log("88888")
-    // console.log("88888")
     return createdBlog;
   }
 

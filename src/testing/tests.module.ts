@@ -9,14 +9,21 @@ import { PostsService } from 'src/post/posts.service';
 import { PostRepository } from 'src/post/posts.repo';
 import { Post, PostSchema } from 'src/post/posts.schema';
 import { BlogRepository } from 'src/blogs/blog.repo';
-import { PostLikesRepository } from 'src/postLikes/postLikes.repo';
 import {
   PostLikeMoongoose,
   PostLikeSchema,
 } from 'src/postLikes/postsLikes.schema';
-import { PostsController } from 'src/post/posts.controller';
 import { PostLikesServices } from 'src/postLikes/postLikes.service';
-// import { User, UserSchema } from './users.schema';
+import { UsersRepository } from 'src/features/users/infrastructure/users.repository';
+import { PostLikesRepository } from 'src/features/postLikes/infrastructure/postLikes.repo';
+import {
+  UserMongoose,
+  UserSchema,
+} from 'src/features/users/domain/user.entity';
+import { UsersController } from 'src/features/users/api/users.controller';
+import { PostsController } from 'src/post/posts.controller';
+import { UsersService } from 'src/features/application/users.service';
+
 
 @Module({
   imports: [
@@ -24,9 +31,15 @@ import { PostLikesServices } from 'src/postLikes/postLikes.service';
       { name: BlogMongoose.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
       { name: PostLikeMoongoose.name, schema: PostLikeSchema },
+      { name: UserMongoose.name, schema: UserSchema },
     ]),
   ],
-  controllers: [TestController, BlogsController, PostsController],
+  controllers: [
+    TestController,
+    BlogsController,
+    PostsController,
+    UsersController,
+  ],
   providers: [
     BlogsService,
     PostsService,
@@ -34,6 +47,8 @@ import { PostLikesServices } from 'src/postLikes/postLikes.service';
     BlogRepository,
     PostLikesRepository,
     PostLikesServices,
+    UsersRepository,
+    UsersService,
   ],
 })
 export class TestsModule {}

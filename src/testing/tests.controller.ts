@@ -15,17 +15,23 @@
 // }
 // @ ------------------------------------------------------------------
 
-
 import { Controller, Delete, HttpCode } from '@nestjs/common';
 import { BlogsService } from 'src/blogs/blogs.service';
+import { UsersRepository } from 'src/features/users/infrastructure/users.repository';
+import { PostRepository } from 'src/post/posts.repo';
 
 @Controller('testing')
 export class TestController {
-  constructor(private readonly blogsService: BlogsService) {}
+  constructor(
+    private readonly blogsService: BlogsService,
+    private postRepository: PostRepository,
+    private usersRepository: UsersRepository,
+  ) {}
   @Delete('/all-data')
   @HttpCode(204)
   async deleteAllData() {
-    await this.blogsService.deleteAll()
+    await this.blogsService.deleteAll();
+    await this.postRepository.deleteAll();
+    await this.usersRepository.deleteAll();
   }
 }
-

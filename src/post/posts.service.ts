@@ -6,7 +6,8 @@ import { Post } from './posts.types';
 import { PostRepository } from './posts.repo';
 import { BlogRepository } from 'src/blogs/blog.repo';
 import { createPostDTO } from 'src/blogs/blog.types';
-import { PostLikesRepository } from 'src/postLikes/postLikes.repo';
+import { PostLikesServices } from 'src/postLikes/postLikes.service';
+import { PostLikesRepository } from 'src/features/postLikes/infrastructure/postLikes.repo';
 
 @Injectable()
 export class PostsService {
@@ -15,6 +16,7 @@ export class PostsService {
     private postRepository: PostRepository,
     private blogRepository: BlogRepository,
     private postLikesRepository: PostLikesRepository,
+    private postLikesServices: PostLikesServices,
   ) {}
 
   async createPost(blogId: string, reqData: createPostDTO) {
@@ -62,10 +64,31 @@ export class PostsService {
     return { ...post, extendedLikesInfo: extendedLikesInfo };
   }
 
-  // async findAll(): Promise<any> {
-  //   const allPosts = this.postRepository.findAll();
-  //   return allPosts;
-  // }
+  async addLikesToPosts(postsNoLikes: any, userId: any ): Promise<any> {
+    const postsWithLikes = await Promise.all(
+      postsNoLikes.map(async (post) => {
+        const newestLikes = await this.postLikesRepository.findNewestLikes(
+          post.postId,
+          'like',
+        );
+        // const newestLikesWithUser =
+        //   await newestLikesServices.addUserDataToLike(newestLikes);
+        const countLikes = await this.postLikesServices.countPostLikes(
+          post.id,
+          userId,
+        );
+        const extendedLikesInfo = {
+          likesCount: countLikes.likesCount,
+          dislikesCount: countLikes.dislikesCount,
+          myStatus: countLikes.myStatus,
+          // newestLikes: newestLikesWithUser,
+          newestLikes: newestLikes,
+        };
+        return { ...post, extendedLikesInfo: extendedLikesInfo };
+      }),
+    );
+    return postsWithLikes
+  }
 
 
 
@@ -77,14 +100,22 @@ export class PostsService {
     const allPostsObject = await this.postRepository.getBlogPosts(
       postsRequestsSortData,
     );
+
+                                    // console.log("allPostsObject")
+                                    // console.log(allPostsObject)
+
     if (!allPostsObject) {
       return null;
     }
 
+ 
 
+    const postsWithLikes = await this.addLikesToPosts(
+      allPostsObject.items,
+      null,
+    );
 
-
-
+    return { ...allPostsObject, items: postsWithLikes };
 
     // const postsWithLikes = await Promise.all(
     //   allPostsObject.items.map(async (post) => {

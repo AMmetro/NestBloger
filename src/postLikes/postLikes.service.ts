@@ -1,9 +1,9 @@
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { PostLikesRepository } from './postLikes.repo';
 import { PostLikeMoongoose } from './postsLikes.schema';
 import { likeStatusEnum } from 'src/features/postLikes/domain/postLikesTypes';
+import { PostLikesRepository } from 'src/features/postLikes/infrastructure/postLikes.repo';
 
 @Injectable()
 export class PostLikesServices {

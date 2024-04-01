@@ -22,6 +22,16 @@ export class PostRepository {
     }
   }
 
+  async deleteAll(): Promise<any> {
+    try {
+      const post = await this.postModel.deleteMany();
+      return post;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
   async update(postId: string, updatedPostData: any): Promise<boolean> {
     try {
       const postForUpd = await this.postModel.updateOne(
@@ -44,6 +54,7 @@ export class PostRepository {
     let filter = {};
     if (blogId) {
       filter = { blogId: blogId };
+    }
       try {
         const posts = await this.postModel
           .find(filter)
@@ -65,7 +76,7 @@ export class PostRepository {
         return null;
       }
     }
-  }
+  
 
   // async getBlogPosts(blogId: string): Promise<any | null> {
   //   try {

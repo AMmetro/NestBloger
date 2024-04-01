@@ -14,9 +14,9 @@ import { BlogsService } from './blogs.service';
 import { Blog, BlogDto, createPostDTO } from './blog.types';
 import { PostsService } from 'src/post/posts.service';
 import { Response } from 'express';
-import { basicSortQuery } from 'src/utils/sortQeryUtils';
 import { BlogRepository } from './blog.repo';
 import { ObjectId } from 'mongodb';
+import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
 
 @Controller('blogs')
 export class BlogsController {

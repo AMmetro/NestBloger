@@ -2,10 +2,9 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UsersModule } from './users/users.module';
+// import { UsersModule } from './users/users.module';
 import { TestsModule } from './testing/tests.module';
 import { ConfigModule } from '@nestjs/config';
-import { appConfig } from './appConfig';
 import { BlogMongoose, BlogSchema } from './blogs/blogs.schema';
 import { Post, PostSchema } from './post/posts.schema';
 import { BlogsService } from './blogs/blogs.service';
@@ -15,12 +14,17 @@ import { PostRepository } from './post/posts.repo';
 import { TestController } from './testing/tests.controller';
 import { BlogRepository } from './blogs/blog.repo';
 import { PostsController } from './post/posts.controller';
-import { PostLikesRepository } from './postLikes/postLikes.repo';
 import {
   PostLikeMoongoose,
   PostLikeSchema,
 } from './postLikes/postsLikes.schema';
 import { PostLikesServices } from './postLikes/postLikes.service';
+import { appConfig } from './settings/appConfig';
+import { UsersRepository } from './features/users/infrastructure/users.repository';
+import { PostLikesRepository } from './features/postLikes/infrastructure/postLikes.repo';
+import { UserMongoose, UserSchema } from './features/users/domain/user.entity';
+import { UsersController } from './features/users/api/users.controller';
+import { UsersService } from './features/application/users.service';
 
 @Module({
   imports: [
@@ -30,8 +34,9 @@ import { PostLikesServices } from './postLikes/postLikes.service';
       { name: BlogMongoose.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
       { name: PostLikeMoongoose.name, schema: PostLikeSchema },
+      { name: UserMongoose.name, schema: UserSchema },
     ]),
-    UsersModule,
+    // UsersModule,
     TestsModule,
   ],
   controllers: [
@@ -39,6 +44,7 @@ import { PostLikesServices } from './postLikes/postLikes.service';
     BlogsController,
     TestController,
     PostsController,
+    UsersController,
   ],
   providers: [
     AppService,
@@ -48,6 +54,8 @@ import { PostLikesServices } from './postLikes/postLikes.service';
     BlogRepository,
     PostLikesRepository,
     PostLikesServices,
+    UsersRepository,
+    UsersService,
   ],
 })
 export class AppModule {}

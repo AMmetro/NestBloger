@@ -14,7 +14,7 @@ import { PostsService } from './posts.service';
 import { Response } from 'express';
 import { ObjectId } from 'mongodb';
 import { PostRepository } from './posts.repo';
-import { basicSortQuery } from 'src/utils/sortQeryUtils';
+import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
 
 @Controller('posts')
 export class PostsController {
@@ -126,12 +126,14 @@ export class PostsController {
     const userOptionalId = null;
     // !!!!!!!!!!!!!!!!!!!!!!!!
     const postsRequestsSortData = basicSortQuery(reqQuery)
-    const result = await this.postsService.composeAllPosts(postsRequestsSortData, userOptionalId);
-    // if (result.status === ResultCode.Success){
-    //   res.status(200).send(result.data);
-    // } else {
-    //   sendCustomError(res, result)
-    // }
+    const result = await this.postsService.composeAllPosts(
+      postsRequestsSortData,
+      userOptionalId,
+    );
+    if (!result) {
+      res.sendStatus(404);
+    }
+    return result;
   }
 
   @Delete(':id')
