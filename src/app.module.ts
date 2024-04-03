@@ -28,7 +28,7 @@ import { UsersService } from './features/application/users.service';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ envFilePath: ['.env'] }), // определяет приорететност .env файлов из массива для загрузки
+    // ConfigModule.forRoot({ envFilePath: ['.env'] }), // определяет приорететност .env файлов из массива для загрузки
     // MongooseModule.forRoot(appConfig.mongoURI),
     MongooseModule.forRoot(
       'mongodb+srv://metroexpress:suradet842@cluster0.gkpqpve.mongodb.net',
