@@ -31,7 +31,7 @@ import { UsersService } from './features/application/users.service';
     // ConfigModule.forRoot({ envFilePath: ['.env'] }), // определяет приорететност .env файлов из массива для загрузки
     // MongooseModule.forRoot(appConfig.mongoURI),
     MongooseModule.forRoot(
-      'mongodb+srv://metroexpress:suradet842@cluster0.gkpqpve.mongodb.net',
+      'mongodb+srv://metroexpress:suradet842@cluster0.gkpqpve.mongodb.net/?retryWrites=true&w=majority',
     ),
     MongooseModule.forFeature([
       { name: BlogMongoose.name, schema: BlogSchema },
