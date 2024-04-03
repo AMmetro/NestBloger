@@ -35,7 +35,7 @@ export class UsersController {
   // usersService: UsersService;
   constructor(
     // private readonly usersQueryRepository: UsersQueryRepository,
-    private readonly usersRepository: UsersRepository,
+    private readonly usersRepository: UsersRepository, 
     private readonly usersService: UsersService
   ) {
     // this.usersService = usersService;
@@ -81,8 +81,8 @@ export class UsersController {
     return createdUser;
   }
 
-
-  @Delete('id')
+  @Delete(':id')
+  @HttpCode(204)
   async deleteUserById(
     @Param('id') userId: string,
     @Res({ passthrough: true }) res: Response,
