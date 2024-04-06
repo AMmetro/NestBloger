@@ -19,3 +19,7 @@
     "noFallthroughCasesInSwitch": false
   }
 }
+
+// c 13 домашки
+// "strictNullChecks": true,
+// "esModuleInterop": true,

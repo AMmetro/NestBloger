@@ -32,7 +32,12 @@ import { appSettings } from './settings/app-settings';
   imports: [
     ConfigModule.forRoot({ envFilePath: ['.env'] }), // определяет приорететност .env файлов из массива для загрузки
     // MongooseModule.forRoot(appConfig.mongoURI),
-    MongooseModule.forRoot(appSettings.api.MONGO_CONNECTION_URI),
+    MongooseModule.forRoot(
+      appSettings.env.isTesting()
+        ? appSettings.api.MONGO_CONNECTION_URI_TESTING
+        : appSettings.api.MONGO_CONNECTION_URI,
+    ),
+    // MongooseModule.forRoot(appSettings.api.MONGO_CONNECTION_URI),
     // MongooseModule.forRoot(
     //   'mongodb+srv://metroexpress:suradet842@cluster0.gkpqpve.mongodb.net/?retryWrites=true&w=majority',
     // ),
@@ -64,11 +69,14 @@ import { appSettings } from './settings/app-settings';
     UsersService,
   ],
 })
-export class AppModule implements NestModule {
-  // https://docs.nestjs.com/middleware#applying-middleware
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('/users');
-    // .apply(OtherMiddleware).forRoutes('*');
-    // .apply(MailMiddleware).forRoutes('*');
-  }
-}
+
+export class AppModule {}
+
+// export class AppModule implements NestModule {
+//   // https://docs.nestjs.com/middleware#applying-middleware
+//   configure(consumer: MiddlewareConsumer) {
+//     consumer.apply(LoggerMiddleware).forRoutes('/users');
+//     // .apply(OtherMiddleware).forRoutes('*');
+//     // .apply(MailMiddleware).forRoutes('*');
+//   }
+// }

@@ -23,16 +23,16 @@ export const applyAppSettings = (app: INestApplication) => {
   // app.use(LoggerMiddlewareFunc);
 
   // Установка префикса
-  setAppPrefix(app);
+  // setAppPrefix(app);
 
   // Конфигурация swagger документации
-  setSwagger(app);
+  // setSwagger(app);
 
   // Применение глобальных pipes
-  setAppPipes(app);
+  // setAppPipes(app);
 
   // Применение глобальных exceptions filters
-  setAppExceptionsFilters(app);
+  // setAppExceptionsFilters(app);
 };
 
 const setAppPrefix = (app: INestApplication) => {

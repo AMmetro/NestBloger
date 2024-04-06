@@ -6,7 +6,9 @@ import { hashServise } from 'src/base/utils/JWTservise';
 import { randomUUID } from 'crypto';
 import { User } from '../users/api/dto/output/user.output.model';
 import { UsersRepository } from '../users/infrastructure/users.repository';
+import { RequestInputUserType } from '../users/api/dto/input/create-user.input.model';
 
+// Для провайдера всегда необходимо применять декоратор @Injectable() и регистрировать в модуле
 @Injectable()
 export class UsersService {
   constructor(
@@ -14,17 +16,7 @@ export class UsersService {
     private usersRepository: UsersRepository,
   ) {}
 
-  // findOne(id): any {
-  //   return this.userModel.find({ login: id }).exec();
-  //   return "h111111111ello"
-  // }
-
-  findAll(): any {
-    // return this.userModel.find().exec();
-    // return "aaaaaaallllllllllllllllllllllllllllllll"
-  }
-
-  async create(createUserModel: any): Promise<any> {
+  async create(createUserModel: RequestInputUserType): Promise<any> {
     const { login, password, email } = createUserModel;
     const passwordSalt = await hashServise.generateSalt();
     const passwordHash = await hashServise.generateHash(password, passwordSalt);
@@ -53,19 +45,3 @@ export class UsersService {
 
   }
 }
-
-// import { Injectable } from '@nestjs/common';
-// import { UsersRepository } from '../infrastructure/users.repository';
-
-// // Для провайдера всегда необходимо применять декоратор @Injectable() и регистрировать в модуле
-// @Injectable()
-// export class UsersService {
-//   constructor(private usersRepository: UsersRepository) {}
-
-//   async create(email: string, name: string) {
-//     // email send message
-//     // this.emailAdapter.send(message);
-
-//     return 'id';
-//   }
-// }

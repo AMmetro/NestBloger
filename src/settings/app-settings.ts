@@ -44,11 +44,12 @@ class AppSettings {
   ) {}
 }
 
-class APISettings {
+class APISettings { 
   // Application
-  public readonly APP_PORT: number;
+  public readonly APP_PORT: number; 
   // Database
   public readonly MONGO_CONNECTION_URI: string;
+  public readonly MONGO_CONNECTION_URI_TESTING: string;
   // JWT
   public readonly JWT_ACSS_SECRET: string;
   public readonly JWT_REFRESH_SECRET: string;
@@ -59,6 +60,7 @@ class APISettings {
     // Database
     this.MONGO_CONNECTION_URI =
       envVariables.MONGO_CONNECTION_URI ?? 'mongodb://localhost/nest';
+    this.MONGO_CONNECTION_URI_TESTING = envVariables.MONGO_CONNECTION_TESTING;
     // JwtAccess
     this.JWT_ACSS_SECRET = envVariables.JWT_ACSS_SECRET ?? '123';
     this.JWT_REFRESH_SECRET = envVariables.JWT_REFRESH_SECRET ?? '456';
@@ -80,6 +82,9 @@ const env = new EnvironmentSettings(
     ? process.env.ENV.trim()
     : 'DEVELOPMENT') as EnvironmentsTypes,
 );
+
+console.log("process.env.ENV")
+console.log(process.env.MONGO_CONNECTION_URI)
 
 const api = new APISettings(process.env);
 export const appSettings = new AppSettings(env, api);
