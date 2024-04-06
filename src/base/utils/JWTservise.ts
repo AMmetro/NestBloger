@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
-import { appConfig } from 'src/settings/appConfig';
+// import { appConfig } from 'src/settings/appConfig';
+import { appSettings } from 'src/settings/app-settings';
 
 export type OutputUserType = {
   id: string;
@@ -27,7 +28,8 @@ export const jwtServise = {
   async createAccessTokenJWT(user: OutputUserType, deviceId: string) {
     const token = jwt.sign(
       { userId: user.id, deviceId },
-      appConfig.JWT_ACSS_SECRET,
+      // appConfig.JWT_ACSS_SECRET,
+      appSettings.api.JWT_ACSS_SECRET,
       {
         expiresIn: '10m',
       },
@@ -42,7 +44,8 @@ export const jwtServise = {
   async createRefreshTokenJWT(user: OutputUserType, deviceId: string) {
     const token: any = jwt.sign(
       { userId: user.id, deviceId },
-      appConfig.JWT_REFRESH_SECRET,
+      // appConfig.JWT_REFRESH_SECRET,
+      appSettings.api.JWT_REFRESH_SECRET,
       {
         expiresIn: '20m',
       },
@@ -54,7 +57,8 @@ export const jwtServise = {
     try {
       const jwtUserData: any = jwt.verify(
         token,
-        appConfig.JWT_ACSS_SECRET,
+        // appConfig.JWT_ACSS_SECRET,
+        appSettings.api.JWT_ACSS_SECRET,
         (err, decoded) => {
           if (err) {
             if (err.name === 'TokenExpiredError') {
@@ -79,7 +83,8 @@ export const jwtServise = {
     try {
       const result: any = jwt.verify(
         token,
-        appConfig.JWT_REFRESH_SECRET,
+        // appConfig.JWT_REFRESH_SECRET,
+        appSettings.api.JWT_REFRESH_SECRET,
         (err, decoded) => {
           if (err) {
             if (err.name === 'TokenExpiredError') {

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -19,20 +19,23 @@ import {
   PostLikeSchema,
 } from './postLikes/postsLikes.schema';
 import { PostLikesServices } from './postLikes/postLikes.service';
-import { appConfig } from './settings/appConfig'; 
+// import { appConfig } from './settings/appConfig';
 import { UsersRepository } from './features/users/infrastructure/users.repository';
 import { PostLikesRepository } from './features/postLikes/infrastructure/postLikes.repo';
 import { UserMongoose, UserSchema } from './features/users/domain/user.entity';
 import { UsersController } from './features/users/api/users.controller';
 import { UsersService } from './features/application/users.service';
+import { LoggerMiddleware } from './common/middlewares/logger.middleware';
+import { appSettings } from './settings/app-settings';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: ['.env'] }), // определяет приорететност .env файлов из массива для загрузки
     // MongooseModule.forRoot(appConfig.mongoURI),
-    MongooseModule.forRoot(
-      'mongodb+srv://metroexpress:suradet842@cluster0.gkpqpve.mongodb.net/?retryWrites=true&w=majority',
-    ),
+    MongooseModule.forRoot(appSettings.api.MONGO_CONNECTION_URI),
+    // MongooseModule.forRoot(
+    //   'mongodb+srv://metroexpress:suradet842@cluster0.gkpqpve.mongodb.net/?retryWrites=true&w=majority',
+    // ),
     MongooseModule.forFeature([
       { name: BlogMongoose.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
@@ -61,4 +64,11 @@ import { UsersService } from './features/application/users.service';
     UsersService,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  // https://docs.nestjs.com/middleware#applying-middleware
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('/users');
+    // .apply(OtherMiddleware).forRoutes('*');
+    // .apply(MailMiddleware).forRoutes('*');
+  }
+}

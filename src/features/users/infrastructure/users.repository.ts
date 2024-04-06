@@ -3,8 +3,8 @@ import { WithId, ObjectId } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDocument, UserMongoose } from '../domain/user.entity';
-import { User } from '../api/models/output/user.output.model';
-import { SortDataType } from '../api/models/input/create-user.input.model';
+import { User } from '../api/dto/output/user.output.model';
+import { SortDataType } from '../api/dto/input/create-user.input.model';
 
 @Injectable()
 export class UsersRepository {

@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 // import { User } from './users.schema';
 import { hashServise } from 'src/base/utils/JWTservise';
 import { randomUUID } from 'crypto';
-import { User } from '../users/api/models/output/user.output.model';
+import { User } from '../users/api/dto/output/user.output.model';
 import { UsersRepository } from '../users/infrastructure/users.repository';
 
 @Injectable()

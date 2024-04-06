@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { UsersRepository } from '../infrastructure/users.repository';
 import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
-import { QueryUserInputModel, RequestInputUserType } from './models/input/create-user.input.model';
+import { QueryUserInputModel, RequestInputUserType } from './dto/input/create-user.input.model';
 import { ObjectId } from 'mongodb';
 // import { UsersQueryRepository } from '../infrastructure/users.query-repository';
 // import { UserCreateModel } from './models/input/create-user.input.model';
