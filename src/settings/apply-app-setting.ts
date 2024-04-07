@@ -29,7 +29,7 @@ export const applyAppSettings = (app: INestApplication) => {
   // setSwagger(app);
 
   // Применение глобальных pipes
-  // setAppPipes(app);
+  setAppPipes(app);
 
   // Применение глобальных exceptions filters
   // setAppExceptionsFilters(app);
@@ -60,6 +60,7 @@ const setSwagger = (app: INestApplication) => {
 };
 
 const setAppPipes = (app: INestApplication) => {
+
   app.useGlobalPipes(
     new ValidationPipe({
       // Для работы трансформации входящих данных
@@ -68,6 +69,33 @@ const setAppPipes = (app: INestApplication) => {
       stopAtFirstError: true,
       // Перехватываем ошибку, кастомизируем её и выкидываем 400 с собранными данными
       exceptionFactory: (errors) => {
+
+    // console.log("---------------------------------------")
+
+// -------------------------------------------------
+// app.useGlobalPipes(new ValidationPipe({
+//   transform: true,
+//   stopAtFirstError: true,
+//   exceptionFactory: validationExceptionFactory
+// }))
+
+// export function validationExceptionFactory(errors) {
+//   const errorsMessages = {
+//     errorsMessages: [],
+//   };
+//   errors.forEach((error) => {
+//     const firstKey = Object.keys(error.constraints)[0];
+//     errorsMessages.errorsMessages.push({
+//       message: error.constraints[firstKey],
+//       field: error.property,
+//     });
+//   });
+//   throw new BadRequestException(errorsMessages);
+// }
+
+// -------------------------------------------------
+
+
         const customErrors = [];
 
         errors.forEach((e) => {
@@ -76,7 +104,7 @@ const setAppPipes = (app: INestApplication) => {
           constraintKeys.forEach((cKey) => {
             const msg = e.constraints[cKey];
 
-            customErrors.push({ key: e.property, message: msg });
+            customErrors.push({ field: e.property, message: msg });
           });
         });
 

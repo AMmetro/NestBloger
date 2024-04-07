@@ -136,22 +136,6 @@ export class PostsController {
     return result;
   }
 
-
-  @Post('users')
-  @HttpCode(201)
-  async createBlog(@Body() reqBody: any): Promise<any> {
-    // const createdBlog = await this.blogsService.create(reqBody);
-    // const mappedCreatedBlog = Blog.mapper(createdBlog);
-    // return mappedCreatedBlog;
-    return "result";
-  }
-
-
-
-
-
-
-
   @Delete(':id')
   @HttpCode(204)
   async deleteById(

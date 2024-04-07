@@ -57,6 +57,9 @@ export class UsersRepository {
       const totalCount = await this.userModel.countDocuments(filter);
       const pagesCount = Math.ceil(totalCount / pageSize);
 
+      // console.log("users")
+      // console.log(users)
+
       return {
         pagesCount: pagesCount,
         page: pageNumber,
@@ -73,13 +76,15 @@ export class UsersRepository {
   async getById(userId: string): Promise<any> {
     try {
       const user = await this.userModel.findById(userId);
+      if (!user) {
+        return null;
+      }
       return User.userMapper(user);
     } catch (e) {
       console.log(e);
       return null;
     }
   }
-
 
   async createWithOutConfirmation(newUserData: User): Promise<any> {
     try {

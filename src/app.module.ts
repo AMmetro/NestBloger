@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -27,6 +32,7 @@ import { UsersController } from './features/users/api/users.controller';
 import { UsersService } from './features/application/users.service';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { appSettings } from './settings/app-settings';
+import { AuthMiddleware } from './common/middlewares/auth/basicAuth-middleware';
 
 @Module({
   imports: [
@@ -70,7 +76,7 @@ import { appSettings } from './settings/app-settings';
   ],
 })
 
-export class AppModule {}
+// export class AppModule {}
 
 // export class AppModule implements NestModule {
 //   // https://docs.nestjs.com/middleware#applying-middleware
@@ -80,3 +86,14 @@ export class AppModule {}
 //     // .apply(MailMiddleware).forRoutes('*');
 //   }
 // }
+export class AppModule implements NestModule {
+  // https://docs.nestjs.com/middleware#applying-middleware
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware)
+      .forRoutes(
+        { path: '/users/:id', method: RequestMethod.DELETE },
+        { path: '/users', method: RequestMethod.POST },
+      );
+  }
+}

@@ -53,6 +53,9 @@ class APISettings {
   // JWT
   public readonly JWT_ACSS_SECRET: string;
   public readonly JWT_REFRESH_SECRET: string;
+  // AUTH
+  public readonly LOGIN: string;
+  public readonly PASS: string;
 
   constructor(private readonly envVariables: EnvironmentVariable) {
     // Application
@@ -64,6 +67,9 @@ class APISettings {
     // JwtAccess
     this.JWT_ACSS_SECRET = envVariables.JWT_ACSS_SECRET ?? '123';
     this.JWT_REFRESH_SECRET = envVariables.JWT_REFRESH_SECRET ?? '456';
+    // AUTH
+    this.LOGIN = envVariables.LOGIN ?? 'admin';
+    this.PASS = envVariables.PASS ?? 'qwerty';
   }
 
   private getNumberOrDefault(value: string, defaultValue: number): number {
@@ -83,8 +89,8 @@ const env = new EnvironmentSettings(
     : 'DEVELOPMENT') as EnvironmentsTypes,
 );
 
-console.log("process.env.ENV")
-console.log(process.env.MONGO_CONNECTION_URI)
+// console.log("process.env.ENV")
+// console.log(process.env.MONGO_CONNECTION_URI)
 
 const api = new APISettings(process.env);
 export const appSettings = new AppSettings(env, api);

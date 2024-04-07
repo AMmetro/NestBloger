@@ -1,4 +1,24 @@
 import { SortDirection } from 'mongodb';
+import { IsString, Length } from 'class-validator';
+import { Trim } from '../../../../../common/decorators/transform/trim';
+import { IsOptionalEmail } from 'src/common/decorators/validate/is-optional-email';
+
+export class UserCreateModel {
+  @Trim()
+  @IsString()
+  @Length(5, 20, { message: 'length of login is not correct' })
+  login: string;
+
+  @IsOptionalEmail()
+  email: string;
+
+  @Trim()
+  @IsString()
+  @Length(6, 20, { message: 'Incorect length of password' })
+  password: string;
+}
+
+
 
 export type QueryUserInputModel = {
   searchEmailTerm?: string;
@@ -24,16 +44,4 @@ export type RequestInputUserType = {
   email: string;
 };
 
-// import { IsString, Length } from 'class-validator';
-// import { Trim } from '../../../../../common/decorators/transform/trim';
-// import { IsOptionalEmail } from '../../../../../common/decorators/validate/is-optional-email';
 
-// export class UserCreateModel {
-//   @Trim()
-//   @IsString()
-//   @Length(5, 20, { message: 'Length not correct' })
-//   name: string;
-
-//   @IsOptionalEmail()
-//   email: string;
-// }

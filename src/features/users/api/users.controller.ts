@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { UsersRepository } from '../infrastructure/users.repository';
 import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
-import { QueryUserInputModel, RequestInputUserType } from './dto/input/create-user.input.model';
+import { QueryUserInputModel, RequestInputUserType, UserCreateModel } from './dto/input/create-user.input.model';
 import { ObjectId } from 'mongodb';
 // import { UsersQueryRepository } from '../infrastructure/users.query-repository';
 // import { UserCreateModel } from './models/input/create-user.input.model';
@@ -61,13 +61,15 @@ export class UsersController {
     return users;
   }
 
+
   @Post()
   @HttpCode(201)
   async createUser(
-    @Body() reqBody: RequestInputUserType,
+    // @Body() reqBody: RequestInputUserType,
+    @Body() createModel: UserCreateModel,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const { login, password, email } = reqBody;
+    const { login, password, email } = createModel;
     const InputUserModel = {
       login: login,
       password: password,
@@ -82,7 +84,6 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @HttpCode(204)
   async deleteUserById(
     @Param('id') userId: string,
     @Res({ passthrough: true }) res: Response,
@@ -101,7 +102,8 @@ export class UsersController {
       res.sendStatus(404);
       return;
     }
-    return isDeleted;
+    res.sendStatus(204);
+    return;
   }
 
   // @Get()
