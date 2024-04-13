@@ -3,6 +3,11 @@ import * as bcrypt from 'bcrypt';
 // import { appConfig } from 'src/settings/appConfig';
 import { appSettings } from 'src/settings/app-settings';
 
+
+// -----------------------------------
+// import { JwtService } from '@nestjs/jwt';
+// -----------------------------------
+
 export type OutputUserType = {
   id: string;
   login: string;
@@ -26,6 +31,13 @@ export type JWTDecodedType = {
 
 export const jwtServise = {
   async createAccessTokenJWT(user: OutputUserType, deviceId: string) {
+    console.log("user")
+    console.log(user)
+    console.log("deviceId")
+    console.log(deviceId)
+
+    throw new Error('Not implemented!!!');
+
     const token = jwt.sign(
       { userId: user.id, deviceId },
       // appConfig.JWT_ACSS_SECRET,
@@ -34,6 +46,8 @@ export const jwtServise = {
         expiresIn: '10m',
       },
     );
+    console.log("222888888888888888888888822222222")
+    console.log(token)
     return token;
     //     return {
     //       resultCode: 0,

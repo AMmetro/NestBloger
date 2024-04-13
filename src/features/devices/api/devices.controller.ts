@@ -14,9 +14,12 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { UsersRepository } from '../infrastructure/users.repository';
 import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
-import { QueryUserInputModel, RequestInputUserType, UserCreateModel } from './dto/input/create-user.input.model';
+import {
+  QueryUserInputModel,
+  RequestInputUserType,
+  UserCreateModel,
+} from './dto/input/create-user.input.model';
 import { ObjectId } from 'mongodb';
 // import { UsersQueryRepository } from '../infrastructure/users.query-repository';
 // import { UserCreateModel } from './models/input/create-user.input.model';
@@ -25,20 +28,20 @@ import { ObjectId } from 'mongodb';
 // import { NumberPipe } from '../../../common/pipes/number.pipe';
 // import { AuthGuard } from '../../../common/guards/auth.guard';
 import { Request, Response } from 'express';
-import { UsersService } from '../application/users.service';
-import { User } from './dto/output/user.output.model';
+import { UsersService } from 'src/features/users/application/users.service';
+import { UsersRepository } from 'src/features/users/infrastructure/users.repository';
 
 // Tag для swagger
 // @ApiTags('Users')
-@Controller('users')
+@Controller('security')
 // Установка guard на весь контроллер
 //@UseGuards(AuthGuard)
-export class UsersController {
+export class DevicesController {
   // usersService: UsersService;
   constructor(
     // private readonly usersQueryRepository: UsersQueryRepository,
-    private readonly usersRepository: UsersRepository, 
-    private readonly usersService: UsersService
+    private readonly usersRepository: UsersRepository,
+    private readonly usersService: UsersService,
   ) {
     // this.usersService = usersService;
   }
@@ -84,7 +87,7 @@ export class UsersController {
       //   { message: 'Cant`t create user', field: 'user' },
       // ]);
     }
-    return User.userNoEmailConfirmation(createdUser);
+    return createdUser;
   }
 
   @Delete(':id')

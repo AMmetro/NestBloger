@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TestController } from './tests.controller';
-// import { UsersService } from './users.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BlogMongoose, BlogSchema } from 'src/blogs/blogs.schema';
 import { BlogsController } from 'src/blogs/blog.controller';
@@ -22,8 +21,14 @@ import {
 } from 'src/features/users/domain/user.entity';
 import { UsersController } from 'src/features/users/api/users.controller';
 import { PostsController } from 'src/post/posts.controller';
-import { UsersService } from 'src/features/application/users.service';
-
+import { UsersService } from 'src/features/users/application/users.service';
+import { DevicesServices } from 'src/features/devices/application/devices.service';
+import {
+  DevicesMongoose,
+  DevicesSchema,
+} from 'src/features/devices/domain/devices.entity';
+import { DevicesRepository } from 'src/features/devices/infrastructure/devices.repository';
+import { DevicesController } from 'src/features/devices/api/devices.controller';
 
 @Module({
   imports: [
@@ -32,6 +37,7 @@ import { UsersService } from 'src/features/application/users.service';
       { name: Post.name, schema: PostSchema },
       { name: PostLikeMoongoose.name, schema: PostLikeSchema },
       { name: UserMongoose.name, schema: UserSchema },
+      { name: DevicesMongoose.name, schema: DevicesSchema },
     ]),
   ],
   controllers: [
@@ -39,6 +45,7 @@ import { UsersService } from 'src/features/application/users.service';
     BlogsController,
     PostsController,
     UsersController,
+    DevicesController,
   ],
   providers: [
     BlogsService,
@@ -49,6 +56,8 @@ import { UsersService } from 'src/features/application/users.service';
     PostLikesServices,
     UsersRepository,
     UsersService,
+    DevicesServices,
+    DevicesRepository,
   ],
 })
 export class TestsModule {}

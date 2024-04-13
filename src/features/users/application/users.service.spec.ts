@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from 'src/app.controller';
 import { AppService } from 'src/app.service';
-import { UsersService } from './users.service';
 import { UsersRepository } from '../users/infrastructure/users.repository';
 import { UserMongoose } from '../users/domain/user.entity';
 import { MongoMemoryServer } from 'mongodb-memory-server';

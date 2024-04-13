@@ -41,37 +41,11 @@ export class User {
       login: user.login,
       email: user.email,
       createdAt: user.createdAt,
-      emailConfirmation: {
-        confirmationCode: user.emailConfirmation.confirmationCode,
-        expirationDate: user.emailConfirmation.expirationDate,
-        isConfirmed: user.emailConfirmation.isConfirmed,
-      },
-    };
-  }
-
-  static userWithOutEmailConfirmationMapper(user) {
-    return {
-      id: user._id.toString(),
-      login: user.login,
-      email: user.email,
-      createdAt: user.createdAt,
-    };
-  }
-
-  static userNoEmailConfirmation(user) {
-    return {
-      id: user.id,
-      login: user.login,
-      email: user.email,
-      createdAt: user.createdAt,
+      // emailConfirmation: {
+      //   confirmationCode: user.emailConfirmation.confirmationCode,
+      //   expirationDate: user.emailConfirmation.expirationDate,
+      //   isConfirmed: user.emailConfirmation.isConfirmed,
+      // },
     };
   }
 }
-
-export type OutputUserType = {
-  id: string;
-  login: string;
-  email: string;
-  createdAt: string;
-  emailConfirmation: emailConfirmationType;
-};

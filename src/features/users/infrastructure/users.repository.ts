@@ -4,7 +4,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDocument, UserMongoose } from '../domain/user.entity';
 import { User } from '../api/dto/output/user.output.model';
-import { SortDataType } from '../api/dto/input/create-user.input.model';
+import {
+  SortDataType,
+  searchDataType,
+} from '../api/dto/input/create-user.input.model';
 
 @Injectable()
 export class UsersRepository {
@@ -65,7 +68,7 @@ export class UsersRepository {
         page: pageNumber,
         pageSize: pageSize,
         totalCount: totalCount,
-        items: users.map(User.userMapper),
+        items: users.map(User.userWithOutEmailConfirmationMapper),
       };
     } catch (e) {
       console.log(e);
@@ -117,6 +120,22 @@ export class UsersRepository {
       console.log(e);
       return null;
     }
+  }
+
+  async getOneByLoginOrEmail(
+    searchData: searchDataType,
+  ): Promise<WithId<User> | null> {
+    const filter = {
+      $or: [
+        { email: { $regex: searchData.email, $options: 'i' } },
+        { login: { $regex: searchData.login, $options: 'i' } },
+      ],
+    };
+    const user = await this.userModel.findOne(filter);
+    if (!user) {
+      return null;
+    }
+    return user;
   }
 
   // public async deleteUserById(userId: string) {

@@ -48,24 +48,6 @@ export class User {
       },
     };
   }
-
-  static userWithOutEmailConfirmationMapper(user) {
-    return {
-      id: user._id.toString(),
-      login: user.login,
-      email: user.email,
-      createdAt: user.createdAt,
-    };
-  }
-
-  static userNoEmailConfirmation(user) {
-    return {
-      id: user.id,
-      login: user.login,
-      email: user.email,
-      createdAt: user.createdAt,
-    };
-  }
 }
 
 export type OutputUserType = {

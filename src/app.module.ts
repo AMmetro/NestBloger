@@ -29,10 +29,21 @@ import { UsersRepository } from './features/users/infrastructure/users.repositor
 import { PostLikesRepository } from './features/postLikes/infrastructure/postLikes.repo';
 import { UserMongoose, UserSchema } from './features/users/domain/user.entity';
 import { UsersController } from './features/users/api/users.controller';
-import { UsersService } from './features/application/users.service';
+// import { UsersService } from './features/application/users.service';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { appSettings } from './settings/app-settings';
 import { AuthMiddleware } from './common/middlewares/auth/basicAuth-middleware';
+import { AuthController } from './features/auth/api/auth.controller';
+import { UsersService } from './features/users/application/users.service';
+import { AuthService } from './features/auth/application/auth.service';
+import { DevicesServices } from './features/devices/application/devices.service';
+import { JwtService } from '@nestjs/jwt';
+import {
+  DevicesMongoose,
+  DevicesSchema,
+} from './features/devices/domain/devices.entity';
+import { DevicesRepository } from './features/devices/infrastructure/devices.repository';
+import { AuthModule } from './features/auth/domain/auth.module';
 
 @Module({
   imports: [
@@ -52,9 +63,11 @@ import { AuthMiddleware } from './common/middlewares/auth/basicAuth-middleware';
       { name: Post.name, schema: PostSchema },
       { name: PostLikeMoongoose.name, schema: PostLikeSchema },
       { name: UserMongoose.name, schema: UserSchema },
+      { name: DevicesMongoose.name, schema: DevicesSchema },
     ]),
     // UsersModule,
     TestsModule,
+    AuthModule,
   ],
   controllers: [
     AppController,
@@ -62,6 +75,7 @@ import { AuthMiddleware } from './common/middlewares/auth/basicAuth-middleware';
     TestController,
     PostsController,
     UsersController,
+    AuthController,
   ],
   providers: [
     AppService,
@@ -73,6 +87,10 @@ import { AuthMiddleware } from './common/middlewares/auth/basicAuth-middleware';
     PostLikesServices,
     UsersRepository,
     UsersService,
+    AuthService,
+    DevicesServices,
+    DevicesRepository,
+    JwtService,
   ],
 })
 

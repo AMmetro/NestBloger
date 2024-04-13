@@ -1,6 +1,5 @@
 // import { ApiTags } from '@nestjs/swagger';
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -14,100 +13,142 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { UsersRepository } from '../infrastructure/users.repository';
+// import { UsersRepository } from '../infrastructure/users.repository';
 import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
-import { QueryUserInputModel, RequestInputUserType, UserCreateModel } from './dto/input/create-user.input.model';
+// import { QueryUserInputModel, RequestInputUserType, UserCreateModel } from './dto/input/create-user.input.model';
 import { ObjectId } from 'mongodb';
 // import { UsersQueryRepository } from '../infrastructure/users.query-repository';
 // import { UserCreateModel } from './models/input/create-user.input.model';
 // import { UserOutputModel } from './models/output/user.output.model';
 // import { UsersService } from '../application/users.service';
 // import { NumberPipe } from '../../../common/pipes/number.pipe';
-// import { AuthGuard } from '../../../common/guards/auth.guard';
 import { Request, Response } from 'express';
-import { UsersService } from '../application/users.service';
-import { User } from './dto/output/user.output.model';
+import { AuthUserInputModel } from './dto/input/auth.input.model';
+import { UsersService } from 'src/features/users/application/users.service';
+import { AuthService } from '../application/auth.service';
+import { AuthGuard } from 'src/common/guards/auth.guard';
+import { LocalAuthGuard } from 'src/common/guards/local.guard';
 
 // Tag для swagger
 // @ApiTags('Users')
-@Controller('users')
+@Controller('auth')
 // Установка guard на весь контроллер
-//@UseGuards(AuthGuard)
-export class UsersController {
+// @UseGuards(AuthGuard)
+export class AuthController {
   // usersService: UsersService;
   constructor(
     // private readonly usersQueryRepository: UsersQueryRepository,
-    private readonly usersRepository: UsersRepository, 
-    private readonly usersService: UsersService
+    // private readonly usersRepository: UsersRepository,
+    private readonly authService: AuthService,
   ) {
     // this.usersService = usersService;
   }
 
-  @Get()
-  @HttpCode(200)
-  async getAllUsers(
-    @Query() reqQuery: QueryUserInputModel,
-    @Res({ passthrough: true }) res: Response,
+  // @Get()
+  // @HttpCode(200)
+  // async getAllUsers(
+  //   @Query() reqQuery: QueryUserInputModel,
+  //   @Res({ passthrough: true }) res: Response,
+  // ) {
+  //   const basicSortData = basicSortQuery(reqQuery);
+  //   const sortData = {
+  //     ...basicSortData,
+  //     searchEmailTerm: reqQuery.searchEmailTerm ?? null,
+  //     searchLoginTerm: reqQuery.searchLoginTerm ?? null,
+  //   };
+  //   const users = await this.usersRepository.getAll(sortData);
+  //   if (users === null) {
+  //     res.sendStatus(404);
+  //     return;
+  //   }
+  //   return users;
+  // }
+
+  // @Post()
+  // @HttpCode(201)
+  // async createUser(
+  //   // @Body() reqBody: RequestInputUserType,
+  //   @Body() createModel: UserCreateModel,
+  //   @Res({ passthrough: true }) res: Response,
+  // ) {
+  //   const { login, password, email } = createModel;
+  //   const InputUserModel = {
+  //     login: login,
+  //     password: password,
+  //     email: email,
+  //   };
+  //   const createdUser = await this.usersService.create(InputUserModel);
+  //   if (!createdUser) {
+  //     res.sendStatus(404);
+  //     return;
+  //   }
+  //   return createdUser;
+  // }
+
+  @Post('/login2')
+  @UseGuards(LocalAuthGuard)
+  async signinUser2(
+    // @Param('id') userId: string,
+    @Body() reqBody: AuthUserInputModel,
+    // @Res({ passthrough: true }) res: Response,
   ) {
-    const basicSortData = basicSortQuery(reqQuery);
-    const sortData = {
-      ...basicSortData,
-      searchEmailTerm: reqQuery.searchEmailTerm ?? null,
-      searchLoginTerm: reqQuery.searchLoginTerm ?? null,
-    };
-    const users = await this.usersRepository.getAll(sortData);
-    if (users === null) {
-      res.sendStatus(404);
-      return;
-    }
-    return users;
+    const { password, loginOrEmail } = reqBody;
+    const userAgent = 'unknown';
+    const userIp = 'unknown';
+
+    // return "hello";
+    const isValid = await this.authService.signinUser(
+      reqBody,
+      userAgent,
+      userIp,
+    );
+    return isValid;
   }
 
-  @Post()
-  @HttpCode(201)
-  async createUser(
-    // @Body() reqBody: RequestInputUserType,
-    @Body() createModel: UserCreateModel,
+  @Post('/login')
+  async signinUser(
+    // @Param('id') userId: string,
+    @Body() reqBody: AuthUserInputModel,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const { login, password, email } = createModel;
-    const InputUserModel = {
-      login: login,
-      password: password,
-      email: email,
-    };
-    const createdUser = await this.usersService.create(InputUserModel);
-    if (!createdUser) {
-      res.sendStatus(404);
+    const { password, loginOrEmail } = reqBody;
+    const userAgent = 'unknown';
+    const userIp = 'unknown';
+    if (!password || !loginOrEmail) {
+      res.sendStatus(400);
       return;
-      // throw new BadRequestException([
-      //   { message: 'Cant`t create user', field: 'user' },
-      // ]);
     }
-    return User.userNoEmailConfirmation(createdUser);
-  }
+    const authData = { loginOrEmail: loginOrEmail, password: password };
+    const result = await this.authService.signinUser(
+      authData,
+      userAgent,
+      userIp,
+    );
+    const accessToken = result.newAT;
+    const refreshToken = result.newRT;
+    return res
+      .cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: true,
+      })
+      .status(200)
+      .send({ accessToken });
 
-  @Delete(':id')
-  async deleteUserById(
-    @Param('id') userId: string,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    if (!ObjectId.isValid(userId)) {
-      res.sendStatus(404);
-      return;
-    }
-    const isUser = await this.usersRepository.getById(userId);
-    if (!isUser) {
-      res.sendStatus(404);
-      return;
-    }
-    const isDeleted = await this.usersRepository.deleteUserById(userId);
-    if (isDeleted === null) {
-      res.sendStatus(404);
-      return;
-    }
-    res.sendStatus(204);
-    return;
+    //   if (result.data && result.status === ResultCode.Success) {
+    //     const accessToken = result.data.newAT;
+    //     const refreshToken = result.data.newRT;
+    //     return res
+    //       .cookie("refreshToken", refreshToken, {
+    //         httpOnly: true,
+    //         secure: true,
+    //       })
+    //       .status(200)
+    //       .send({ accessToken });
+    //   } else {
+    //     sendCustomError(res, result);
+    //     return;
+    //   }
+    // }
   }
 
   // @Get()

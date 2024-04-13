@@ -5,7 +5,9 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
+import { log } from 'console';
 import { Request, Response } from 'express';
+import { appSettings } from 'src/settings/app-settings';
 
 // https://docs.nestjs.com/exception-filters
 @Catch(HttpException)
@@ -15,6 +17,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
+
+    if (status === HttpStatus.BAD_REQUEST) {
+    }
 
     if (status === HttpStatus.BAD_REQUEST) {
       const errorsResponse = {
@@ -38,6 +43,25 @@ export class HttpExceptionFilter implements ExceptionFilter {
         timestamp: new Date().toISOString(),
         path: request.url,
       });
+    }
+  }
+}
+
+// отлавливаем ошибки брошенные внутри сервисов (для облегчения разработки)
+// только в режиме не "PRODUCTION"
+// https://youtu.be/OO3xa61PTHU?t=3825
+@Catch(Error)
+export class ErrorExceptionFilter implements ExceptionFilter {
+  catch(exception: HttpException, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+
+    if (!appSettings.env.isProduction()) {
+      response
+        .status(500)
+        .send({ error: exception.toString(), stack: exception.stack });
+    } else {
+      response.status(500).send('some error ocurred');
     }
   }
 }

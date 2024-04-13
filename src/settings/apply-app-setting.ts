@@ -4,7 +4,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 // import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { HttpExceptionFilter } from '../common/exception-filters/http-exception-filter';
+import { ErrorExceptionFilter, HttpExceptionFilter } from '../common/exception-filters/http-exception-filter';
 import { appSettings } from './app-settings';
 import { LoggerMiddlewareFunc } from '../common/middlewares/logger.middleware';
 
@@ -32,7 +32,7 @@ export const applyAppSettings = (app: INestApplication) => {
   setAppPipes(app);
 
   // Применение глобальных exceptions filters
-  // setAppExceptionsFilters(app);
+  setAppExceptionsFilters(app);
 };
 
 const setAppPrefix = (app: INestApplication) => {
@@ -60,44 +60,17 @@ const setSwagger = (app: INestApplication) => {
 };
 
 const setAppPipes = (app: INestApplication) => {
-
   app.useGlobalPipes(
     new ValidationPipe({
       // Для работы трансформации входящих данных
+      // например вместо преобразования в числа внутри не писать везде
+      // (@Param('id', ParseIntPipe) userId: number))
       transform: true,
       // Выдавать первую ошибку для каждого поля
       stopAtFirstError: true,
       // Перехватываем ошибку, кастомизируем её и выкидываем 400 с собранными данными
       exceptionFactory: (errors) => {
-
-    // console.log("---------------------------------------")
-
-// -------------------------------------------------
-// app.useGlobalPipes(new ValidationPipe({
-//   transform: true,
-//   stopAtFirstError: true,
-//   exceptionFactory: validationExceptionFactory
-// }))
-
-// export function validationExceptionFactory(errors) {
-//   const errorsMessages = {
-//     errorsMessages: [],
-//   };
-//   errors.forEach((error) => {
-//     const firstKey = Object.keys(error.constraints)[0];
-//     errorsMessages.errorsMessages.push({
-//       message: error.constraints[firstKey],
-//       field: error.property,
-//     });
-//   });
-//   throw new BadRequestException(errorsMessages);
-// }
-
-// -------------------------------------------------
-
-
         const customErrors = [];
-
         errors.forEach((e) => {
           const constraintKeys = Object.keys(e.constraints);
 
@@ -116,5 +89,7 @@ const setAppPipes = (app: INestApplication) => {
 };
 
 const setAppExceptionsFilters = (app: INestApplication) => {
-  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalFilters(new HttpExceptionFilter()
+  // , new ErrorExceptionFilter()
+  );
 };
