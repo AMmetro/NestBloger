@@ -3,11 +3,6 @@ import * as bcrypt from 'bcrypt';
 // import { appConfig } from 'src/settings/appConfig';
 import { appSettings } from 'src/settings/app-settings';
 
-
-// -----------------------------------
-// import { JwtService } from '@nestjs/jwt';
-// -----------------------------------
-
 export type OutputUserType = {
   id: string;
   login: string;

@@ -12,6 +12,7 @@ import {
   Req,
   Res,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 // import { UsersRepository } from '../infrastructure/users.repository';
 import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
@@ -22,12 +23,15 @@ import { ObjectId } from 'mongodb';
 // import { UserOutputModel } from './models/output/user.output.model';
 // import { UsersService } from '../application/users.service';
 // import { NumberPipe } from '../../../common/pipes/number.pipe';
-import { Request, Response } from 'express';
-import { AuthUserInputModel } from './dto/input/auth.input.model';
+import { Response } from 'express';
+import { AuthUserInputModel, RegistrationUserInputModel } from './dto/input/auth.input.model';
 import { UsersService } from 'src/features/users/application/users.service';
 import { AuthService } from '../application/auth.service';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { LocalAuthGuard } from 'src/common/guards/local.guard';
+import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
+import { BasicAuthGuard } from 'src/common/guards/basic.guard';
+import { log } from 'console';
 
 // Tag для swagger
 // @ApiTags('Users')
@@ -85,70 +89,99 @@ export class AuthController {
   //   return createdUser;
   // }
 
-  @Post('/login2')
+  @Get('/superAdmin')
+  @UseGuards(BasicAuthGuard)
+  async forSuperAdmin(
+    // @Param('id') userId: string,
+    @Request() req: AuthUserInputModel,
+    // @Res({ passthrough: true }) res: Response,
+  ) {
+    const { loginOrEmail } = req;
+    const { password } = req;
+
+    // generate coocies 
+    return "i am admin";
+  }
+
+  @Post('/me')
+  @UseGuards(JwtAuthGuard)
+  async aboutMe(
+    // @Param('id') userId: string,
+    @Request() req: AuthUserInputModel,
+    // @Res({ passthrough: true }) res: Response,
+  ) {
+    const { loginOrEmail } = req;
+    const { password } = req;
+
+    // generate coocies 
+    return "coocies";
+  }
+
+  @Post('/login')
+  @HttpCode(200)
   @UseGuards(LocalAuthGuard)
-  async signinUser2(
+  async signinUser(
     // @Param('id') userId: string,
     @Body() reqBody: AuthUserInputModel,
     // @Res({ passthrough: true }) res: Response,
   ) {
-    const { password, loginOrEmail } = reqBody;
+    // const { password, loginOrEmail } = reqBody;
     const userAgent = 'unknown';
     const userIp = 'unknown';
-
-    // return "hello";
-    const isValid = await this.authService.signinUser(
+    const AccessToken = await this.authService.signinUser(
       reqBody,
       userAgent,
       userIp,
     );
-    return isValid;
+    return { accessToken: AccessToken };
   }
 
-  @Post('/login')
-  async signinUser(
+  @Post('/registration')
+  @HttpCode(204)
+  async registration(
     // @Param('id') userId: string,
-    @Body() reqBody: AuthUserInputModel,
+    @Body() reqBody: RegistrationUserInputModel,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const { password, loginOrEmail } = reqBody;
-    const userAgent = 'unknown';
-    const userIp = 'unknown';
-    if (!password || !loginOrEmail) {
-      res.sendStatus(400);
+    const { password, login, email } = reqBody;
+    if (!password || !login || !email) {
+      res.sendStatus(401);
       return;
     }
-    const authData = { loginOrEmail: loginOrEmail, password: password };
-    const result = await this.authService.signinUser(
-      authData,
-      userAgent,
-      userIp,
-    );
-    const accessToken = result.newAT;
-    const refreshToken = result.newRT;
-    return res
-      .cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: true,
-      })
-      .status(200)
-      .send({ accessToken });
+    await this.authService.registrationUserWithConfirmation(reqBody);
+  }
 
-    //   if (result.data && result.status === ResultCode.Success) {
-    //     const accessToken = result.data.newAT;
-    //     const refreshToken = result.data.newRT;
-    //     return res
-    //       .cookie("refreshToken", refreshToken, {
-    //         httpOnly: true,
-    //         secure: true,
-    //       })
-    //       .status(200)
-    //       .send({ accessToken });
-    //   } else {
-    //     sendCustomError(res, result);
-    //     return;
-    //   }
-    // }
+  @Post('/registration-email-resending')
+  @HttpCode(204)
+  async registrationEmailResending(
+    // @Param('id') userId: string,
+    @Body() reqBody: { email: string },
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { email } = reqBody;
+    if (!email) {
+      res.sendStatus(401);
+      return;
+    }
+    const isResended = await this.authService.emailResending(email);
+  }
+
+
+
+  @Post('/registration-confirmation')
+  @HttpCode(204)
+  async registrationConfirmation(
+    // @Param('id') userId: string,
+    @Body() reqBody: { code: string },
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { code } = reqBody;
+    if (!code) {
+      res.sendStatus(401);
+      return;
+    }
+    // !!!!!!!!!!!!!!!!!!!
+    const isConfirmed = await this.authService.confirmEmail(code);
   }
 
   // @Get()

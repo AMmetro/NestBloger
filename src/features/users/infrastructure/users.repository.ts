@@ -3,7 +3,7 @@ import { WithId, ObjectId } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDocument, UserMongoose } from '../domain/user.entity';
-import { User } from '../api/dto/output/user.output.model';
+import { OutputUserType, User } from '../api/dto/output/user.output.model';
 import {
   SortDataType,
   searchDataType,
@@ -76,6 +76,27 @@ export class UsersRepository {
     }
   }
 
+  async confirmRegistration(userId: string): Promise<boolean> {
+    const user = await this.userModel.updateOne(
+      { _id: new ObjectId(userId) },
+      { $set: { 'emailConfirmation.isConfirmed': true } },
+    );
+    return user.modifiedCount === 1;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   async getById(userId: string): Promise<any> {
     try {
       const user = await this.userModel.findById(userId);
@@ -89,6 +110,18 @@ export class UsersRepository {
     }
   }
 
+
+  async getByConfirmationCode(code: string): Promise<OutputUserType | null> {
+    const user = await this.userModel.findOne({
+      'emailConfirmation.confirmationCode': code,
+    });
+    if (!user) {
+      return null;
+    }
+    return User.userMapper(user);
+  }
+
+
   async createWithOutConfirmation(newUserData: User): Promise<any> {
     try {
       const newUserId = await this.userModel.create(newUserData);
@@ -98,6 +131,28 @@ export class UsersRepository {
       console.log(e);
       return null;
     }
+  }
+
+  async createUser(newUserData: User): Promise<any> {
+    try {
+      const newUserId = await this.userModel.create(newUserData);
+      await newUserId.save();
+      return newUserId._id.toString();
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  async updateConfirmationCode(
+    userId: ObjectId,
+    newConfirmationCode: string,
+  ): Promise<boolean> {
+    const user = await this.userModel.updateOne(
+      { _id: new ObjectId(userId) },
+      { $set: { 'emailConfirmation.confirmationCode': newConfirmationCode } },
+    );
+    return user.modifiedCount === 1;
   }
 
   async deleteUserById(userId: string): Promise<any> {

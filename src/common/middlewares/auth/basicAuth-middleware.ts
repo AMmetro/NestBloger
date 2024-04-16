@@ -4,7 +4,6 @@ import { appSettings } from 'src/settings/app-settings';
 const AcsessLogin = appSettings.api.LOGIN;
 const AcsessPass = appSettings.api.PASS;
 
-
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
@@ -13,7 +12,7 @@ export class AuthMiddleware implements NestMiddleware {
       res.sendStatus(401);
       return;
     }
-    const [basic, token] = auth.split(' '); 
+    const [basic, token] = auth.split(' ');
     if (basic !== 'Basic') {
       res.sendStatus(401);
       return;
@@ -27,7 +26,6 @@ export class AuthMiddleware implements NestMiddleware {
     return next();
   }
 }
-
 
 export const authMiddleware = (
   req: Request,

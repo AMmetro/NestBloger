@@ -23,7 +23,8 @@ import {
   DevicesSchema,
 } from 'src/features/devices/domain/devices.entity';
 import { DevicesRepository } from 'src/features/devices/infrastructure/devices.repository';
-import { LocalStrategy } from '../strategies/local';
+import { LocalStrategy } from '../strategies/localStrategy';
+import { BasicStrategy } from '../strategies/basicStrategy';
 
 @Module({
   imports: [
@@ -33,6 +34,15 @@ import { LocalStrategy } from '../strategies/local';
       secret: 'jwtConstants.secret',
       signOptions: { expiresIn: '60s' },
     }),
+    // JwtModule.registerAsync({
+    //   useFactory: () => {
+    //     return {
+    //       secret: 'jwtConstants.secret',
+    //       signOptions: { expiresIn: '60s' },
+    //     };
+    //   },
+    //   // inject: [ConfigService],
+    // }),
 
     MongooseModule.forFeature([
       { name: UserMongoose.name, schema: UserSchema },
@@ -47,6 +57,7 @@ import { LocalStrategy } from '../strategies/local';
     JwtService,
     DevicesRepository,
     LocalStrategy,
+    BasicStrategy,
     // вешает guard на весь контроллер (независмо от того что он не прописан в самом контроллере)
     // {
     //   provide: APP_GUARD,

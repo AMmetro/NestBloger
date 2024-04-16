@@ -37,13 +37,21 @@ import { AuthController } from './features/auth/api/auth.controller';
 import { UsersService } from './features/users/application/users.service';
 import { AuthService } from './features/auth/application/auth.service';
 import { DevicesServices } from './features/devices/application/devices.service';
-import { JwtService } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import {
   DevicesMongoose,
   DevicesSchema,
 } from './features/devices/domain/devices.entity';
 import { DevicesRepository } from './features/devices/infrastructure/devices.repository';
-import { AuthModule } from './features/auth/domain/auth.module';
+import { BasicStrategy } from './features/auth/strategies/basicStrategy';
+import { LocalStrategy } from './features/auth/strategies/localStrategy';
+import { RateLimitMiddleware } from './common/middlewares/rateLimit-middleware';
+import { RateLimitRepository } from './features/rateLimit/infrastructure/rateLimit.repository';
+import {
+  RateLimitMongoose,
+  RateLimitSchema,
+} from './features/rateLimit/domain/rateLimit.entity';
+// import { AuthModule } from './features/auth/domain/auth.module';
 
 @Module({
   imports: [
@@ -54,6 +62,12 @@ import { AuthModule } from './features/auth/domain/auth.module';
         ? appSettings.api.MONGO_CONNECTION_URI_TESTING
         : appSettings.api.MONGO_CONNECTION_URI,
     ),
+    // JwtModule.register({
+    //   // global: true,
+    //   secret: 'jwtConstant',
+    //   signOptions: { expiresIn: '60s' },
+    // }),
+
     // MongooseModule.forRoot(appSettings.api.MONGO_CONNECTION_URI),
     // MongooseModule.forRoot(
     //   'mongodb+srv://metroexpress:suradet842@cluster0.gkpqpve.mongodb.net/?retryWrites=true&w=majority',
@@ -64,10 +78,11 @@ import { AuthModule } from './features/auth/domain/auth.module';
       { name: PostLikeMoongoose.name, schema: PostLikeSchema },
       { name: UserMongoose.name, schema: UserSchema },
       { name: DevicesMongoose.name, schema: DevicesSchema },
+      { name: RateLimitMongoose.name, schema: RateLimitSchema },
     ]),
     // UsersModule,
     TestsModule,
-    AuthModule,
+    // AuthModule,
   ],
   controllers: [
     AppController,
@@ -90,20 +105,14 @@ import { AuthModule } from './features/auth/domain/auth.module';
     AuthService,
     DevicesServices,
     DevicesRepository,
+    RateLimitRepository,
     JwtService,
+    LocalStrategy,
+    BasicStrategy,
   ],
 })
 
 // export class AppModule {}
-
-// export class AppModule implements NestModule {
-//   // https://docs.nestjs.com/middleware#applying-middleware
-//   configure(consumer: MiddlewareConsumer) {
-//     consumer.apply(LoggerMiddleware).forRoutes('/users');
-//     // .apply(OtherMiddleware).forRoutes('*');
-//     // .apply(MailMiddleware).forRoutes('*');
-//   }
-// }
 export class AppModule implements NestModule {
   // https://docs.nestjs.com/middleware#applying-middleware
   configure(consumer: MiddlewareConsumer) {
@@ -113,5 +122,13 @@ export class AppModule implements NestModule {
         { path: '/users/:id', method: RequestMethod.DELETE },
         { path: '/users', method: RequestMethod.POST },
       );
+    consumer.apply(RateLimitMiddleware).forRoutes(
+      { path: '/auth/login', method: RequestMethod.POST },
+      { path: '/auth/registration', method: RequestMethod.POST },
+      {
+        path: '/auth/registration-email-resending',
+        method: RequestMethod.POST,
+      },
+    );
   }
 }

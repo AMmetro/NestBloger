@@ -76,6 +76,7 @@ export class UsersController {
       password: password,
       email: email,
     };
+
     const createdUser = await this.usersService.create(InputUserModel);
     if (!createdUser) {
       res.sendStatus(404);

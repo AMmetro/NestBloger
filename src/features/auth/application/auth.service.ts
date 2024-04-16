@@ -1,6 +1,11 @@
-import { WithId, ObjectId } from 'mongodb';
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { WithId } from 'mongodb';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+// import { InjectModel } from '@nestjs/mongoose';
 // import { User } from './users.schema';
 import { JwtService } from '@nestjs/jwt';
 import { hashServise } from 'src/base/utils/JWTservise';
@@ -11,6 +16,8 @@ import { AuthUserInputModel } from '../api/dto/input/auth.input.model';
 import { UsersService } from 'src/features/users/application/users.service';
 import { DevicesServices } from 'src/features/devices/application/devices.service';
 import { User } from '../api/dto/output/user.output.model';
+import { add } from 'date-fns/add';
+import { emailAdaper } from 'src/base/utils/emailAdaper';
 // import { User } from '../users/api/dto/output/user.output.model';
 // import { UsersRepository } from '../users/infrastructure/users.repository';
 // import { RequestInputUserType } from '../users/api/dto/input/create-user.input.model';
@@ -60,17 +67,11 @@ export class AuthService {
       email: authUserData.loginOrEmail,
     };
 
-    // return true
     const user: WithId<User> | null =
       await this.usersRepository.getOneByLoginOrEmail(userSearchData);
-
     if (!user) {
       return null;
     }
-
-    // return User.userMapper(user);
-
-
     const userLogInPasswordHash = await hashServise.generateHash(
       authUserData.password,
       user.passwordSalt,
@@ -82,35 +83,43 @@ export class AuthService {
     return User.userMapper(user);
   }
 
-
   async signinUser(
     authData: AuthUserInputModel,
     userAgent: string,
     userIp: string,
   ): Promise<any> {
-    // const authUsers = await this.validateUser(authData);
+    const userSearchData = {
+      login: authData.loginOrEmail,
+      email: authData.loginOrEmail,
+    };
+    const user: WithId<User> | null =
+      await this.usersRepository.getOneByLoginOrEmail(userSearchData);
 
-    // const payload = {
-    //   userLogin: authData.loginOrEmail,
-    //   userId: authData._id.toISOString(),
-    // };
+    const payload = {
+      userId: user._id.toString(),
+    };
+    // console.log('payload---');
+    // console.log(payload);
 
-    // const AccessToken = await this.jwtService.signAsync(payload);
-    // const authUsers2 = await this.usersService.checkCredentials(authData);
-    // if (!authUsers) {
-    //   // return {
-    //   //   status: ResultCode.Unauthorised,
-    //   //   errorMessage: `Can't login user`,
-    //   // };
-    // }
+    // const AccessToken = this.jwtService.sign(payload);
+    const AccessToken = this.jwtService.sign(payload, {
+      expiresIn: '360s',
+      secret: 'secretword',
+    });
+
+    return AccessToken;
+
+    // console.log('AccessToken---');
+    // console.log(AccessToken);
+
     // const twoTokensWithDeviceId = await this.devicesServices.createdDevice(
     //   authUsers,
     //   userAgent,
     //   userIp,
     // );
 
-    // console.log('twoTokensWithDeviceId');
-    // console.log(twoTokensWithDeviceId);
+    console.log('authData');
+    console.log(authData);
 
     // if (!twoTokensWithDeviceId) {
     //   // return {
@@ -118,15 +127,133 @@ export class AuthService {
     //   //   errorMessage: `Can't create new session (with devices) for user`,
     //   // };
     // }
-  //   return twoTokensWithDeviceId;
-  //   // return {
-  //   //   status: ResultCode.Success,
-  //   //   data: {
-  //   //     newAT: twoTokensWithDeviceId.newAT,
-  //   //     newRT: twoTokensWithDeviceId.newRT,
-  //   //   },
-  //   // };
+    //   return twoTokensWithDeviceId;
+    //   // return {
+    //   //   status: ResultCode.Success,
+    //   //   data: {
+    //   //     newAT: twoTokensWithDeviceId.newAT,
+    //   //     newRT: twoTokensWithDeviceId.newRT,
+    //   //   },
+    //   // };
+  }
+
+  async registrationUserWithConfirmation(
+    registrationData: RequestInputUserType,
+  ): Promise<any | null> {
+    const { login, password, email } = registrationData;
+    const userSearchData = { login: login, email: email };
+
+    const userAllreadyExist: WithId<User> | null =
+      await this.usersRepository.getOneByLoginOrEmail(userSearchData);
+    if (userAllreadyExist) {
+      throw new BadRequestException([
+        { message: 'email allready exist', field: 'email' },
+        { message: 'login allready exist', field: 'login' },
+      ]);
+      // throw new BadRequestException('email or password allready exist', {
+      //   cause: new Error(),
+      //   description: 'email or password allready exist',
+      // });
+    }
+
+    const passwordSalt = await hashServise.generateSalt();
+    const passwordHash = await hashServise.generateHash(password, passwordSalt);
+
+    const newUser = {
+      login: login,
+      email: email,
+      passwordHash: passwordHash,
+      passwordSalt: passwordSalt,
+      blackListToken: [],
+      createdAt: new Date(),
+      emailConfirmation: {
+        confirmationCode: randomUUID(),
+        expirationDate: add(new Date(), { hours: 1, minutes: 30 }),
+        isConfirmed: false,
+      },
+    };
+    const newUserId = await this.usersRepository.createUser(newUser);
+    if (!newUserId) {
+      return null;
+    }
+    const emailInfo = {
+      email: newUser.email,
+      subject: 'confirm Email',
+      code: newUser.emailConfirmation.confirmationCode,
+    };
+    await emailAdaper.sendEmailRecoveryMessage(emailInfo);
+    return true;
+  }
+
+  async emailResending(email: string): Promise<any | null> {
+    const userSearchData = { email: email, login: ' ' }; // search by login " " false for all login
+
+    const userForEmailResending =
+      await this.usersRepository.getOneByLoginOrEmail(userSearchData);
+    if (!userForEmailResending) {
+      throw new BadRequestException([
+        { message: 'not found user for email resending', field: 'email' },
+      ]);
+    }
+    const emailIsConfirmed =
+      userForEmailResending.emailConfirmation?.isConfirmed;
+    if (emailIsConfirmed) {
+      throw new BadRequestException([
+        { message: 'email allready confirmed', field: 'email' },
+      ]);
+    }
+
+    const newConfirmationCode = randomUUID();
+    const codeUpd = await this.usersRepository.updateConfirmationCode(
+      userForEmailResending._id,
+      newConfirmationCode,
+    );
+    if (!codeUpd) {
+      throw new BadRequestException([
+        { message: 'confirmation code not updated', field: 'db save error' },
+      ]);
+    }
+    const emailInfo = {
+      email: userForEmailResending.email,
+      code: newConfirmationCode,
+      subject: 'resending confirmation code',
+    };
+    emailAdaper.sendEmailRecoveryMessage(emailInfo);
+    return true;
+  }
+
+  async confirmEmail(code: string): Promise<any> {
+    const userForConfirmation =
+      await this.usersRepository.getByConfirmationCode(code);
+    if (!userForConfirmation) {
+      throw new BadRequestException([
+        { message: 'user for confirmation not exist', field: 'code' },
+      ]);
+    }
+    if (userForConfirmation.emailConfirmation.isConfirmed) {
+      throw new BadRequestException([
+        { message: 'code already confirmed', field: 'code' },
+      ]);
+    }
+    // if (userForConfirmation.emailConfirmation.expirationDate < new Date()) {
+    //   return {
+    //     status: ResultCode.ClientError,
+    //     errorMessage: JSON.stringify({
+    //       errorsMessages: [
+    //         { message: `Confirmation code ${code} expired`, field: 'code' },
+    //       ],
+    //     }),
+    //   };
+    // }
+    const isConfirmed = await this.usersRepository.confirmRegistration(
+      userForConfirmation.id,
+    );
+    if (!isConfirmed) {
+      // return {
+      //   status: ResultCode.Conflict,
+      //   errorMessage: `Confirmation code ${code}`,
+      // };
+    }
+    return true;
   }
 }
-
-

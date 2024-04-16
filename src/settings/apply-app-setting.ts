@@ -4,7 +4,10 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 // import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ErrorExceptionFilter, HttpExceptionFilter } from '../common/exception-filters/http-exception-filter';
+import {
+  ErrorExceptionFilter,
+  HttpExceptionFilter,
+} from '../common/exception-filters/http-exception-filter';
 import { appSettings } from './app-settings';
 import { LoggerMiddlewareFunc } from '../common/middlewares/logger.middleware';
 
@@ -90,6 +93,6 @@ const setAppPipes = (app: INestApplication) => {
 
 const setAppExceptionsFilters = (app: INestApplication) => {
   app.useGlobalFilters(new HttpExceptionFilter()
-  // , new ErrorExceptionFilter()
+  //  , new ErrorExceptionFilter()
   );
 };
