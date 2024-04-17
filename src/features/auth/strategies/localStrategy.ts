@@ -18,12 +18,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       loginOrEmail: loginOrEmail,
       password: password,
     };
-
-    console.log("loginOrEmail")
-    console.log(loginOrEmail)
-    console.log("password")
-    console.log(password)
-
     const user = await this.authService.validateUser(userSearchData);
     if (!user) {
       throw new UnauthorizedException();

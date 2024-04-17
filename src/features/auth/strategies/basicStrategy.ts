@@ -13,11 +13,6 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(req, username: string, password: string): Promise<any> {
-    console.log('===username===11');
-    console.log(username);
-    console.log('===password===11');
-    console.log(password);
-
     if (
       basicConstant.username === username &&
       basicConstant.password === password

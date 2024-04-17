@@ -53,8 +53,7 @@ export class PostsService {
       postId,
       'like',
     );
-    // console.log("currentBlog")
-    // console.log(currentBlog)
+
     const extendedLikesInfo = {
       likesCount: 0,
       dislikesCount: 0,
@@ -101,14 +100,10 @@ export class PostsService {
       postsRequestsSortData,
     );
 
-                                    // console.log("allPostsObject")
-                                    // console.log(allPostsObject)
-
     if (!allPostsObject) {
       return null;
     }
 
- 
 
     const postsWithLikes = await this.addLikesToPosts(
       allPostsObject.items,

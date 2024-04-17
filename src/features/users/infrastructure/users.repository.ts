@@ -59,10 +59,6 @@ export class UsersRepository {
         .lean();
       const totalCount = await this.userModel.countDocuments(filter);
       const pagesCount = Math.ceil(totalCount / pageSize);
-
-      // console.log("users")
-      // console.log(users)
-
       return {
         pagesCount: pagesCount,
         page: pageNumber,

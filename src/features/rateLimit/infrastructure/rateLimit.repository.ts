@@ -18,9 +18,6 @@ export class RateLimitRepository {
     try {
       const createdDeviceId = await this.rateLimitModel.create(newRequest);
 
-      console.log('createdDeviceId');
-      console.log(createdDeviceId);
-
       return createdDeviceId;
       // return PostClass.mapper(post);
     } catch (e) {

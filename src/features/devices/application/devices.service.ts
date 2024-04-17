@@ -30,34 +30,18 @@ export class DevicesServices {
   ): Promise<any> {
     const newDeviceId = randomUUID();
 
-    // console.log("loginUser")
-    // console.log(loginUser)
-    // console.log("newDeviceId")
-    // console.log(newDeviceId)
-
-
     const accessToken = await jwtServise.createAccessTokenJWT(
       loginUser,
       newDeviceId,
     );
 
-    console.log("22222222222")
-    console.log(accessToken)
-
     const refreshToken = await jwtServise.createRefreshTokenJWT(
       loginUser,
       newDeviceId,
     );
- 
-    console.log("refreshToken")
-    console.log(refreshToken)
 
     const decodedRefreshToken =
       await jwtServise.getUserFromRefreshToken(refreshToken);
-
-      console.log("decodedRefreshToken")
-      console.log(decodedRefreshToken)
-
 
     const newDevices = {
       userId: loginUser.id,
@@ -67,9 +51,6 @@ export class DevicesServices {
       lastActiveDate: new Date(decodedRefreshToken!.exp * 1000),
       tokenCreatedAt: new Date(decodedRefreshToken!.iat * 1000),
     };
-
-    console.log("decodedRefreshToken")
-    console.log(decodedRefreshToken)
 
     const createdDeviceId = await this.devicesRepository.create(newDevices);
 

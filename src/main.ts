@@ -8,10 +8,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   applyAppSettings(app);
-
-
-  // console.log("appSettings.api.APP_PORT-------------")
-  // console.log(appSettings.api.JWT_ACSS_SECRET) 
  
   app.enableCors();
   await app.listen(appSettings.api.APP_PORT, () =>

@@ -98,9 +98,6 @@ export class AuthService {
     const payload = {
       userId: user._id.toString(),
     };
-    // console.log('payload---');
-    // console.log(payload);
-
     // const AccessToken = this.jwtService.sign(payload);
     const AccessToken = this.jwtService.sign(payload, {
       expiresIn: '360s',
@@ -109,17 +106,11 @@ export class AuthService {
 
     return AccessToken;
 
-    // console.log('AccessToken---');
-    // console.log(AccessToken);
-
     // const twoTokensWithDeviceId = await this.devicesServices.createdDevice(
     //   authUsers,
     //   userAgent,
     //   userIp,
     // );
-
-    console.log('authData');
-    console.log(authData);
 
     // if (!twoTokensWithDeviceId) {
     //   // return {
@@ -141,19 +132,25 @@ export class AuthService {
     registrationData: RequestInputUserType,
   ): Promise<any | null> {
     const { login, password, email } = registrationData;
-    const userSearchData = { login: login, email: email };
-
-    const userAllreadyExist: WithId<User> | null =
-      await this.usersRepository.getOneByLoginOrEmail(userSearchData);
-    if (userAllreadyExist) {
+    const userWithEmail: WithId<User> | null =
+      await this.usersRepository.getOneByLoginOrEmail({
+        login: ' ',
+        email: email,
+      });
+    if (userWithEmail) {
       throw new BadRequestException([
         { message: 'email allready exist', field: 'email' },
+      ]);
+    }
+    const userWithLogin: WithId<User> | null =
+      await this.usersRepository.getOneByLoginOrEmail({
+        email: ' ',
+        login: login,
+      });
+    if (userWithLogin) {
+      throw new BadRequestException([
         { message: 'login allready exist', field: 'login' },
       ]);
-      // throw new BadRequestException('email or password allready exist', {
-      //   cause: new Error(),
-      //   description: 'email or password allready exist',
-      // });
     }
 
     const passwordSalt = await hashServise.generateSalt();

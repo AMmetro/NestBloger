@@ -13,8 +13,6 @@ export class PostLikesRepository {
   async findAllByPostId(postId: string): Promise<PostLikeMoongoose | null> {
     try {
       const postLikes = await this.postLikesModel.findById(postId);
-      // console.log("post")
-      // console.log(post)
       if (!postLikes) {
         return null;
       }
@@ -34,8 +32,6 @@ export class PostLikesRepository {
         postId: postId,
         userId: userId,
       });
-      // console.log("post")
-      // console.log(post)
       if (!postLikes) {
         return null;
       }

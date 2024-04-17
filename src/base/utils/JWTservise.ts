@@ -26,11 +26,6 @@ export type JWTDecodedType = {
 
 export const jwtServise = {
   async createAccessTokenJWT(user: OutputUserType, deviceId: string) {
-    console.log("user")
-    console.log(user)
-    console.log("deviceId")
-    console.log(deviceId)
-
     throw new Error('Not implemented!!!');
 
     const token = jwt.sign(
@@ -41,8 +36,6 @@ export const jwtServise = {
         expiresIn: '10m',
       },
     );
-    console.log("222888888888888888888888822222222")
-    console.log(token)
     return token;
     //     return {
     //       resultCode: 0,
