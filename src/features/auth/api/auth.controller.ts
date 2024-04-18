@@ -31,7 +31,7 @@ import { AuthGuard } from 'src/common/guards/auth.guard';
 import { LocalAuthGuard } from 'src/common/guards/local.guard';
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { BasicAuthGuard } from 'src/common/guards/basic.guard';
-import { log } from 'console';
+
 
 // Tag для swagger
 // @ApiTags('Users')

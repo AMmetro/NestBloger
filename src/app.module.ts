@@ -1,3 +1,9 @@
+import { ConfigModule } from '@nestjs/config';
+// @@
+// @ так чтобы (построение зависимостей дерева графов) process.env при старте происходил в первую очередь
+// @ const configModule = ConfigModule.forRoot
+// @ https://www.youtube.com/watch?v=jdxFuG2pH2g
+// @@
 import {
   MiddlewareConsumer,
   Module,
@@ -9,7 +15,6 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 // import { UsersModule } from './users/users.module';
 import { TestsModule } from './testing/tests.module';
-import { ConfigModule } from '@nestjs/config';
 import { BlogMongoose, BlogSchema } from './blogs/blogs.schema';
 import { Post, PostSchema } from './post/posts.schema';
 import { BlogsService } from './blogs/blogs.service';
@@ -55,7 +60,8 @@ import {
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ envFilePath: ['.env'] }), // определяет приорететност .env файлов из массива для загрузки
+    ConfigModule.forRoot({
+      envFilePath: ['.env.local', '.env']}), // определяет приорететност .env файлов из массива для загрузки
     // MongooseModule.forRoot(appConfig.mongoURI),
     // MongooseModule.forRoot(
     //   appSettings.env.isTesting()
@@ -68,10 +74,9 @@ import {
     //   signOptions: { expiresIn: '60s' },
     // }),
 
-    MongooseModule.forRoot(appSettings.api.MONGO_CONNECTION_URI),
-    // MongooseModule.forRoot(
-    //   'mongodb+srv://metroexpress:suradet842@cluster0.gkpqpve.mongodb.net/?retryWrites=true&w=majority',
-    // ),
+    MongooseModule.forRoot(
+      'mongodb+srv://metroexpress:suradet842@cluster0.gkpqpve.mongodb.net/?retryWrites=true&w=majority',
+    ),
     MongooseModule.forFeature([
       { name: BlogMongoose.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
@@ -93,6 +98,12 @@ import {
     AuthController,
   ],
   providers: [
+    // {
+    //   provide: PostRepository,
+    //   useClass: appSettings.env.isTesting()
+    //     ? PostRepository // MONGO
+    //     : PostLikesRepository, // SQL
+    // },
     AppService,
     BlogsService,
     PostsService,
@@ -115,12 +126,12 @@ import {
 // export class AppModule {}
 export class AppModule implements NestModule {
   // https://docs.nestjs.com/middleware#applying-middleware
-  configure(consumer: MiddlewareConsumer) {
+  configure(consumer: MiddlewareConsumer) { 
     consumer
       .apply(AuthMiddleware)
       .forRoutes(
         { path: '/users/:id', method: RequestMethod.DELETE },
-        { path: '/users', method: RequestMethod.POST },
+        { path: '/users', method: RequestMethod.POST }, 
       );
     consumer.apply(RateLimitMiddleware).forRoutes(
       { path: '/auth/login', method: RequestMethod.POST },

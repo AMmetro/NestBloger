@@ -89,10 +89,10 @@ const env = new EnvironmentSettings(
     : 'DEVELOPMENT') as EnvironmentsTypes,
 );
 
-console.log("process.env.ENV")
-console.log(process.env.MONGO_CONNECTION_URI)
-console.log(process.env)
-console.log(env.getEnv())
+// console.log("process.env.ENV")
+// console.log(process.env.MONGO_CONNECTION_URI)
+// console.log(process.env)
+// console.log(env.getEnv())
 
 const api = new APISettings(process.env);
 export const appSettings = new AppSettings(env, api);

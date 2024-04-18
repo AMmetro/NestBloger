@@ -9,14 +9,16 @@ import {
   Delete,
   Res,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
-import { Blog, BlogDto, createPostDTO } from './blog.types';
+import { Blog, CreateBlogDto, createPostDTO } from './blog.types';
 import { PostsService } from 'src/post/posts.service';
 import { Response } from 'express';
 import { BlogRepository } from './blog.repo';
 import { ObjectId } from 'mongodb';
 import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
+import { BasicAuthGuard } from 'src/common/guards/basic.guard';
 
 @Controller('blogs')
 export class BlogsController {
@@ -38,9 +40,16 @@ export class BlogsController {
   }
 
   @Post()
+  @UseGuards(BasicAuthGuard)
   @HttpCode(201)
-  async createBlog(@Body() reqBody: BlogDto): Promise<Blog> {
+  async createBlog(
+    @Body() reqBody: CreateBlogDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<Blog> {
     const createdBlog = await this.blogsService.create(reqBody);
+    if (!createdBlog) {
+      res.sendStatus(404);
+    }
     const mappedCreatedBlog = Blog.mapper(createdBlog);
     return mappedCreatedBlog;
   }
@@ -63,6 +72,7 @@ export class BlogsController {
   }
 
   @Put(':id')
+  @UseGuards(BasicAuthGuard)
   @HttpCode(204)
   async updateBlog(
     @Param('id') blogId: string,
@@ -134,6 +144,7 @@ export class BlogsController {
   }
 
   @Delete()
+  @UseGuards(BasicAuthGuard)
   async deleteAll(): Promise<any> {
     const countDelDoc = await this.blogsService.deleteAll();
     return countDelDoc;
