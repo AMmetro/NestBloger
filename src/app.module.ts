@@ -57,18 +57,18 @@ import {
   imports: [
     ConfigModule.forRoot({ envFilePath: ['.env'] }), // определяет приорететност .env файлов из массива для загрузки
     // MongooseModule.forRoot(appConfig.mongoURI),
-    MongooseModule.forRoot(
-      appSettings.env.isTesting()
-        ? appSettings.api.MONGO_CONNECTION_URI_TESTING
-        : appSettings.api.MONGO_CONNECTION_URI,
-    ),
+    // MongooseModule.forRoot(
+    //   appSettings.env.isTesting()
+    //     ? appSettings.api.MONGO_CONNECTION_URI_TESTING
+    //     : appSettings.api.MONGO_CONNECTION_URI,
+    // ),
     // JwtModule.register({
     //   // global: true,
     //   secret: 'jwtConstant',
     //   signOptions: { expiresIn: '60s' },
     // }),
 
-    // MongooseModule.forRoot(appSettings.api.MONGO_CONNECTION_URI),
+    MongooseModule.forRoot(appSettings.api.MONGO_CONNECTION_URI),
     // MongooseModule.forRoot(
     //   'mongodb+srv://metroexpress:suradet842@cluster0.gkpqpve.mongodb.net/?retryWrites=true&w=majority',
     // ),
