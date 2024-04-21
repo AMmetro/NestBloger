@@ -15,10 +15,10 @@ export class BlogRepository {
       if (!blog) {
         return null;
       }
-                                                console.log("blog")
-                                                console.log(blog)
-                                                console.log("mapper")
-                                                console.log(Blog.mapper(blog))
+                                                // console.log("blog")
+                                                // console.log(blog)
+                                                // console.log("mapper")
+                                                // console.log(Blog.mapper(blog))
       return Blog.mapper(blog);
     } catch (e) {
       console.log(e);

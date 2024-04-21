@@ -16,26 +16,22 @@ import { MongooseModule } from '@nestjs/mongoose';
 // import { UsersModule } from './users/users.module';
 import { TestsModule } from './testing/tests.module';
 import { BlogMongoose, BlogSchema } from './blogs/blogs.schema';
-import { Post, PostSchema } from './post/posts.schema';
+// import { Post, PostSchema } from './post/posts.schema';
 import { BlogsService } from './blogs/blogs.service';
-import { PostsService } from './post/posts.service';
+// import { PostsService } from './post/posts.service';
 import { BlogsController } from './blogs/blog.controller';
-import { PostRepository } from './post/posts.repo';
+// import { PostRepository } from './post/posts.repo';
 import { TestController } from './testing/tests.controller';
 import { BlogRepository } from './blogs/blog.repo';
-import { PostsController } from './post/posts.controller';
-import {
-  PostLikeMoongoose,
-  PostLikeSchema,
-} from './postLikes/postsLikes.schema';
-import { PostLikesServices } from './postLikes/postLikes.service';
+// import { PostsController } from './post/posts.controller';
+
 // import { appConfig } from './settings/appConfig';
 import { UsersRepository } from './features/users/infrastructure/users.repository';
 import { PostLikesRepository } from './features/postLikes/infrastructure/postLikes.repo';
 import { UserMongoose, UserSchema } from './features/users/domain/user.entity';
 import { UsersController } from './features/users/api/users.controller';
 // import { UsersService } from './features/application/users.service';
-import { LoggerMiddleware } from './common/middlewares/logger.middleware';
+// import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { appSettings } from './settings/app-settings';
 import { AuthMiddleware } from './common/middlewares/auth/basicAuth-middleware';
 import { AuthController } from './features/auth/api/auth.controller';
@@ -56,27 +52,34 @@ import {
   RateLimitMongoose,
   RateLimitSchema,
 } from './features/rateLimit/domain/rateLimit.entity';
+import { Post, PostSchema } from './features/posts/domain/post.entity';
+import { PostsController } from './features/posts/api/posts.controller';
+import { PostsService } from './features/posts/application/post.service';
+import { PostRepository } from './features/posts/infrastructure/post.repository';
+import {
+  PostLikeMoongoose,
+  PostLikeSchema,
+} from './features/postLikes/domain/postsLikes.schema';
+import { PostLikesServices } from './features/postLikes/application/postLikes.service';
+import { JwtStrategy } from './features/auth/strategies/jwtStrategy';
+import { PassportModule } from '@nestjs/passport';
 // import { AuthModule } from './features/auth/domain/auth.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ['.env.local', '.env']}), // определяет приорететност .env файлов из массива для загрузки
-    // MongooseModule.forRoot(appConfig.mongoURI),
-    // MongooseModule.forRoot(
-    //   appSettings.env.isTesting()
-    //     ? appSettings.api.MONGO_CONNECTION_URI_TESTING
-    //     : appSettings.api.MONGO_CONNECTION_URI,
-    // ),
-    // JwtModule.register({
-    //   // global: true,
-    //   secret: 'jwtConstant',
-    //   signOptions: { expiresIn: '60s' },
-    // }),
-
+      envFilePath: ['.env.local', '.env'],
+    }), // определяет приорететност .env файлов из массива для загрузки
     MongooseModule.forRoot(
-      'mongodb+srv://metroexpress:suradet842@cluster0.gkpqpve.mongodb.net/?retryWrites=true&w=majority',
+      appSettings.env.isTesting()
+        ? appSettings.api.MONGO_CONNECTION_URI_TESTING
+        : appSettings.api.MONGO_CONNECTION_URI,
     ),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.register({}),
+    // MongooseModule.forRoot(
+    //   'mongodb+srv://metroexpress:suradet842@cluster0.gkpqpve.mongodb.net/?retryWrites=true&w=majority',
+    // ),
     MongooseModule.forFeature([
       { name: BlogMongoose.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
@@ -120,18 +123,20 @@ import {
     JwtService,
     LocalStrategy,
     BasicStrategy,
+    JwtStrategy,
   ],
+  // exports: [JwtModule];
 })
 
 // export class AppModule {}
 export class AppModule implements NestModule {
   // https://docs.nestjs.com/middleware#applying-middleware
-  configure(consumer: MiddlewareConsumer) { 
+  configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
       .forRoutes(
         { path: '/users/:id', method: RequestMethod.DELETE },
-        { path: '/users', method: RequestMethod.POST }, 
+        { path: '/users', method: RequestMethod.POST },
       );
     consumer.apply(RateLimitMiddleware).forRoutes(
       { path: '/auth/login', method: RequestMethod.POST },

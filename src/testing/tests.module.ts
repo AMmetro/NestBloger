@@ -4,15 +4,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { BlogMongoose, BlogSchema } from 'src/blogs/blogs.schema';
 import { BlogsController } from 'src/blogs/blog.controller';
 import { BlogsService } from 'src/blogs/blogs.service';
-import { PostsService } from 'src/post/posts.service';
-import { PostRepository } from 'src/post/posts.repo';
-import { Post, PostSchema } from 'src/post/posts.schema';
+// import { PostsService } from 'src/post/posts.service';
+// import { PostRepository } from 'src/post/posts.repo';
+// import { Post, PostSchema } from 'src/post/posts.schema';
 import { BlogRepository } from 'src/blogs/blog.repo';
-import {
-  PostLikeMoongoose,
-  PostLikeSchema,
-} from 'src/postLikes/postsLikes.schema';
-import { PostLikesServices } from 'src/postLikes/postLikes.service';
+
 import { UsersRepository } from 'src/features/users/infrastructure/users.repository';
 import { PostLikesRepository } from 'src/features/postLikes/infrastructure/postLikes.repo';
 import {
@@ -20,7 +16,7 @@ import {
   UserSchema,
 } from 'src/features/users/domain/user.entity';
 import { UsersController } from 'src/features/users/api/users.controller';
-import { PostsController } from 'src/post/posts.controller';
+// import { PostsController } from 'src/post/posts.controller';
 import { UsersService } from 'src/features/users/application/users.service';
 import { DevicesServices } from 'src/features/devices/application/devices.service';
 import {
@@ -29,6 +25,16 @@ import {
 } from 'src/features/devices/domain/devices.entity';
 import { DevicesRepository } from 'src/features/devices/infrastructure/devices.repository';
 import { DevicesController } from 'src/features/devices/api/devices.controller';
+import { PostsController } from 'src/features/posts/api/posts.controller';
+import { Post, PostSchema } from 'src/features/posts/domain/post.entity';
+import { PostsService } from 'src/features/posts/application/post.service';
+import { PostRepository } from 'src/features/posts/infrastructure/post.repository';
+import {
+  PostLikeMoongoose,
+  PostLikeSchema,
+} from 'src/features/postLikes/domain/postsLikes.schema';
+import { PostLikesServices } from 'src/features/postLikes/application/postLikes.service';
+import { JwtStrategy } from 'src/features/auth/strategies/jwtStrategy';
 
 @Module({
   imports: [
@@ -58,6 +64,7 @@ import { DevicesController } from 'src/features/devices/api/devices.controller';
     UsersService,
     DevicesServices,
     DevicesRepository,
+    // JwtStrategy,
   ],
 })
 export class TestsModule {}

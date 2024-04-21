@@ -13,6 +13,7 @@ import {
   Res,
   UseGuards,
   Request,
+  BadRequestException,
 } from '@nestjs/common';
 // import { UsersRepository } from '../infrastructure/users.repository';
 import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
@@ -24,14 +25,16 @@ import { ObjectId } from 'mongodb';
 // import { UsersService } from '../application/users.service';
 // import { NumberPipe } from '../../../common/pipes/number.pipe';
 import { Response } from 'express';
-import { AuthUserInputModel, RegistrationUserInputModel } from './dto/input/auth.input.model';
+import {
+  AuthUserInputModel,
+  RegistrationUserInputModel,
+} from './dto/input/auth.input.model';
 import { UsersService } from 'src/features/users/application/users.service';
 import { AuthService } from '../application/auth.service';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { LocalAuthGuard } from 'src/common/guards/local.guard';
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { BasicAuthGuard } from 'src/common/guards/basic.guard';
-
 
 // Tag для swagger
 // @ApiTags('Users')
@@ -99,8 +102,8 @@ export class AuthController {
     const { loginOrEmail } = req;
     const { password } = req;
 
-    // generate coocies 
-    return "i am admin";
+    // generate coocies
+    return 'i am admin';
   }
 
   @Post('/me')
@@ -113,8 +116,8 @@ export class AuthController {
     const { loginOrEmail } = req;
     const { password } = req;
 
-    // generate coocies 
-    return "coocies";
+    // generate coocies
+    return 'coocies';
   }
 
   @Post('/login')
@@ -123,17 +126,25 @@ export class AuthController {
   async signinUser(
     // @Param('id') userId: string,
     @Body() reqBody: AuthUserInputModel,
-    // @Res({ passthrough: true }) res: Response,
+    @Res() res: Response,
   ) {
     // const { password, loginOrEmail } = reqBody;
     const userAgent = 'unknown';
     const userIp = 'unknown';
-    const AccessToken = await this.authService.signinUser(
-      reqBody,
-      userAgent,
-      userIp,
-    );
-    return { accessToken: AccessToken };
+    const tokens = await this.authService.loginUser(reqBody, userAgent, userIp);
+    if (!tokens) {
+      throw new BadRequestException([
+        { message: 'not found user', field: 'user' },
+      ]);
+    }
+    return res
+      .cookie('refreshToken', tokens.RefreshToken, {
+        httpOnly: true,
+        secure: true,
+      })
+      .status(200)
+      .send({ accessToken: tokens.AccessToken });
+      // .send(tokens);
   }
 
   @Post('/registration')
@@ -165,8 +176,6 @@ export class AuthController {
     }
     const isResended = await this.authService.emailResending(email);
   }
-
-
 
   @Post('/registration-confirmation')
   @HttpCode(204)

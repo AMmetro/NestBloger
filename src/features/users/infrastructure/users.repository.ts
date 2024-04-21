@@ -80,19 +80,6 @@ export class UsersRepository {
     return user.modifiedCount === 1;
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   async getById(userId: string): Promise<any> {
     try {
       const user = await this.userModel.findById(userId);

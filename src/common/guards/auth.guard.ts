@@ -12,8 +12,8 @@ export class AuthGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
 
-    return false;
-    throw new UnauthorizedException();
+    // return false;
+    // throw new UnauthorizedException();
 
     if (request.query['token'] !== '123') {
       // Если нужно выкинуть custom ошибку с кодом 401

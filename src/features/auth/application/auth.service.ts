@@ -83,7 +83,7 @@ export class AuthService {
     return User.userMapper(user);
   }
 
-  async signinUser(
+  async loginUser(
     authData: AuthUserInputModel,
     userAgent: string,
     userIp: string,
@@ -94,17 +94,23 @@ export class AuthService {
     };
     const user: WithId<User> | null =
       await this.usersRepository.getOneByLoginOrEmail(userSearchData);
+    if (!user) {
+      return null;
+    }
 
     const payload = {
       userId: user._id.toString(),
     };
-    // const AccessToken = this.jwtService.sign(payload);
     const AccessToken = this.jwtService.sign(payload, {
-      expiresIn: '360s',
-      secret: 'secretword',
+      expiresIn: '3600s',
+      secret: '123',
+    });
+    const RefreshToken = this.jwtService.sign(payload, {
+      expiresIn: '9900s',
+      secret: '456',
     });
 
-    return AccessToken;
+    return { AccessToken: AccessToken, RefreshToken: RefreshToken };
 
     // const twoTokensWithDeviceId = await this.devicesServices.createdDevice(
     //   authUsers,

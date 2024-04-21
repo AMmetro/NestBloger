@@ -1,4 +1,5 @@
-import { IsString, Length } from "class-validator";
+import { IsString, Length, Matches } from 'class-validator';
+import { Trim } from 'src/common/decorators/transform/trim';
 
 export class Blog {
   constructor(
@@ -10,8 +11,6 @@ export class Blog {
   ) {}
 
   static mapper(blog): MappedBlogType {
-                                                  console.log("blog")
-                                                  console.log(blog)
     return {
       id: blog._id.toString(),
       name: blog.name,
@@ -23,18 +22,27 @@ export class Blog {
   }
 }
 
-
-export class CreateBlogDto {
+export class IncomBlogDto {
   @IsString()
-  @Length(1, 15, { message: 'name of blog is not correct' })
+  @Trim()
+  @Length(1, 15, { message: 'blog name length is not correct' })
   name: string;
 
   @IsString()
-  @Length(1, 500, { message: 'description of blog is not correct' })
+  @Trim()
+  @Length(1, 500, { message: 'description length is not correct' })
   description: string;
 
   @IsString()
-  @Length(1, 100, { message: 'Incorect length of password' })
+  @Matches(
+    new RegExp(
+      '^https://([a-zA-Z0-9_-]+.)+[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*/?$',
+    ),
+    {
+      message: 'websiteUrl pattern is not correct',
+    },
+  )
+  @Length(1, 100, { message: 'websiteUrl length is not correct' })
   websiteUrl: string;
 }
 export class BlogDto {

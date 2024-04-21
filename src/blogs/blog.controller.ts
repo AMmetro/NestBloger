@@ -12,13 +12,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
-import { Blog, CreateBlogDto, createPostDTO } from './blog.types';
-import { PostsService } from 'src/post/posts.service';
+import { Blog, IncomBlogDto, createPostDTO } from './blog.types';
+// import { PostsService } from 'src/post/posts.service';
 import { Response } from 'express';
 import { BlogRepository } from './blog.repo';
 import { ObjectId } from 'mongodb';
 import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
 import { BasicAuthGuard } from 'src/common/guards/basic.guard';
+import { PostsService } from 'src/features/posts/application/post.service';
+import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 
 @Controller('blogs')
 export class BlogsController {
@@ -39,21 +41,6 @@ export class BlogsController {
     return blogs;
   }
 
-  @Post()
-  @UseGuards(BasicAuthGuard)
-  @HttpCode(201)
-  async createBlog(
-    @Body() reqBody: CreateBlogDto,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<Blog> {
-    const createdBlog = await this.blogsService.create(reqBody);
-    if (!createdBlog) {
-      res.sendStatus(404);
-    }
-    const mappedCreatedBlog = Blog.mapper(createdBlog);
-    return mappedCreatedBlog;
-  }
-
   @Get(':id/posts')
   async getBlogPosts(
     @Param('id') blogId: string,
@@ -71,12 +58,28 @@ export class BlogsController {
     return blogPosts;
   }
 
+  @Post()
+  // @UseGuards(BasicAuthGuard)
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(201)
+  async createBlog(
+    @Body() reqBody: IncomBlogDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<Blog> {
+    const createdBlog = await this.blogsService.create(reqBody);
+    if (!createdBlog) {
+      res.sendStatus(404);
+    }
+    const mappedCreatedBlog = Blog.mapper(createdBlog);
+    return mappedCreatedBlog;
+  }
+
   @Put(':id')
   @UseGuards(BasicAuthGuard)
   @HttpCode(204)
   async updateBlog(
     @Param('id') blogId: string,
-    @Body() reqBody: any,
+    @Body() reqBody: IncomBlogDto,
     @Res({ passthrough: true }) res: Response,
   ) {
     if (!ObjectId.isValid(blogId)) {
@@ -123,24 +126,24 @@ export class BlogsController {
   }
 
   @Delete(':id')
+  @UseGuards(BasicAuthGuard)
   @HttpCode(204)
   async deleteById(
     @Param('id') blogId: string,
-    @Res({ passthrough: true }) res: Response,
+    @Res() res: Response,
   ): Promise<any> {
     if (!ObjectId.isValid(blogId)) {
-      res.sendStatus(404);
-      return;
+      return res.sendStatus(404);
     }
     const isBlogExist = await this.blogRepository.findById(blogId);
     if (!isBlogExist) {
-      res.sendStatus(404);
+      return res.sendStatus(404);
     }
     const isDeleted = await this.blogRepository.deleteById(blogId);
     if (!isDeleted) {
-      res.sendStatus(404);
+      return res.sendStatus(404);
     }
-    return isDeleted;
+    return res.sendStatus(204);
   }
 
   @Delete()
@@ -159,12 +162,22 @@ export class BlogsController {
       res.sendStatus(404);
       return;
     }
-    const isBlogExist = await this.blogRepository.findById(blogId);
-    if (!isBlogExist) {
+    const blog = await this.blogRepository.findById(blogId);
+    if (!blog) {
       res.sendStatus(404);
     }
-    const blog = await this.blogsService.findOne(blogId);
-    const resultBlog = Blog.mapper(blog);
-    return resultBlog;
+
+
+    // const blog = await this.blogsService.findOne(blogId);
+    // if (!blog) {
+    //   res.sendStatus(404);
+    // }
+    // !!!!!!!!!!
+                                        //     console.log('-----------------blog------------');
+                                        // console.log(blog);
+    // const resultBlog = Blog.mapper(blog);
+    return blog;
   }
+
+
 }

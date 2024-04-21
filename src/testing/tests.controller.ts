@@ -17,8 +17,8 @@
 
 import { Controller, Delete, HttpCode } from '@nestjs/common';
 import { BlogsService } from 'src/blogs/blogs.service';
+import { PostRepository } from 'src/features/posts/infrastructure/post.repository';
 import { UsersRepository } from 'src/features/users/infrastructure/users.repository';
-import { PostRepository } from 'src/post/posts.repo';
 
 @Controller('testing')
 export class TestController {

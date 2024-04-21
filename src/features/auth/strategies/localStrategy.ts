@@ -14,6 +14,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(loginOrEmail: string, password: string): Promise<any> {
+
     const userSearchData = {
       loginOrEmail: loginOrEmail,
       password: password,

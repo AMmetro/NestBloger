@@ -2,14 +2,16 @@ import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { BlogMongoose } from './blogs.schema'; 
-import { PostRepository } from 'src/post/posts.repo';
+// import { PostRepository } from 'src/post/posts.repo';
 import { BlogRepository } from './blog.repo';
-import { PostLikesServices } from 'src/postLikes/postLikes.service';
 import { SortDirection } from 'mongodb';
-import { PostsService } from 'src/post/posts.service';
+// import { PostsService } from 'src/post/posts.service';
 import { OutputBasicSortQueryType } from 'src/base/utils/sortQeryUtils';
 import { PostLikesRepository } from 'src/features/postLikes/infrastructure/postLikes.repo';
 import { BlogDto } from './blog.types';
+import { PostsService } from 'src/features/posts/application/post.service';
+import { PostRepository } from 'src/features/posts/infrastructure/post.repository';
+import { PostLikesServices } from 'src/features/postLikes/application/postLikes.service';
 
 type SortDataType = {
   searchNameTerm?: string | null;
