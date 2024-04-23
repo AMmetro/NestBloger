@@ -70,16 +70,16 @@ import { PassportModule } from '@nestjs/passport';
     ConfigModule.forRoot({
       envFilePath: ['.env.local', '.env'],
     }), // определяет приорететност .env файлов из массива для загрузки
-    MongooseModule.forRoot(
-      appSettings.env.isTesting()
-        ? appSettings.api.MONGO_CONNECTION_URI_TESTING
-        : appSettings.api.MONGO_CONNECTION_URI,
-    ),
+    // MongooseModule.forRoot(
+    //   appSettings.env.isTesting()
+    //     ? appSettings.api.MONGO_CONNECTION_URI_TESTING
+    //     : appSettings.api.MONGO_CONNECTION_URI,
+    // ),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({}),
-    // MongooseModule.forRoot(
-    //   'mongodb+srv://metroexpress:suradet842@cluster0.gkpqpve.mongodb.net/?retryWrites=true&w=majority',
-    // ),
+    MongooseModule.forRoot(
+      'mongodb+srv://metroexpress:suradet842@cluster0.gkpqpve.mongodb.net/?retryWrites=true&w=majority',
+    ),
     MongooseModule.forFeature([
       { name: BlogMongoose.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
