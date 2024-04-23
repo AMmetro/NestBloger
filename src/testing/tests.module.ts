@@ -8,7 +8,7 @@ import { BlogsService } from 'src/blogs/blogs.service';
 // import { PostRepository } from 'src/post/posts.repo';
 // import { Post, PostSchema } from 'src/post/posts.schema';
 import { BlogRepository } from 'src/blogs/blog.repo';
-
+import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from 'src/features/users/infrastructure/users.repository';
 import { PostLikesRepository } from 'src/features/postLikes/infrastructure/postLikes.repo';
 import {
@@ -34,7 +34,8 @@ import {
   PostLikeSchema,
 } from 'src/features/postLikes/domain/postsLikes.schema';
 import { PostLikesServices } from 'src/features/postLikes/application/postLikes.service';
-import { JwtStrategy } from 'src/features/auth/strategies/jwtStrategy';
+// import { JwtStrategy } from 'src/features/auth/strategies/jwtStrategy';
+import { AuthService } from 'src/features/auth/application/auth.service';
 
 @Module({
   imports: [
@@ -65,6 +66,8 @@ import { JwtStrategy } from 'src/features/auth/strategies/jwtStrategy';
     DevicesServices,
     DevicesRepository,
     // JwtStrategy,
+    AuthService,
+    JwtService,
   ],
 })
 export class TestsModule {}

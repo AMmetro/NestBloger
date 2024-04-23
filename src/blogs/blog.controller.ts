@@ -59,8 +59,7 @@ export class BlogsController {
   }
 
   @Post()
-  // @UseGuards(BasicAuthGuard)
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(BasicAuthGuard)
   @HttpCode(201)
   async createBlog(
     @Body() reqBody: IncomBlogDto,

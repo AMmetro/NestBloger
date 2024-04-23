@@ -16,10 +16,10 @@ export class PostLikesRepository {
   async findAllByPostId(postId: string): Promise<PostLikeMoongoose | null> {
     try {
       const postLikes = await this.postLikesModel.find({ postId: postId });
-      console.log('============postId=========');
-      console.log(postId);
-      console.log('============postLikes=========');
-      console.log(postLikes);
+      // console.log('============postId=========');
+      // console.log(postId);
+      // console.log('============postLikes=========');
+      // console.log(postLikes);
       if (!postLikes) {
         return null;
       }
@@ -44,7 +44,7 @@ export class PostLikesRepository {
       if (!postLikes) {
         return null;
       }
-      // return PostClass.mapper(post);
+      return postLikes;
     } catch (e) {
       console.log(e);
       return null;

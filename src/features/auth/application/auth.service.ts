@@ -8,7 +8,7 @@ import {
 // import { InjectModel } from '@nestjs/mongoose';
 // import { User } from './users.schema';
 import { JwtService } from '@nestjs/jwt';
-import { hashServise } from 'src/base/utils/JWTservise';
+import { hashServise, jwtServise } from 'src/base/utils/JWTservise';
 import { randomUUID } from 'crypto';
 import { UsersRepository } from 'src/features/users/infrastructure/users.repository';
 import { RequestInputUserType } from 'src/features/users/api/dto/input/create-user.input.model';
@@ -18,6 +18,7 @@ import { DevicesServices } from 'src/features/devices/application/devices.servic
 import { User } from '../api/dto/output/user.output.model';
 import { add } from 'date-fns/add';
 import { emailAdaper } from 'src/base/utils/emailAdaper';
+import { appConfigLocal } from 'src/settings/appConfig';
 // import { User } from '../users/api/dto/output/user.output.model';
 // import { UsersRepository } from '../users/infrastructure/users.repository';
 // import { RequestInputUserType } from '../users/api/dto/input/create-user.input.model';
@@ -103,11 +104,11 @@ export class AuthService {
     };
     const AccessToken = this.jwtService.sign(payload, {
       expiresIn: '3600s',
-      secret: '123',
+      secret: appConfigLocal.JWT_ACSS_SECRET_LOCAL,
     });
     const RefreshToken = this.jwtService.sign(payload, {
-      expiresIn: '9900s',
-      secret: '456',
+      expiresIn: '3600s',
+      secret: appConfigLocal.JWT_REFRESH_SECRET_LOCAL,
     });
 
     return { AccessToken: AccessToken, RefreshToken: RefreshToken };
@@ -259,4 +260,37 @@ export class AuthService {
     }
     return true;
   }
+
+  async checkAcssesToken(authRequest: string): Promise<any> {
+    const token = authRequest.split(' ');
+    const authMethod = token[0];
+    if (authMethod !== 'Bearer') {
+      return null;
+    }
+    const jwtUserData = await jwtServise.getUserFromAcssesToken(token[1]);
+    if (jwtUserData && jwtUserData.userId) {
+      const user = await this.usersRepository.getById(jwtUserData.userId);
+      if (!user) {
+        return null
+      }
+      return user;
+    //   if (!jwtUserData.deviceId) {
+    //     return {
+    //       status: ResultCode.Unauthorised,
+    //       errorMessage: 'Not found deviceId' + jwtUserData.deviceId,
+    //     };
+    //   }
+    //   return {
+    //     status: ResultCode.Success,
+    //     data: { ...user, deviceId: jwtUserData.deviceId, iat: jwtUserData.iat },
+    //   };
+    // }
+
+    // return {
+    //   status: ResultCode.Unauthorised,
+    //   errorMessage: 'JWT is broken',
+    // };
+  }
+}
+
 }

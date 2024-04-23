@@ -12,6 +12,7 @@ import {
   BadRequestException,
   UseGuards,
   Req,
+  Headers,
 } from '@nestjs/common';
 // import { PostsService } from './posts.service';
 import { Response } from 'express';
@@ -28,12 +29,15 @@ import {
 import { LocalAuthGuard } from 'src/common/guards/local.guard';
 import { JwtStrategy } from 'src/features/auth/strategies/jwtStrategy';
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
+import { AuthService } from 'src/features/auth/application/auth.service';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 
 @Controller('posts')
 export class PostsController {
   constructor(
     private readonly postsService: PostsService,
     private readonly postRepository: PostRepository,
+    private readonly authService: AuthService,
   ) {}
 
   // @Post(':id/posts')
@@ -103,28 +107,33 @@ export class PostsController {
 
   @Get(':id')
   // @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   async getOne(
+    // Установка guard на данный роут
+    @Headers() headers,
     @Param('id') postId: string,
     // @Res({ passthrough: true }) res: Response,
     @Res() res: Response,
-    // @Req() req: any,
+    @Req() req: any,
   ) {
+    // ----------------------------------------------------------------------------
+    const optionalUserId = req.user?.userId || null;
+    // console.log("req.user")
+    // console.log(req.user);
+    // console.log("optionalUserId")
+    // console.log(optionalUserId);
     if (!postId) {
       throw new BadRequestException([
         { message: 'not found user id', field: 'userId' },
       ]);
     }
-    // const userOptionalId = req?.user?.userId || null;
-    const userOptionalId = null;
-    // console.log("--------!!!!!!!!!-------req")
-    // console.log(userId)
     const post = await this.postsService.composePostById(
       postId,
-      userOptionalId,
+      optionalUserId,
     );
 
-                                                              console.log("post result")
-                                                              console.log(post)
+                              // console.log("post result")
+                              // console.log(post)
 
     if (!post) {
       throw new BadRequestException([
@@ -196,8 +205,8 @@ export class PostsController {
     }
     const result = await this.postsService.addLike(postId, likeStatus, userId);
 
-    console.log("result")
-    console.log(result)
+    // console.log("result")
+    // console.log(result)
 
     if (!result) {
       return res.sendStatus(404);

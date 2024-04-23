@@ -47,7 +47,6 @@ export class PostsService {
     return { ...createdPost, extendedLikesInfo: extendedLikesInfo };
   }
 
-  // !!!!!!!!!!!!!!!!!найти лайки и присоединить их к посту!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   async composePostById(postId: string, userOptionalId: null): Promise<any> {
     const post = await this.postRepository.findById(postId);
     if (!post) {
@@ -58,7 +57,8 @@ export class PostsService {
       postId,
       userOptionalId,
     );
-
+                        console.log("postLikesInfo")
+                        console.log(postLikesInfo)
     // const postLikes = await this.postLikesRepository.findAllByPostId(postId);
     // const countLikes = await this.postLikesRepository.countPostLikes(
     //   postId,

@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 // import { appConfig } from 'src/settings/appConfig';
 import { appSettings } from 'src/settings/app-settings';
+import { appConfigLocal } from 'src/settings/appConfig';
 
 export type OutputUserType = {
   id: string;
@@ -59,8 +60,8 @@ export const jwtServise = {
     try {
       const jwtUserData: any = jwt.verify(
         token,
-        // appConfig.JWT_ACSS_SECRET,
-        appSettings.api.JWT_ACSS_SECRET,
+        appConfigLocal.JWT_ACSS_SECRET_LOCAL,
+        // appSettings.api.JWT_ACSS_SECRET,
         (err, decoded) => {
           if (err) {
             if (err.name === 'TokenExpiredError') {

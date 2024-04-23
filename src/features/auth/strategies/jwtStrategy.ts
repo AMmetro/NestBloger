@@ -4,6 +4,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../application/auth.service';
 import { appSettings } from 'src/settings/app-settings';
 import { UsersRepository } from 'src/features/users/infrastructure/users.repository';
+import { appConfigLocal } from 'src/settings/appConfig';
 
 @Injectable()
 // ctrl + click Strategy - можно изменить filds - смотреть структуру
@@ -16,7 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       // secretOrKey: appSettings.api.JWT_ACSS_SECRET,
-      secretOrKey: '123',
+      secretOrKey: appConfigLocal.JWT_ACSS_SECRET_LOCAL,
     });
   }
 
