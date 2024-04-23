@@ -93,7 +93,6 @@ export class PostsController {
     @Req() req: any,
   ) {
     const userOptionalId = null;
-    // !!!!!!!!!!!!!!!!!!!!!!!!
     const postsRequestsSortData = basicSortQuery(reqQuery);
     const result = await this.postsService.composeAllPosts(
       postsRequestsSortData,

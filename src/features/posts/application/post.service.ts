@@ -12,6 +12,7 @@ import { Post } from '../domain/post.entity';
 import { PostRepository } from '../infrastructure/post.repository';
 import { PostLikesServices } from 'src/features/postLikes/application/postLikes.service';
 import { UsersRepository } from 'src/features/users/infrastructure/users.repository';
+import { likeStatusEnum } from 'src/features/postLikes/domain/postLikesTypes';
 
 @Injectable()
 export class PostsService {
@@ -47,6 +48,24 @@ export class PostsService {
     return { ...createdPost, extendedLikesInfo: extendedLikesInfo };
   }
 
+  async addUserDataToLike(newestLikes): Promise<any> {
+    const enrichedLike = await Promise.all(
+      newestLikes.map(async (like) => {
+        const user = await this.usersRepository.getById(like.userId);
+        if (user && user.login) {
+          return {
+            userId: like.userId,
+            addedAt: like.addedAt,
+            login: user.login,
+          };
+        } else {
+          return null;
+        }
+      }),
+    );
+    return enrichedLike;
+  }
+
   async composePostById(postId: string, userOptionalId: null): Promise<any> {
     const post = await this.postRepository.findById(postId);
     if (!post) {
@@ -57,36 +76,25 @@ export class PostsService {
       postId,
       userOptionalId,
     );
-                        console.log("postLikesInfo")
-                        console.log(postLikesInfo)
-    // const postLikes = await this.postLikesRepository.findAllByPostId(postId);
-    // const countLikes = await this.postLikesRepository.countPostLikes(
-    //   postId,
-    //   'Like',
-    // );
-    // const countDislikes = await this.postLikesRepository.countPostLikes(
-    //   postId,
-    //   'Dislike',
-    // );
-
     const newestLikes = await this.postLikesRepository.findNewestLikes(
       postId,
-      'Like',
+      likeStatusEnum.Like,
     );
 
     // const newestLikesWithUser =
     //   await this.postLikesRepository.addUserDataToLike(newestLikes);
+    const newestLikesWithUser = await this.addUserDataToLike(newestLikes);
 
-    const newestLikesWithUser = await Promise.all(
-      newestLikes.map(async (like) => {
-        const likeUserLogin = await this.usersRepository.getById(like.userId);
-        return {
-          addedAt: like.addedAt,
-          userId: like.userId,
-          login: likeUserLogin.login,
-        };
-      }),
-    );
+    // const newestLikesWithUser = await Promise.all(
+    //   newestLikes.map(async (like) => {
+    //     const likeUserLogin = await this.usersRepository.getById(like.userId);
+    //     return {
+    //       addedAt: like.addedAt,
+    //       userId: like.userId,
+    //       login: likeUserLogin.login,
+    //     };
+    //   }),
+    // );
 
     const extendedLikesInfo = {
       likesCount: postLikesInfo.likesCount,
@@ -102,10 +110,26 @@ export class PostsService {
       postsNoLikes.map(async (post) => {
         const newestLikes = await this.postLikesRepository.findNewestLikes(
           post.postId,
-          'like',
+          likeStatusEnum.Like,
         );
         // const newestLikesWithUser =
         //   await newestLikesServices.addUserDataToLike(newestLikes);
+
+        const newestLikesWithUser = await this.addUserDataToLike(newestLikes);
+
+        // const newestLikesWithUser = await Promise.all(
+        //   newestLikes.map(async (like) => {
+        //     const likeUserLogin = await this.usersRepository.getById(
+        //       like.userId,
+        //     );
+        //     return {
+        //       addedAt: like.addedAt,
+        //       userId: like.userId,
+        //       login: likeUserLogin.login,
+        //     };
+        //   }),
+        // );
+
         const countLikes = await this.postLikesServices.countPostLikes(
           post.id,
           userId,
@@ -114,8 +138,8 @@ export class PostsService {
           likesCount: countLikes.likesCount,
           dislikesCount: countLikes.dislikesCount,
           myStatus: countLikes.myStatus,
-          // newestLikes: newestLikesWithUser,
-          newestLikes: newestLikes,
+          newestLikes: newestLikesWithUser,
+          // newestLikes: newestLikes,
         };
         return { ...post, extendedLikesInfo: extendedLikesInfo };
       }),
