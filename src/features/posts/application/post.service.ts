@@ -210,7 +210,7 @@ export class PostsService {
 
     const postsWithLikes = await this.addLikesToPosts(
       allPostsObject.items,
-      null,
+      userId,
     );
 
     return { ...allPostsObject, items: postsWithLikes };

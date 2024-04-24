@@ -25,7 +25,7 @@ export class PostLike {
       postId: PostLike.postId,
       userId: PostLike.userId,
       myStatus: PostLike.myStatus,
-      addedAt: PostLike.addedAt.toString(),
+      addedAt: PostLike.addedAt.toISOString(),
     };
   }
 }
