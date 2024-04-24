@@ -30,7 +30,7 @@ import { LocalAuthGuard } from 'src/common/guards/local.guard';
 import { JwtStrategy } from 'src/features/auth/strategies/jwtStrategy';
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { AuthService } from 'src/features/auth/application/auth.service';
-import { AuthGuard } from 'src/common/guards/auth.guard';
+import { OptioanlAuthGuard } from 'src/common/guards/optionalAuth.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -87,7 +87,7 @@ export class PostsController {
   // }
 
   @Get()
-  @UseGuards(AuthGuard)
+  @UseGuards(OptioanlAuthGuard)
   async getAll(
     @Query() reqQuery: any,
     @Res({ passthrough: true }) res: Response,
@@ -107,7 +107,7 @@ export class PostsController {
 
   @Get(':id')
   // @UseGuards(JwtAuthGuard)
-  @UseGuards(AuthGuard)
+  @UseGuards(OptioanlAuthGuard)
   async getOne(
     // Установка guard на данный роут
     @Headers() headers,

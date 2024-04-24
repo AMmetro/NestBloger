@@ -39,7 +39,7 @@ import { appConfigLocal } from 'src/settings/appConfig';
 // }
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class OptioanlAuthGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

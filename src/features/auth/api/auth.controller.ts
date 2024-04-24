@@ -31,7 +31,7 @@ import {
 } from './dto/input/auth.input.model';
 import { UsersService } from 'src/features/users/application/users.service';
 import { AuthService } from '../application/auth.service';
-import { AuthGuard } from 'src/common/guards/auth.guard';
+import { OptioanlAuthGuard } from 'src/common/guards/optionalAuth.guard';
 import { LocalAuthGuard } from 'src/common/guards/local.guard';
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { BasicAuthGuard } from 'src/common/guards/basic.guard';
@@ -40,7 +40,7 @@ import { BasicAuthGuard } from 'src/common/guards/basic.guard';
 // @ApiTags('Users')
 @Controller('auth')
 // Установка guard на весь контроллер
-// @UseGuards(AuthGuard)
+// @UseGuards(OptioanlAuthGuard)
 export class AuthController {
   // usersService: UsersService;
   constructor(

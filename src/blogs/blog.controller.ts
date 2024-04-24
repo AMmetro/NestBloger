@@ -10,6 +10,7 @@ import {
   Res,
   Query,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
 import { Blog, IncomBlogDto, createPostDTO } from './blog.types';
@@ -21,6 +22,7 @@ import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
 import { BasicAuthGuard } from 'src/common/guards/basic.guard';
 import { PostsService } from 'src/features/posts/application/post.service';
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
+import { OptioanlAuthGuard } from 'src/common/guards/optionalAuth.guard';
 
 @Controller('blogs')
 export class BlogsController {
@@ -42,15 +44,19 @@ export class BlogsController {
   }
 
   @Get(':id/posts')
+  @UseGuards(OptioanlAuthGuard)
   async getBlogPosts(
     @Param('id') blogId: string,
     @Query() reqQuery: any,
     @Res({ passthrough: true }) res: Response,
+    @Req() req: any,
   ) {
+    const optionalUserId = req.user?.userId || null;
     const basicSortData = basicSortQuery(reqQuery);
     const blogPosts = await this.blogsService.composeBlogPosts(
       blogId,
       basicSortData,
+      optionalUserId,
     );
     if (!blogPosts) {
       res.sendStatus(404);

@@ -121,8 +121,10 @@ export class PostsService {
         // const allLikes = await this.postLikesRepository.findAllByPostId(
         //   post.id,
         // );
-        // console.log("post.postId");
-        // console.log(post);
+        console.log("post.postId");
+        console.log(post.id);
+        console.log("userId");
+        console.log(userId);
         // console.log("allLikes");
         // console.log(allLikes);
         // console.log("newestLikes");

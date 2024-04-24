@@ -52,8 +52,8 @@ export class BlogsService {
   async composeBlogPosts(
     blogId: string,
     basicSortData: OutputBasicSortQueryType,
+    optionalUserId: string | null,
   ): Promise<any> {
-    const userId = null;
     const isBlogExist = await this.blogRepository.findById(blogId);
     if (!isBlogExist) {
       return null;
@@ -63,9 +63,10 @@ export class BlogsService {
       blogId,
     );
 
+                                  console.log("======start=====");
     const postsWithLikes = await this.postsService.addLikesToPosts(
       blogPostsWithPagination.items,
-      null,
+      optionalUserId,
     );
     // ----------------перенести в пост сервис ?----------------------------------------------------
 
