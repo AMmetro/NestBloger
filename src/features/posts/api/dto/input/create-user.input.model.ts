@@ -3,6 +3,39 @@
 // import { Trim } from '../../../../../common/decorators/transform/trim';
 // import { IsOptionalEmail } from 'src/common/decorators/validate/is-optional-email';
 
+import { IsString, Length } from 'class-validator';
+import { Trim } from 'src/common/decorators/transform/trim';
+
+export class IncomPostDto {
+  @IsString()
+  @Trim()
+  @Length(1, 30, { message: 'title length is not correct' })
+  title: string;
+
+  @IsString()
+  @Length(1, 100, { message: 'description length is not correct' })
+  shortDescription: string;
+
+  @IsString()
+  @Length(1, 1000, { message: '1000 length is not correct' })
+  content: string;
+
+  @IsString()
+  blogId: string;
+
+//   @IsString()
+//   @Matches(
+//     new RegExp(
+//       '^https://([a-zA-Z0-9_-]+.)+[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*/?$',
+//     ),
+//     {
+//       message: 'websiteUrl pattern is not correct',
+//     },
+//   )
+//   @Length(1, 100, { message: 'websiteUrl length is not correct' })
+//   websiteUrl: string;
+}
+
 // export class UserCreateModel {
 //   @Trim()
 //   @IsString()
@@ -46,4 +79,3 @@
 //   password: string;
 //   email: string;
 // };
-

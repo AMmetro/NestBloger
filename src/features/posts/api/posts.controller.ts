@@ -13,6 +13,7 @@ import {
   UseGuards,
   Req,
   Headers,
+  NotFoundException,
 } from '@nestjs/common';
 // import { PostsService } from './posts.service';
 import { Response } from 'express';
@@ -31,6 +32,7 @@ import { JwtStrategy } from 'src/features/auth/strategies/jwtStrategy';
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { AuthService } from 'src/features/auth/application/auth.service';
 import { OptioanlAuthGuard } from 'src/common/guards/optionalAuth.guard';
+import { IncomPostDto } from './dto/input/create-user.input.model';
 
 @Controller('posts')
 export class PostsController {
@@ -53,37 +55,6 @@ export class PostsController {
   //     content: reqBody.content,
   //   };
   //   return "createdPost";
-  // }
-
-  @Post()
-  @HttpCode(201)
-  async createPost(
-    @Body() reqBody: any,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<any> {
-    const { title, shortDescription, content, blogId } = reqBody;
-    const newPostModal = {
-      title: title,
-      shortDescription: shortDescription,
-      content: content,
-    };
-    const newPost = await this.postsService.createPost(blogId, newPostModal);
-    if (!newPost) {
-      res.sendStatus(404);
-      return;
-    }
-    return newPost;
-  }
-
-  // @Delete()
-  // async deleteAll(): Promise<any> {
-  //   const countDelDoc = await this.blogsService.deleteAll();
-  //   return countDelDoc;
-  // }
-
-  // @Put(':id')
-  // updateBlog(@Param('id') userId: number, @Body() model: {}): any {
-  //   return
   // }
 
   @Get()
@@ -136,13 +107,46 @@ export class PostsController {
                               // console.log(post)
 
     if (!post) {
-      throw new BadRequestException([
+      throw new NotFoundException([
         { message: 'not found user', field: 'user' },
       ]);
       // res.sendStatus(404);
     }
     res.status(200).send(post);
   }
+
+
+  @Post()
+  @HttpCode(201)
+  async createPost(
+    @Body() reqBody: IncomPostDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<any> {
+    const { title, shortDescription, content, blogId } = reqBody;
+    const newPostModal = {
+      title: title,
+      shortDescription: shortDescription,
+      content: content,
+    };
+    const newPost = await this.postsService.createPost(blogId, newPostModal);
+    if (!newPost) {
+      res.sendStatus(404);
+      return;
+    }
+    return newPost;
+  }
+
+  // @Delete()
+  // async deleteAll(): Promise<any> {
+  //   const countDelDoc = await this.blogsService.deleteAll();
+  //   return countDelDoc;
+  // }
+
+  // @Put(':id')
+  // updateBlog(@Param('id') userId: number, @Body() model: {}): any {
+  //   return
+  // }
+
 
   @Put(':id')
   @HttpCode(204)
@@ -225,8 +229,7 @@ export class PostsController {
     @Res() res: Response,
   ): Promise<any> {
     if (!ObjectId.isValid(postId)) {
-      res.sendStatus(404);
-      return;
+      return res.sendStatus(404);
     }
     const isPostExist = await this.postRepository.findById(postId);
     if (!isPostExist) {
@@ -236,6 +239,5 @@ export class PostsController {
     if (!isDeleted) {
       res.sendStatus(404);
     }
-    return isDeleted;
   }
 }

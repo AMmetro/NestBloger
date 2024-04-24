@@ -146,6 +146,7 @@ export class AppModule implements NestModule {
       .forRoutes(
         { path: '/posts/:id', method: RequestMethod.PUT },
         { path: '/posts/:id', method: RequestMethod.DELETE },
+        { path: '/posts', method: RequestMethod.POST },
       );
     consumer.apply(RateLimitMiddleware).forRoutes(
       { path: '/auth/login', method: RequestMethod.POST },
