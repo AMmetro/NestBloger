@@ -87,16 +87,17 @@ export class PostsController {
   // }
 
   @Get()
+  @UseGuards(AuthGuard)
   async getAll(
     @Query() reqQuery: any,
     @Res({ passthrough: true }) res: Response,
     @Req() req: any,
   ) {
-    const userOptionalId = null;
+    const optionalUserId = req.user?.userId || null;
     const postsRequestsSortData = basicSortQuery(reqQuery);
     const result = await this.postsService.composeAllPosts(
       postsRequestsSortData,
-      userOptionalId,
+      optionalUserId,
     );
     if (!result) {
       res.sendStatus(404);
