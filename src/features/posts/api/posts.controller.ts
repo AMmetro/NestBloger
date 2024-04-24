@@ -145,8 +145,8 @@ export class PostsController {
   }
 
   @Put(':id')
-  @HttpCode(201)
-  @UseGuards(JwtAuthGuard)
+  @HttpCode(204)
+  // @UseGuards(JwtAuthGuard)
   async updatePost(
     @Param('id') postId: string,
     @Body() reqBody: any,
@@ -174,8 +174,7 @@ export class PostsController {
       updatedPostModal,
     );
     if (!postIsUpdated) {
-      res.sendStatus(404);
-      return;
+      return res.sendStatus(404);
     }
     res.sendStatus(204);
   }

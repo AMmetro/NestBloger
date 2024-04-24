@@ -138,6 +138,15 @@ export class AppModule implements NestModule {
         { path: '/users/:id', method: RequestMethod.DELETE },
         { path: '/users', method: RequestMethod.POST },
       );
+    consumer
+      .apply(AuthMiddleware)
+      .forRoutes({ path: '/blogs/:id/posts', method: RequestMethod.POST });
+    consumer
+      .apply(AuthMiddleware)
+      .forRoutes(
+        { path: '/posts/:id', method: RequestMethod.PUT },
+        { path: '/posts/:id', method: RequestMethod.DELETE },
+      );
     consumer.apply(RateLimitMiddleware).forRoutes(
       { path: '/auth/login', method: RequestMethod.POST },
       { path: '/auth/registration', method: RequestMethod.POST },

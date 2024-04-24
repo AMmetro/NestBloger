@@ -79,6 +79,28 @@ export class BlogsController {
     return mappedCreatedBlog;
   }
 
+  @Post(':id/posts')
+  @HttpCode(201)
+  async createPost(
+    @Param('id') blogId: string,
+    @Body() reqBody: createPostDTO,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<any> {
+    const createPostModel = {
+      title: reqBody.title,
+      shortDescription: reqBody.shortDescription,
+      content: reqBody.content,
+    };
+    const createdPost = await this.postsService.createPost(
+      blogId,
+      createPostModel,
+    );
+    if (!createdPost) {
+      res.sendStatus(404);
+    }
+    return createdPost;
+  }
+
   @Put(':id')
   @UseGuards(BasicAuthGuard)
   @HttpCode(204)
@@ -108,27 +130,6 @@ export class BlogsController {
     return updatedBlog;
   }
 
-  @Post(':id/posts')
-  @HttpCode(201)
-  async createPost(
-    @Param('id') blogId: string,
-    @Body() reqBody: createPostDTO,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<any> {
-    const createPostModel = {
-      title: reqBody.title,
-      shortDescription: reqBody.shortDescription,
-      content: reqBody.content,
-    };
-    const createdPost = await this.postsService.createPost(
-      blogId,
-      createPostModel,
-    );
-    if (!createdPost) {
-      res.sendStatus(404);
-    }
-    return createdPost;
-  }
 
   @Delete(':id')
   @UseGuards(BasicAuthGuard)
