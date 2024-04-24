@@ -83,7 +83,7 @@ export class BlogsController {
   @HttpCode(201)
   async createPost(
     @Param('id') blogId: string,
-    @Body() reqBody: createPostDTO,
+    @Body() reqBody: any,
     @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
     const createPostModel = {

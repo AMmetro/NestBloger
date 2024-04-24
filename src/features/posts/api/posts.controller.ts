@@ -107,10 +107,11 @@ export class PostsController {
                               // console.log(post)
 
     if (!post) {
-      throw new NotFoundException([
-        { message: 'not found user', field: 'user' },
-      ]);
-      // res.sendStatus(404);
+      // почему это не возвращает 404 а возвращает 400 ????
+      // throw new NotFoundException([
+      //   { message: 'not found user', field: 'user' },
+      // ]);
+      res.sendStatus(404);
     }
     res.status(200).send(post);
   }
@@ -222,7 +223,7 @@ export class PostsController {
   }
 
   @Delete(':id')
-  @HttpCode(204)
+  // @HttpCode(204)
   async deleteById(
     @Param('id') postId: string,
     // @Res({ passthrough: true }) res: Response,
@@ -239,5 +240,6 @@ export class PostsController {
     if (!isDeleted) {
       res.sendStatus(404);
     }
+    res.sendStatus(204);
   }
 }
