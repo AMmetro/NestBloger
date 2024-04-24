@@ -109,13 +109,26 @@ export class PostsService {
     const postsWithLikes = await Promise.all(
       postsNoLikes.map(async (post) => {
         const newestLikes = await this.postLikesRepository.findNewestLikes(
-          post.postId,
+          post.id,
           likeStatusEnum.Like,
         );
         // const newestLikesWithUser =
         //   await newestLikesServices.addUserDataToLike(newestLikes);
 
         const newestLikesWithUser = await this.addUserDataToLike(newestLikes);
+
+
+        // const allLikes = await this.postLikesRepository.findAllByPostId(
+        //   post.id,
+        // );
+        // console.log("post.postId");
+        // console.log(post);
+        // console.log("allLikes");
+        // console.log(allLikes);
+        // console.log("newestLikes");
+        // console.log(newestLikes);
+        // console.log("newestLikesWithUser");
+        // console.log(newestLikesWithUser);
 
         // const newestLikesWithUser = await Promise.all(
         //   newestLikes.map(async (like) => {

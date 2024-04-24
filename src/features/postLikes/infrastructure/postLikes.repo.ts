@@ -13,7 +13,7 @@ export class PostLikesRepository {
     private usersRepository: UsersRepository,
   ) {}
 
-  async findAllByPostId(postId: string): Promise<PostLikeMoongoose | null> {
+  async findAllByPostId(postId: string): Promise<any | null> {
     try {
       const postLikes = await this.postLikesModel.find({ postId: postId });
       // console.log('============postId=========');
@@ -23,9 +23,7 @@ export class PostLikesRepository {
       if (!postLikes) {
         return null;
       }
-      // @ts-ignore
-      return PostLike.mapper(postLikes);
-      // return postLikes;
+      return postLikes.map((like) => PostLike.mapper(like));
     } catch (e) {
       console.log(e);
       return null;
