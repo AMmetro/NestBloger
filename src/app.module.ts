@@ -63,6 +63,7 @@ import {
 import { PostLikesServices } from './features/postLikes/application/postLikes.service';
 import { JwtStrategy } from './features/auth/strategies/jwtStrategy';
 import { PassportModule } from '@nestjs/passport';
+import { CustomBlogIdvalidation } from './common/decorators/validate/isBlogExist';
 // import { AuthModule } from './features/auth/domain/auth.module';
 
 @Module({
@@ -124,6 +125,7 @@ import { PassportModule } from '@nestjs/passport';
     LocalStrategy,
     BasicStrategy,
     JwtStrategy,
+    CustomBlogIdvalidation,
   ],
   // exports: [JwtModule];
 })

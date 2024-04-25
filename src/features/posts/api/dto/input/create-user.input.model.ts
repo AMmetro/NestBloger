@@ -3,8 +3,9 @@
 // import { Trim } from '../../../../../common/decorators/transform/trim';
 // import { IsOptionalEmail } from 'src/common/decorators/validate/is-optional-email';
 
-import { IsString, Length } from 'class-validator';
+import { IsString, Length, Validate } from 'class-validator';
 import { Trim } from 'src/common/decorators/transform/trim';
+import { CustomBlogIdvalidation } from 'src/common/decorators/validate/isBlogExist';
 
 export class CreatePostModel {
   @IsString()
@@ -21,6 +22,7 @@ export class CreatePostModel {
   content: string;
 
   @IsString()
+  @Validate(CustomBlogIdvalidation, { message: 'blog id not exists' })
   blogId: string;
 }
 
