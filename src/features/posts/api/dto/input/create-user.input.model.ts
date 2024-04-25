@@ -32,10 +32,12 @@ export class CreatePostForSpecifiedBlogModel {
   title: string;
 
   @IsString()
+  @Trim()
   @Length(1, 100, { message: 'description length is not correct' })
   shortDescription: string;
 
   @IsString()
+  @Trim()
   @Length(1, 1000, { message: '1000 length is not correct' })
   content: string;
 
