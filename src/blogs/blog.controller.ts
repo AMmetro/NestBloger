@@ -23,6 +23,7 @@ import { BasicAuthGuard } from 'src/common/guards/basic.guard';
 import { PostsService } from 'src/features/posts/application/post.service';
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { OptioanlAuthGuard } from 'src/common/guards/optionalAuth.guard';
+import { CreatePostForSpecifiedBlogModel, CreatePostModel } from 'src/features/posts/api/dto/input/create-user.input.model';
 
 @Controller('blogs')
 export class BlogsController {
@@ -83,7 +84,7 @@ export class BlogsController {
   @HttpCode(201)
   async createPost(
     @Param('id') blogId: string,
-    @Body() reqBody: any,
+    @Body() reqBody: CreatePostForSpecifiedBlogModel,
     @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
     const createPostModel = {

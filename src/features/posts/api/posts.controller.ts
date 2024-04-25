@@ -32,7 +32,8 @@ import { JwtStrategy } from 'src/features/auth/strategies/jwtStrategy';
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { AuthService } from 'src/features/auth/application/auth.service';
 import { OptioanlAuthGuard } from 'src/common/guards/optionalAuth.guard';
-import { IncomPostDto } from './dto/input/create-user.input.model';
+import { CreatePostModel } from './dto/input/create-user.input.model';
+import { CreateCommentDto } from 'src/features/postComments/domain/postLikesTypes';
 
 @Controller('posts')
 export class PostsController {
@@ -120,7 +121,7 @@ export class PostsController {
   @Post()
   @HttpCode(201)
   async createPost(
-    @Body() reqBody: IncomPostDto,
+    @Body() reqBody: CreatePostModel,
     @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
     const { title, shortDescription, content, blogId } = reqBody;
@@ -135,6 +136,22 @@ export class PostsController {
       return;
     }
     return newPost;
+  }
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  @Post(':id/comments')
+  @UseGuards(OptioanlAuthGuard)
+  @HttpCode(201)
+  async createComment(
+    @Body() reqBody: CreateCommentDto,
+    @Param('id') postId: string,
+    // @Res({ passthrough: true }) res: Response,
+  ): Promise<any> {
+    const { content } = reqBody;
+    // const result = await CommentsServices.create(commentedPostId, userCommentatorId, content );
+    // if (result.status === ResultCode.Success){
+    //   res.status(201).send(result.data);
+    // } else {sendCustomError(res, result)}
   }
 
   // @Delete()
