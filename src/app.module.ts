@@ -64,6 +64,8 @@ import { PostLikesServices } from './features/postLikes/application/postLikes.se
 import { JwtStrategy } from './features/auth/strategies/jwtStrategy';
 import { PassportModule } from '@nestjs/passport';
 import { CustomBlogIdvalidation } from './common/decorators/validate/isBlogExist';
+import { PostCommentsRepository } from './features/postComments/infrastructure/postComments.repo';
+import { PostCommentMoongoose, PostCommentSchema } from './features/postComments/domain/postsComment.schema';
 // import { AuthModule } from './features/auth/domain/auth.module';
 
 @Module({
@@ -88,6 +90,7 @@ import { CustomBlogIdvalidation } from './common/decorators/validate/isBlogExist
       { name: UserMongoose.name, schema: UserSchema },
       { name: DevicesMongoose.name, schema: DevicesSchema },
       { name: RateLimitMongoose.name, schema: RateLimitSchema },
+      { name: PostCommentMoongoose.name, schema: PostCommentSchema },
     ]),
     // UsersModule,
     TestsModule,
@@ -126,6 +129,7 @@ import { CustomBlogIdvalidation } from './common/decorators/validate/isBlogExist
     BasicStrategy,
     JwtStrategy,
     CustomBlogIdvalidation,
+    PostCommentsRepository,
   ],
   // exports: [JwtModule];
 })

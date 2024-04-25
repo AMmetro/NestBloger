@@ -34,6 +34,7 @@ import { AuthService } from 'src/features/auth/application/auth.service';
 import { OptioanlAuthGuard } from 'src/common/guards/optionalAuth.guard';
 import { CreatePostModel } from './dto/input/create-user.input.model';
 import { CreateCommentDto } from 'src/features/postComments/domain/postLikesTypes';
+import { PostCommentsRepository } from 'src/features/postComments/infrastructure/postComments.repo';
 
 @Controller('posts')
 export class PostsController {
@@ -41,6 +42,7 @@ export class PostsController {
     private readonly postsService: PostsService,
     private readonly postRepository: PostRepository,
     private readonly authService: AuthService,
+    private readonly postCommentsRepository: PostCommentsRepository,
   ) {}
 
   // @Post(':id/posts')
@@ -104,8 +106,8 @@ export class PostsController {
       optionalUserId,
     );
 
-                              // console.log("post result")
-                              // console.log(post)
+    // console.log("post result")
+    // console.log(post)
 
     if (!post) {
       // почему это не возвращает 404 а возвращает 400 ????
@@ -116,7 +118,6 @@ export class PostsController {
     }
     res.status(200).send(post);
   }
-
 
   @Post()
   @HttpCode(201)
@@ -138,17 +139,30 @@ export class PostsController {
     return newPost;
   }
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   @Post(':id/comments')
-  @UseGuards(OptioanlAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @HttpCode(201)
   async createComment(
     @Body() reqBody: CreateCommentDto,
+    @Req() req: any,
+    @Res() res: Response,
     @Param('id') postId: string,
     // @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
     const { content } = reqBody;
-    // const result = await CommentsServices.create(commentedPostId, userCommentatorId, content );
+    const userId = req.user.userId;
+    if (!userId) {
+      return res.sendStatus(401);
+    }
+
+    const newComment = {
+      postId: postId,
+      userId: userId,
+      addedAt: new Date(),
+      content: content,
+    };
+    const result = await this.postCommentsRepository.create(newComment);
     // if (result.status === ResultCode.Success){
     //   res.status(201).send(result.data);
     // } else {sendCustomError(res, result)}
@@ -164,7 +178,6 @@ export class PostsController {
   // updateBlog(@Param('id') userId: number, @Body() model: {}): any {
   //   return
   // }
-
 
   @Put(':id')
   @HttpCode(204)
@@ -236,7 +249,7 @@ export class PostsController {
       // ]);
     }
     return res.sendStatus(204);
-  //  return res.status(201).send(result);
+    //  return res.status(201).send(result);
   }
 
   @Delete(':id')

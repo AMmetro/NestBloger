@@ -36,6 +36,11 @@ import {
 import { PostLikesServices } from 'src/features/postLikes/application/postLikes.service';
 // import { JwtStrategy } from 'src/features/auth/strategies/jwtStrategy';
 import { AuthService } from 'src/features/auth/application/auth.service';
+import { PostCommentsRepository } from 'src/features/postComments/infrastructure/postComments.repo';
+import {
+  PostCommentMoongoose,
+  PostCommentSchema,
+} from 'src/features/postComments/domain/postsComment.schema';
 
 @Module({
   imports: [
@@ -45,6 +50,7 @@ import { AuthService } from 'src/features/auth/application/auth.service';
       { name: PostLikeMoongoose.name, schema: PostLikeSchema },
       { name: UserMongoose.name, schema: UserSchema },
       { name: DevicesMongoose.name, schema: DevicesSchema },
+      { name: PostCommentMoongoose.name, schema: PostCommentSchema },
     ]),
   ],
   controllers: [
@@ -68,6 +74,7 @@ import { AuthService } from 'src/features/auth/application/auth.service';
     // JwtStrategy,
     AuthService,
     JwtService,
+    PostCommentsRepository,
   ],
 })
 export class TestsModule {}
