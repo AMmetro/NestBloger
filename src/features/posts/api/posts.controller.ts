@@ -171,7 +171,7 @@ export class PostsController {
   // @UseGuards(JwtAuthGuard)
   async updatePost(
     @Param('id') postId: string,
-    @Body() reqBody: any,
+    @Body() reqBody: CreatePostModel,
     // @Res({ passthrough: true }) res: Response,
     @Res() res: Response,
   ): Promise<any> {
