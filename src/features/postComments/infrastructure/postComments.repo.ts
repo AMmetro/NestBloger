@@ -2,6 +2,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { PostCommentMoongoose } from '../domain/postsComment.schema';
+import { CreateComment } from '../domain/postCommentTypes';
 
 @Injectable()
 export class PostCommentsRepository {
@@ -11,17 +12,17 @@ export class PostCommentsRepository {
   ) {}
 
   async create(newComment: any): Promise<any | null> {
+    console.log('============newComment========='); 
+    console.log(newComment);
     try {
-      const postComment = await this.PostCommentModel.create({ newComment });
+      const postComment = await this.PostCommentModel.create(newComment);
       // console.log('============postId=========');
       // console.log(postId);
-      console.log('============postComment=========');
-      console.log(postComment);
       if (!postComment) {
         return null;
       }
       //   return postLikes.map((like) => PostLike.mapper(like));
-      return postComment;
+      return CreateComment.mapper(postComment);
     } catch (e) {
       console.log(e);
       return null;

@@ -33,8 +33,9 @@ import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { AuthService } from 'src/features/auth/application/auth.service';
 import { OptioanlAuthGuard } from 'src/common/guards/optionalAuth.guard';
 import { CreatePostModel } from './dto/input/create-user.input.model';
-import { CreateCommentDto } from 'src/features/postComments/domain/postLikesTypes';
+
 import { PostCommentsRepository } from 'src/features/postComments/infrastructure/postComments.repo';
+import { CreateCommentDto } from 'src/features/postComments/domain/postCommentTypes';
 
 @Controller('posts')
 export class PostsController {
@@ -151,11 +152,10 @@ export class PostsController {
     // @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
     const { content } = reqBody;
-    const userId = req.user.userId;
+    const userId = req.user?.userId;
     if (!userId) {
       return res.sendStatus(401);
     }
-
     const newComment = {
       postId: postId,
       userId: userId,
@@ -168,7 +168,7 @@ export class PostsController {
         { message: 'wrong creating comment', field: 'comment' },
       ]);
     }
-    return res.sendStatus(201).send(newComment);
+    return res.sendStatus(201).send(result);
   }
 
   // @Delete()

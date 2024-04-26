@@ -37,49 +37,36 @@ import { OptioanlAuthGuard } from 'src/common/guards/optionalAuth.guard';
 // @UseGuards(OptioanlAuthGuard)
 export class PostCommentsController {
   // usersService: UsersService;
-  constructor(
-    // private readonly usersQueryRepository: UsersQueryRepository,
-    // private readonly usersRepository: UsersRepository,
-    // private readonly authService: AuthService,
-  ) {
+  constructor() {
+    // private readonly authService: AuthService, // private readonly usersRepository: UsersRepository, // private readonly usersQueryRepository: UsersQueryRepository,
     // this.usersService = usersService;
   }
 
-  @Post(':commentsId')
+  @Get(':commentsId')
   @UseGuards(OptioanlAuthGuard)
   @HttpCode(201)
   async createComment(
     @Req() req: any,
     @Res() res: Response,
-    @Param('commentsId') postId: string,
+    @Param('commentsId') commentsId: string,
     // @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
     const userOptionalId = req.user?.id || null;
 
-    if (!postId) {
+    if (!commentsId) {
       throw new BadRequestException([
-        { message: 'not found postId', field: 'postId' },
+        { message: 'not found commentsId', field: 'commentsId' },
       ]);
     }
 
     // const result = await CommentsServices.composeComment(id, userOptionalId);
-    
+
     //   throw new BadRequestException([
     //     { message: 'wrong creating comment', field: 'comment' },
     //   ]);
     // }
     // return res.sendStatus(201).send(newComment);
 
-  return "hello"
-
-
+    return 'hello';
   }
-
-
-
-
 }
-
-
-
-
