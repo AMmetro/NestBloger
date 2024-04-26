@@ -163,9 +163,12 @@ export class PostsController {
       content: content,
     };
     const result = await this.postCommentsRepository.create(newComment);
-    // if (result.status === ResultCode.Success){
-    //   res.status(201).send(result.data);
-    // } else {sendCustomError(res, result)}
+    if (!result) {
+      throw new BadRequestException([
+        { message: 'wrong creating comment', field: 'comment' },
+      ]);
+    }
+    return res.sendStatus(201).send(newComment);
   }
 
   // @Delete()

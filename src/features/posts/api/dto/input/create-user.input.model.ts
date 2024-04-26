@@ -18,6 +18,7 @@ export class CreatePostModel {
   shortDescription: string;
 
   @IsString()
+  @Trim()
   @Length(1, 1000, { message: '1000 length is not correct' })
   content: string;
 

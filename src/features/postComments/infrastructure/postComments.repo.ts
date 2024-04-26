@@ -21,6 +21,7 @@ export class PostCommentsRepository {
         return null;
       }
       //   return postLikes.map((like) => PostLike.mapper(like));
+      return postComment;
     } catch (e) {
       console.log(e);
       return null;
