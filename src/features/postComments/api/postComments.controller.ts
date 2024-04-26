@@ -29,6 +29,7 @@ import { LocalAuthGuard } from 'src/common/guards/local.guard';
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { BasicAuthGuard } from 'src/common/guards/basic.guard';
 import { OptioanlAuthGuard } from 'src/common/guards/optionalAuth.guard';
+import { PostCommentsService } from '../application/postComments.service';
 
 // Tag для swagger
 // @ApiTags('Users')
@@ -37,29 +38,29 @@ import { OptioanlAuthGuard } from 'src/common/guards/optionalAuth.guard';
 // @UseGuards(OptioanlAuthGuard)
 export class PostCommentsController {
   // usersService: UsersService;
-  constructor() {
-    // private readonly authService: AuthService, // private readonly usersRepository: UsersRepository, // private readonly usersQueryRepository: UsersQueryRepository,
-    // this.usersService = usersService;
-  }
+  constructor(
+    private readonly postCommentsService: PostCommentsService,
+     ) {}
 
   @Get(':commentsId')
   @UseGuards(OptioanlAuthGuard)
   @HttpCode(201)
-  async createComment(
+  async getComment(
     @Req() req: any,
     @Res() res: Response,
     @Param('commentsId') commentsId: string,
     // @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
     const userOptionalId = req.user?.id || null;
-
     if (!commentsId) {
       throw new BadRequestException([
         { message: 'not found commentsId', field: 'commentsId' },
       ]);
     }
-
-    // const result = await CommentsServices.composeComment(id, userOptionalId);
+    const result = await this.postCommentsService.composePostComment(
+      commentsId,
+      userOptionalId,
+    );
 
     //   throw new BadRequestException([
     //     { message: 'wrong creating comment', field: 'comment' },
@@ -67,6 +68,6 @@ export class PostCommentsController {
     // }
     // return res.sendStatus(201).send(newComment);
 
-    return 'hello';
+    return result;
   }
 }

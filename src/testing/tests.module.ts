@@ -41,6 +41,7 @@ import {
   PostCommentMoongoose,
   PostCommentSchema,
 } from 'src/features/postComments/domain/postsComment.schema';
+import { PostCommentsService } from 'src/features/postComments/application/postComments.service';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import {
       { name: PostLikeMoongoose.name, schema: PostLikeSchema },
       { name: UserMongoose.name, schema: UserSchema },
       { name: DevicesMongoose.name, schema: DevicesSchema },
+      { name: PostCommentMoongoose.name, schema: PostCommentSchema },
       { name: PostCommentMoongoose.name, schema: PostCommentSchema },
     ]),
   ],
@@ -75,6 +77,7 @@ import {
     AuthService,
     JwtService,
     PostCommentsRepository,
+    PostCommentsService,
   ],
 })
 export class TestsModule {}

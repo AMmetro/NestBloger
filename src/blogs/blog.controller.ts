@@ -87,6 +87,9 @@ export class BlogsController {
     @Body() reqBody: CreatePostForSpecifiedBlogModel,
     @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
+    if (!blogId) {
+      res.sendStatus(400);
+    }
     const createPostModel = {
       title: reqBody.title,
       shortDescription: reqBody.shortDescription,

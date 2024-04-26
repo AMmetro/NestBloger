@@ -36,6 +36,7 @@ import { CreatePostModel } from './dto/input/create-user.input.model';
 
 import { PostCommentsRepository } from 'src/features/postComments/infrastructure/postComments.repo';
 import { CreateCommentDto } from 'src/features/postComments/domain/postCommentTypes';
+import { PostCommentsService } from 'src/features/postComments/application/postComments.service';
 
 @Controller('posts')
 export class PostsController {
@@ -44,6 +45,7 @@ export class PostsController {
     private readonly postRepository: PostRepository,
     private readonly authService: AuthService,
     private readonly postCommentsRepository: PostCommentsRepository,
+    private readonly postCommentsService: PostCommentsService,
   ) {}
 
   // @Post(':id/posts')
@@ -141,7 +143,7 @@ export class PostsController {
   }
 
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  @Post(':id/comments')
+  @Post(':id/comments') 
   @UseGuards(JwtAuthGuard)
   @HttpCode(201)
   async createComment(
@@ -162,7 +164,7 @@ export class PostsController {
       addedAt: new Date(),
       content: content,
     };
-    const result = await this.postCommentsRepository.create(newComment);
+    const result = await this.postCommentsService.createComment(newComment);
     if (!result) {
       throw new BadRequestException([
         { message: 'wrong creating comment', field: 'comment' },

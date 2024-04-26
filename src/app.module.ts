@@ -67,6 +67,7 @@ import { CustomBlogIdvalidation } from './common/decorators/validate/isBlogExist
 import { PostCommentsRepository } from './features/postComments/infrastructure/postComments.repo';
 import { PostCommentMoongoose, PostCommentSchema } from './features/postComments/domain/postsComment.schema';
 import { PostCommentsController } from './features/postComments/api/postComments.controller';
+import { PostCommentsService } from './features/postComments/application/postComments.service';
 // import { AuthModule } from './features/auth/domain/auth.module';
 
 @Module({
@@ -132,6 +133,7 @@ import { PostCommentsController } from './features/postComments/api/postComments
     JwtStrategy,
     CustomBlogIdvalidation,
     PostCommentsRepository,
+    PostCommentsService,
   ],
   // exports: [JwtModule];
 })
