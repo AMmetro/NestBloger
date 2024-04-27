@@ -10,7 +10,8 @@ export class CreateComment {
   constructor(
     public postId: string,
     public userId: string,
-    public addedAt: Date,
+    public createdAt: Date,
+    public commentatorInfo: { userId: string; userLogin: string },
   ) {}
 
   static mapper(comment): CreateComment {
@@ -18,7 +19,8 @@ export class CreateComment {
       // id: blog._id.toString(),
       postId: comment.postId,
       userId: comment.userId,
-      addedAt: comment.addedAt.toISOString(),
+      createdAt: comment.createdAt.toISOString(),
+      commentatorInfo: comment.commentatorInfo,
     };
   }
 }

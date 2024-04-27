@@ -4,15 +4,21 @@ import { HydratedDocument } from 'mongoose';
 export type PostCommentDocument = HydratedDocument<PostCommentMoongoose>;
 
 @Schema()
+export class CommentatorInfoMoongoose {
+  @Prop({ required: true })
+  userId: string;
+  @Prop({ required: true })
+  userLogin: string;
+}
+
+@Schema()
 export class PostCommentMoongoose {
   @Prop({ required: true })
   postId: string;
   @Prop({ required: true })
-  userId: string;
-  // @Prop({ required: true })
-  // myStatus: string;
+  commentatorInfo: CommentatorInfoMoongoose;
   @Prop({ required: true })
-  addedAt: Date;
+  createdAt: Date;
 }
 
 export const PostCommentSchema =

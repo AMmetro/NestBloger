@@ -74,18 +74,12 @@ export class PostCommentsService {
     const newCommentModel = {
       content: content,
       postId: commentedPostId,
+      createdAt: new Date().toISOString(),
       commentatorInfo: {
         userId: commentatorInfo.id,
         userLogin: commentatorInfo.login,
       },
-      likesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: 'None',
-      },
-      createdAt: new Date().toISOString(),
     };
-
     const createdComment =
       await this.postCommentsRepository.create(newCommentModel);
     if (!createdComment) {
