@@ -155,22 +155,23 @@ export class PostsController {
   ): Promise<any> {
     const { content } = reqBody;
     const userId = req.user?.userId;
+    if (!postId) {
+      return res.sendStatus(401);
+    }
     if (!userId) {
       return res.sendStatus(401);
     }
-    const newComment = {
-      postId: postId,
-      userId: userId,
-      addedAt: new Date(),
-      content: content,
-    };
-    const result = await this.postCommentsService.createComment(newComment);
+    const result = await this.postCommentsService.createComment(
+      postId,
+      userId,
+      content,
+    );
     if (!result) {
       throw new BadRequestException([
         { message: 'wrong creating comment', field: 'comment' },
       ]);
     }
-    return res.sendStatus(201).send(result);
+    return res.status(201).send(result);
   }
 
   // @Delete()

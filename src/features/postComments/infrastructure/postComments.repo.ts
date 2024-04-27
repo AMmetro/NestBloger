@@ -31,8 +31,6 @@ export class PostCommentsRepository {
   }
 
   async create(newComment: any): Promise<any | null> {
-    console.log('============newComment========='); 
-    console.log(newComment);
     try {
       const postComment = await this.PostCommentModel.create(newComment);
       // console.log('============postId=========');

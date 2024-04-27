@@ -12,6 +12,7 @@ import { UsersRepository } from 'src/features/users/infrastructure/users.reposit
 import { UsersService } from 'src/features/users/application/users.service';
 import { DevicesServices } from 'src/features/devices/application/devices.service';
 import { PostCommentsRepository } from '../infrastructure/postComments.repo';
+import { PostRepository } from 'src/features/posts/infrastructure/post.repository';
 // import { User } from '../users/api/dto/output/user.output.model';
 // import { UsersRepository } from '../users/infrastructure/users.repository';
 // import { RequestInputUserType } from '../users/api/dto/input/create-user.input.model';
@@ -24,7 +25,8 @@ export class PostCommentsService {
     private postCommentsRepository: PostCommentsRepository,
     private usersService: UsersService,
     private devicesServices: DevicesServices,
-    private jwtService: JwtService,
+    private usersRepository: UsersRepository,
+    private readonly postRepository: PostRepository,
   ) {}
 
   async composePostComment(
@@ -55,11 +57,47 @@ export class PostCommentsService {
     return resultComment;
   }
 
-  async createComment(comment: any): Promise<any> {
-    const newComment = await this.postCommentsRepository.create(comment);
-    if (!newComment) {
+  async createComment(
+    commentedPostId: string,
+    userCommentatorId: string,
+    content: string,
+  ): Promise<any> {
+    const commentedPost = await this.postRepository.findById(commentedPostId);
+    if (!commentedPost) {
       return null;
     }
-    return newComment;
+    const commentatorInfo =
+      await this.usersRepository.getById(userCommentatorId);
+    if (!commentatorInfo) {
+      return null;
+    }
+    const newCommentModel = {
+      content: content,
+      postId: commentedPostId,
+      commentatorInfo: {
+        userId: commentatorInfo.id,
+        userLogin: commentatorInfo.login,
+      },
+      likesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: 'None',
+      },
+      createdAt: new Date().toISOString(),
+    };
+
+    const createdComment =
+      await this.postCommentsRepository.create(newCommentModel);
+    if (!createdComment) {
+      return null;
+    }
+    return {
+      ...createdComment,
+      likesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: 'None',
+      },
+    };
   }
 }

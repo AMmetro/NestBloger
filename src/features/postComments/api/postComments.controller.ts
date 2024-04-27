@@ -14,6 +14,7 @@ import {
   UseGuards,
   Request,
   BadRequestException,
+  Put,
 } from '@nestjs/common';
 // import { UsersRepository } from '../infrastructure/users.repository';
 import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
@@ -38,9 +39,7 @@ import { PostCommentsService } from '../application/postComments.service';
 // @UseGuards(OptioanlAuthGuard)
 export class PostCommentsController {
   // usersService: UsersService;
-  constructor(
-    private readonly postCommentsService: PostCommentsService,
-     ) {}
+  constructor(private readonly postCommentsService: PostCommentsService) {}
 
   @Get(':commentsId')
   @UseGuards(OptioanlAuthGuard)
@@ -61,13 +60,39 @@ export class PostCommentsController {
       commentsId,
       userOptionalId,
     );
+    if (!result) {
+      throw new BadRequestException([
+        { message: 'wrong creating comment', field: 'comment' },
+      ]);
+    }
+    return res.sendStatus(201).send(result);
+  }
 
-    //   throw new BadRequestException([
-    //     { message: 'wrong creating comment', field: 'comment' },
-    //   ]);
-    // }
-    // return res.sendStatus(201).send(newComment);
 
-    return result;
+  @Put(':commentsId/like-status')
+  @UseGuards(OptioanlAuthGuard)
+  @HttpCode(204)
+  async addLike(
+    @Req() req: any,
+    @Res() res: Response,
+    @Param('commentsId') commentsId: string,
+    // @Res({ passthrough: true }) res: Response,
+  ): Promise<any> {
+    const userOptionalId = req.user?.id || null;
+    if (!commentsId) {
+      throw new BadRequestException([
+        { message: 'not found commentsId', field: 'commentsId' },
+      ]);
+    }
+    const result = await this.postCommentsService.composePostComment(
+      commentsId,
+      userOptionalId,
+    );
+    if (!result) {
+      throw new BadRequestException([
+        { message: 'wrong creating comment', field: 'comment' },
+      ]);
+    }
+    return res.sendStatus(201).send(result);
   }
 }
