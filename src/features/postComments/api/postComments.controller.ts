@@ -32,6 +32,11 @@ import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { BasicAuthGuard } from 'src/common/guards/basic.guard';
 import { OptioanlAuthGuard } from 'src/common/guards/optionalAuth.guard';
 import { PostCommentsService } from '../application/postComments.service';
+import {
+  IncomLikeStatusDTO,
+  likeStatusEnum,
+} from 'src/features/postLikes/domain/postLikesTypes';
+import { CommentLikesServices } from 'src/features/commentLikes/application/commentLikes.service';
 
 // Tag для swagger
 // @ApiTags('Users')
@@ -40,7 +45,10 @@ import { PostCommentsService } from '../application/postComments.service';
 // @UseGuards(OptioanlAuthGuard)
 export class PostCommentsController {
   // usersService: UsersService;
-  constructor(private readonly postCommentsService: PostCommentsService) {}
+  constructor(
+    private readonly postCommentsService: PostCommentsService,
+    private readonly commentLikesServices: CommentLikesServices,
+  ) {}
 
   @Get(':id')
   @UseGuards(OptioanlAuthGuard)
@@ -69,26 +77,38 @@ export class PostCommentsController {
     return res.status(200).send(result);
   }
 
-
-  @Put(':commentsId/like-status')
+  @Put(':commentId/like-status')
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   async addLike(
     @Req() req: any,
     @Res() res: Response,
-    @Param('commentsId') commentsId: string,
+    @Body() likeModel: IncomLikeStatusDTO,
+    @Param('commentId') commentId: string,
     // @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
-    const userOptionalId = req.user?.id || null;
-    if (!commentsId) {
+    const userId = req.user?.id || null;
+    const likeStatus = likeModel.likeStatus;
+    if (!likeStatus || !likeStatusEnum.hasOwnProperty(likeStatus)) {
+      throw new BadRequestException([
+        { message: 'wrong like status', field: 'likeStatus' },
+      ]);
+    }
+    if (!commentId) {
       throw new BadRequestException([
         { message: 'not found commentsId', field: 'commentsId' },
       ]);
     }
-    const result = await this.postCommentsService.composePostComment(
-      commentsId,
-      userOptionalId,
+    const result = await this.postCommentsService.addLikeToComment(
+      commentId,
+      likeStatus,
+      userId,
     );
+    // const result = await this.commentLikesServices.addLikeToComment(
+    //   commentId,
+    //   likeStatus,
+    //   userId,
+    // );
     if (!result) {
       throw new NotFoundException([
         { message: 'wrong creating comment', field: 'comment' },

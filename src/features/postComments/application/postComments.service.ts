@@ -14,6 +14,7 @@ import { DevicesServices } from 'src/features/devices/application/devices.servic
 import { PostCommentsRepository } from '../infrastructure/postComments.repo';
 import { PostRepository } from 'src/features/posts/infrastructure/post.repository';
 import { PostLikesServices } from 'src/features/postLikes/application/postLikes.service';
+import { CommentLikesRepository } from 'src/features/commentLikes/infrastructure/commentLikes.repo';
 // import { User } from '../users/api/dto/output/user.output.model';
 // import { UsersRepository } from '../users/infrastructure/users.repository';
 // import { RequestInputUserType } from '../users/api/dto/input/create-user.input.model';
@@ -28,13 +29,14 @@ export class PostCommentsService {
     private postLikesServices: PostLikesServices,
     private usersRepository: UsersRepository,
     private readonly postRepository: PostRepository,
+    private readonly commentLikesRepository: CommentLikesRepository,
   ) {}
 
   async composePostComment(
     commentId: string,
     userOptionalId: null | string,
   ): Promise<any> {
-    const postComment =
+    const postComments =
       await this.postCommentsRepository.findComment(commentId);
 
     //     console.log('============userOptionalId=========');
@@ -42,7 +44,7 @@ export class PostCommentsService {
     //     console.log('============comment=========');
     // console.log(comment);
 
-    if (!postComment) {
+    if (!postComments) {
       return null;
     }
     const composedCommentLikes = await this.postLikesServices.countPostLikes(
@@ -51,13 +53,13 @@ export class PostCommentsService {
     );
     const resultComment = {
       id: commentId,
-      content: postComment.content,
+      content: postComments.content,
       commentatorInfo: {
-        userId: postComment.commentatorInfo.userId,
-        userLogin: postComment.commentatorInfo.userLogin,
+        userId: postComments.commentatorInfo.userId,
+        userLogin: postComments.commentatorInfo.userLogin,
       },
       likesInfo: composedCommentLikes,
-      createdAt: postComment.createdAt,
+      createdAt: postComments.createdAt,
     };
     return resultComment;
   }
@@ -102,5 +104,37 @@ export class PostCommentsService {
         myStatus: 'None',
       },
     };
+  }
+
+  async addLikeToComment(
+    commentId: string,
+    sendedLikeStatus: string,
+    userId: string,
+  ): Promise<any> {
+    const existingLikeForComment =
+      await this.commentLikesRepository.findComment(commentId);
+    if (!existingLikeForComment) {
+      return null;
+    }
+    const createdLikeModel = {
+      commentId: commentId,
+      userId: userId,
+      myStatus: sendedLikeStatus,
+      addedAt: new Date(),
+    };
+
+    if (!existingLikeForComment) {
+      const newLikeForComment =
+        await this.commentLikesRepository.createLike(createdLikeModel);
+
+      if (newLikeForComment.myStatus === sendedLikeStatus) {
+        return createdLikeModel;
+      }
+      newLikeForComment.myStatus = sendedLikeStatus;
+      await newLikeForComment.save();
+      return newLikeForComment;
+    }
+
+    return createdLikeModel;
   }
 }

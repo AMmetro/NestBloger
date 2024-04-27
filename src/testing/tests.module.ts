@@ -42,6 +42,11 @@ import {
   PostCommentSchema,
 } from 'src/features/postComments/domain/postsComment.schema';
 import { PostCommentsService } from 'src/features/postComments/application/postComments.service';
+import { CommentLikesRepository } from 'src/features/commentLikes/infrastructure/commentLikes.repo';
+import {
+  CommentLikeMoongoose,
+  CommentLikeSchema,
+} from 'src/features/commentLikes/domain/commentLikes.schema';
 
 @Module({
   imports: [
@@ -52,7 +57,7 @@ import { PostCommentsService } from 'src/features/postComments/application/postC
       { name: UserMongoose.name, schema: UserSchema },
       { name: DevicesMongoose.name, schema: DevicesSchema },
       { name: PostCommentMoongoose.name, schema: PostCommentSchema },
-      { name: PostCommentMoongoose.name, schema: PostCommentSchema },
+      { name: CommentLikeMoongoose.name, schema: CommentLikeSchema },
     ]),
   ],
   controllers: [
@@ -78,6 +83,7 @@ import { PostCommentsService } from 'src/features/postComments/application/postC
     JwtService,
     PostCommentsRepository,
     PostCommentsService,
+    CommentLikesRepository,
   ],
 })
 export class TestsModule {}

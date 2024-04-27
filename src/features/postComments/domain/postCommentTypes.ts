@@ -9,7 +9,7 @@ export class CreateCommentDto {
 export class PostComment {
   constructor(
     public id: string,
-    public userId: string,
+    // public userId: string,
     public content: string,
     public createdAt: Date,
     public commentatorInfo: { userId: string; userLogin: string },
@@ -19,7 +19,7 @@ export class PostComment {
     return {
       // id: blog._id.toString(),
       id: comment._id.toString(),
-      userId: comment.userId,
+      // userId: comment.userId,
       content: comment.content,
       createdAt: comment.createdAt.toISOString(),
       commentatorInfo: {

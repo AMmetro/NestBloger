@@ -68,6 +68,9 @@ import { PostCommentsRepository } from './features/postComments/infrastructure/p
 import { PostCommentMoongoose, PostCommentSchema } from './features/postComments/domain/postsComment.schema';
 import { PostCommentsController } from './features/postComments/api/postComments.controller';
 import { PostCommentsService } from './features/postComments/application/postComments.service';
+import { CommentLikesServices } from './features/commentLikes/application/commentLikes.service';
+import { CommentLikesRepository } from './features/commentLikes/infrastructure/commentLikes.repo';
+import { CommentLikeMoongoose, CommentLikeSchema } from './features/commentLikes/domain/commentLikes.schema';
 // import { AuthModule } from './features/auth/domain/auth.module';
 
 @Module({
@@ -93,6 +96,7 @@ import { PostCommentsService } from './features/postComments/application/postCom
       { name: DevicesMongoose.name, schema: DevicesSchema },
       { name: RateLimitMongoose.name, schema: RateLimitSchema },
       { name: PostCommentMoongoose.name, schema: PostCommentSchema },
+      { name: CommentLikeMoongoose.name, schema: CommentLikeSchema },
     ]),
     // UsersModule,
     TestsModule,
@@ -134,6 +138,8 @@ import { PostCommentsService } from './features/postComments/application/postCom
     CustomBlogIdvalidation,
     PostCommentsRepository,
     PostCommentsService,
+    CommentLikesServices,
+    CommentLikesRepository,
   ],
   // exports: [JwtModule];
 })
