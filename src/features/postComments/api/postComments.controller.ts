@@ -15,6 +15,7 @@ import {
   Request,
   BadRequestException,
   Put,
+  NotFoundException,
 } from '@nestjs/common';
 // import { UsersRepository } from '../infrastructure/users.repository';
 import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
@@ -65,12 +66,12 @@ export class PostCommentsController {
         { message: 'wrong creating comment', field: 'comment' },
       ]);
     }
-    return res.status(201).send(result);
+    return res.status(200).send(result);
   }
 
 
   @Put(':commentsId/like-status')
-  @UseGuards(OptioanlAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   async addLike(
     @Req() req: any,
@@ -89,10 +90,10 @@ export class PostCommentsController {
       userOptionalId,
     );
     if (!result) {
-      throw new BadRequestException([
+      throw new NotFoundException([
         { message: 'wrong creating comment', field: 'comment' },
       ]);
     }
-    return res.sendStatus(201).send(result);
+    return res.sendStatus(204);
   }
 }
