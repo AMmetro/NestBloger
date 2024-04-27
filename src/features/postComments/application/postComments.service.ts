@@ -85,6 +85,10 @@ export class PostCommentsService {
     if (!createdComment) {
       return null;
     }
+
+        console.log('============createdComment=========');
+      console.log(createdComment);
+
     return {
       ...createdComment,
       likesInfo: {

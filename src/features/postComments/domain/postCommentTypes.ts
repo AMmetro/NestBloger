@@ -1,4 +1,4 @@
-import { IsString, Length } from 'class-validator'; 
+import { IsString, Length } from 'class-validator';
 
 export class CreateCommentDto {
   @IsString()
@@ -8,8 +8,9 @@ export class CreateCommentDto {
 
 export class CreateComment {
   constructor(
-    public postId: string,
+    public id: string,
     public userId: string,
+    public content: string,
     public createdAt: Date,
     public commentatorInfo: { userId: string; userLogin: string },
   ) {}
@@ -17,10 +18,14 @@ export class CreateComment {
   static mapper(comment): CreateComment {
     return {
       // id: blog._id.toString(),
-      postId: comment.postId,
+      id: comment.postId,
       userId: comment.userId,
+      content: comment.content,
       createdAt: comment.createdAt.toISOString(),
-      commentatorInfo: comment.commentatorInfo,
+      commentatorInfo: {
+        userId: comment.commentatorInfo.userId,
+        userLogin: comment.commentatorInfo.userLogin,
+      },
     };
   }
 }

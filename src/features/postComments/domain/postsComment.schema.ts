@@ -16,6 +16,8 @@ export class PostCommentMoongoose {
   @Prop({ required: true })
   postId: string;
   @Prop({ required: true })
+  content: string;
+  @Prop({ required: true })
   commentatorInfo: CommentatorInfoMoongoose;
   @Prop({ required: true })
   createdAt: Date;
