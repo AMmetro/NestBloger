@@ -41,16 +41,16 @@ export class PostCommentsController {
   // usersService: UsersService;
   constructor(private readonly postCommentsService: PostCommentsService) {}
 
-  @Get(':commentsId')
+  @Get(':id')
   @UseGuards(OptioanlAuthGuard)
   @HttpCode(201)
   async getComment(
     @Req() req: any,
     @Res() res: Response,
-    @Param('commentsId') commentsId: string,
+    @Param('id') commentsId: string,
     // @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
-    const userOptionalId = req.user?.id || null;
+    const userOptionalId = req.user?.userId || null;
     if (!commentsId) {
       throw new BadRequestException([
         { message: 'not found commentsId', field: 'commentsId' },
@@ -65,7 +65,7 @@ export class PostCommentsController {
         { message: 'wrong creating comment', field: 'comment' },
       ]);
     }
-    return res.sendStatus(201).send(result);
+    return res.status(201).send(result);
   }
 
 

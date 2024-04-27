@@ -13,6 +13,7 @@ import { UsersService } from 'src/features/users/application/users.service';
 import { DevicesServices } from 'src/features/devices/application/devices.service';
 import { PostCommentsRepository } from '../infrastructure/postComments.repo';
 import { PostRepository } from 'src/features/posts/infrastructure/post.repository';
+import { PostLikesServices } from 'src/features/postLikes/application/postLikes.service';
 // import { User } from '../users/api/dto/output/user.output.model';
 // import { UsersRepository } from '../users/infrastructure/users.repository';
 // import { RequestInputUserType } from '../users/api/dto/input/create-user.input.model';
@@ -24,35 +25,39 @@ export class PostCommentsService {
     // @InjectModel(User.name) private userModel: Model<User>,
     private postCommentsRepository: PostCommentsRepository,
     private usersService: UsersService,
-    private devicesServices: DevicesServices,
+    private postLikesServices: PostLikesServices,
     private usersRepository: UsersRepository,
     private readonly postRepository: PostRepository,
   ) {}
 
   async composePostComment(
-    commentsId: string,
+    commentId: string,
     userOptionalId: null | string,
   ): Promise<any> {
-    const comment = await this.postCommentsRepository.findComment(commentsId);
-    if (!comment) {
+    const postComment =
+      await this.postCommentsRepository.findComment(commentId);
+
+    //     console.log('============userOptionalId=========');
+    // console.log(userOptionalId);
+    //     console.log('============comment=========');
+    // console.log(comment);
+
+    if (!postComment) {
       return null;
     }
-    // const composedCommentLikes = await LikeCommentsServices.composeCommentLikes(commentId, userId)
-    const composedCommentLikes = {
-      likesCount: 0,
-      dislikesCount: 0,
-      myStatus: 'None',
-    };
-
+    const composedCommentLikes = await this.postLikesServices.countPostLikes(
+      commentId,
+      userOptionalId,
+    );
     const resultComment = {
-      id: commentsId,
-      content: comment.content,
+      id: commentId,
+      content: postComment.content,
       commentatorInfo: {
-        userId: comment.commentatorInfo.userId,
-        userLogin: comment.commentatorInfo.userLogin,
+        userId: postComment.commentatorInfo.userId,
+        userLogin: postComment.commentatorInfo.userLogin,
       },
       likesInfo: composedCommentLikes,
-      createdAt: comment.createdAt,
+      createdAt: postComment.createdAt,
     };
     return resultComment;
   }
@@ -86,8 +91,8 @@ export class PostCommentsService {
       return null;
     }
 
-        console.log('============createdComment=========');
-      console.log(createdComment);
+    //   console.log('============createdComment=========');
+    // console.log(createdComment);
 
     return {
       ...createdComment,

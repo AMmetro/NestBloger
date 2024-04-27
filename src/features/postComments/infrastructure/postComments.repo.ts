@@ -2,21 +2,24 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { PostCommentMoongoose } from '../domain/postsComment.schema';
-import { CreateComment } from '../domain/postCommentTypes';
+import { PostComment } from '../domain/postCommentTypes';
 
 @Injectable()
 export class PostCommentsRepository {
   constructor(
     @InjectModel(PostCommentMoongoose.name)
-    private PostCommentModel: Model<PostCommentMoongoose>,
+    private postCommentModel: Model<PostComment>,
+
+    // @InjectModel(Post.name) private postModel: Model<Post>
+
   ) {}
 
   async findComment(id: string): Promise<any | null> {
     // console.log('============newComment========='); 
     // console.log(newComment);
     try {
-      const postComment = await this.PostCommentModel.findById(id);
-      // const postComment = await this.PostCommentModel.find();
+      const postComment = await this.postCommentModel.findById(id);
+      // const postComment = await this.postCommentModel.find();
       // console.log('============postId=========');
       // console.log(postId);
       if (!postComment) {
@@ -32,14 +35,12 @@ export class PostCommentsRepository {
 
   async create(newComment: any): Promise<any | null> {
     try {
-      const postComment = await this.PostCommentModel.create(newComment);
-      // console.log('============postId=========');
-      // console.log(postId);
+      const postComment = await this.postCommentModel.create(newComment);
       if (!postComment) {
         return null;
       }
       //   return postLikes.map((like) => PostLike.mapper(like));
-      return CreateComment.mapper(postComment);
+      return PostComment.mapper(postComment);
     } catch (e) {
       console.log(e);
       return null;

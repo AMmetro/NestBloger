@@ -6,7 +6,7 @@ export class CreateCommentDto {
   content: string;
 }
 
-export class CreateComment {
+export class PostComment {
   constructor(
     public id: string,
     public userId: string,
@@ -15,10 +15,10 @@ export class CreateComment {
     public commentatorInfo: { userId: string; userLogin: string },
   ) {}
 
-  static mapper(comment): CreateComment {
+  static mapper(comment): PostComment {
     return {
       // id: blog._id.toString(),
-      id: comment.postId,
+      id: comment._id.toString(),
       userId: comment.userId,
       content: comment.content,
       createdAt: comment.createdAt.toISOString(),
