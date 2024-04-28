@@ -77,9 +77,37 @@ export class PostCommentsController {
     return res.status(200).send(result);
   }
 
+
+  @Get(':commentId/like-status')
+  @UseGuards(OptioanlAuthGuard)
+  async getLike(
+    @Req() req: any,
+    @Res() res: Response,
+    @Param('commentId') commentId: string,
+    // @Res({ passthrough: true }) res: Response,
+  ): Promise<any> {
+    const userId = req.user?.id || null;
+    if (!commentId) {
+      throw new BadRequestException([
+        { message: 'not found commentsId', field: 'commentsId' },
+      ]);
+    }
+    const result = await this.postCommentsService.composePostComment(
+      commentId,
+      userId,
+    );
+    if (!result) {
+      throw new NotFoundException([
+        { message: 'wrong creating comment', field: 'comment' },
+      ]);
+    }
+    return res.sendStatus(204);
+  }
+
+
+
   @Put(':commentId/like-status')
   @UseGuards(JwtAuthGuard)
-  @HttpCode(204)
   async addLike(
     @Req() req: any,
     @Res() res: Response,
@@ -104,11 +132,6 @@ export class PostCommentsController {
       likeStatus,
       userId,
     );
-    // const result = await this.commentLikesServices.addLikeToComment(
-    //   commentId,
-    //   likeStatus,
-    //   userId,
-    // );
     if (!result) {
       throw new NotFoundException([
         { message: 'wrong creating comment', field: 'comment' },
