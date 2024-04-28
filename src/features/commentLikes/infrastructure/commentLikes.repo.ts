@@ -65,6 +65,30 @@ export class CommentLikesRepository {
     }
   }
 
+  async updLike(updLike: any): Promise<any | null> {
+    try {
+ 
+      // const likeId = updLike;
+
+      console.log('updLike');
+      console.log(updLike);
+
+      const like = await this.commentLikeModel.updateOne(
+        { _id: updLike._id },
+        { $set: { myStatus: updLike.myStatus } },
+      );
+      console.log('SAVED LIKE');
+      console.log(like);
+      if (!like.modifiedCount) {
+        return null;
+      }
+      return !!like.modifiedCount;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
   async countCommentLikes(
     commentId: string,
     myStatus: string,
@@ -91,7 +115,7 @@ export class CommentLikesRepository {
   async findLike(commentId: string, userId: string): Promise<any | null> {
     try {
       // const like2 = await this.commentLikeModel.find({ commentId: commentId });
-      const like = await this.commentLikeModel.find({
+      const like = await this.commentLikeModel.findOne({
         commentId: commentId,
         userId: userId,
       });
@@ -105,6 +129,8 @@ export class CommentLikesRepository {
       return null;
     }
   }
+
+
   async deleteAll(): Promise<any | null> {
     try {
       await this.commentLikeModel.deleteMany();

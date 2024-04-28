@@ -122,43 +122,49 @@ export class PostCommentsService {
     const existingPostComment =
       await this.postCommentsRepository.findComment(commentId);
     if (!existingPostComment) {
-      return null; 
+      return null;
     }
 
-    const existingCommentSLike = await this.commentLikesRepository.findLike(
+    const existingCommentLike = await this.commentLikesRepository.findLike(
       commentId,
       userId,
     );
 
-    const createdLikeModel = {
+                                      console.log('============1111111111=========');
+                                      console.log(existingCommentLike);
+
+    const newLikeModel = { 
       commentId: commentId,
       userId: userId,
       myStatus: sendedLikeStatus,
       addedAt: new Date(),
     };
 
-                                            console.log('============existingCommentSLike=========');
-                                            console.log(existingCommentSLike); 
-
-    if (!existingCommentSLike) {
+     if (!existingCommentLike) {
       const createdLikeForComment =
-        await this.commentLikesRepository.createLike(createdLikeModel);
+        await this.commentLikesRepository.createLike(newLikeModel);
+                                              console.log('============2222222222=========');
+                                              console.log(createdLikeForComment);
       return createdLikeForComment;
       // console.log(createdLikeForComment);
     }
 
-                                        console.log('============createdLikeModel=========');
-                                        console.log(createdLikeModel);
+    console.log('============existingCommentLike=========');
+    console.log(existingCommentLike); 
 
-    if (existingCommentSLike.myStatus === sendedLikeStatus) {
-      return existingCommentSLike;
+    if (existingCommentLike.myStatus === sendedLikeStatus) {
+      return existingCommentLike;
     }
-    existingCommentSLike.myStatus = sendedLikeStatus;
-    await existingCommentSLike.save();
+    existingCommentLike.myStatus = sendedLikeStatus;
 
-    console.log('============existingLikeForComment RETURN=========');
-    console.log(existingCommentSLike);
+    // const isLikeUpdated =
+      await this.commentLikesRepository.updLike(existingCommentLike);
 
-    return existingCommentSLike;
+    // await existingCommentLike.save();
+
+    // console.log('============UPD RETURN=========');
+    // console.log(updExistingCommentLike);
+
+    return existingCommentLike;
   }
 }
