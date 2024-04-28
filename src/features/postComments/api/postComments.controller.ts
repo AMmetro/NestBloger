@@ -189,7 +189,7 @@ export class PostCommentsController {
     }
     const result = await this.postCommentsService.deleteComment(commentsId);
     if (!result) {
-      throw new BadRequestException([
+      throw new NotFoundException([
         { message: 'wrong creating comment', field: 'comment' },
       ]);
     }
