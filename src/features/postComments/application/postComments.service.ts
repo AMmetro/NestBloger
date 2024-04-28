@@ -122,11 +122,13 @@ export class PostCommentsService {
     const existingPostComment =
       await this.postCommentsRepository.findComment(commentId);
     if (!existingPostComment) {
-      return null;
+      return null; 
     }
 
-    const existingLikeForComment =
-      await this.commentLikesRepository.findComment(commentId);
+    const existingCommentSLike = await this.commentLikesRepository.findLike(
+      commentId,
+      userId,
+    );
 
     const createdLikeModel = {
       commentId: commentId,
@@ -135,17 +137,28 @@ export class PostCommentsService {
       addedAt: new Date(),
     };
 
-    if (!existingLikeForComment) {
+                                            console.log('============existingCommentSLike=========');
+                                            console.log(existingCommentSLike); 
+
+    if (!existingCommentSLike) {
       const createdLikeForComment =
         await this.commentLikesRepository.createLike(createdLikeModel);
       return createdLikeForComment;
       // console.log(createdLikeForComment);
     }
-    if (existingLikeForComment.myStatus === sendedLikeStatus) {
-      return existingLikeForComment;
+
+                                        console.log('============createdLikeModel=========');
+                                        console.log(createdLikeModel);
+
+    if (existingCommentSLike.myStatus === sendedLikeStatus) {
+      return existingCommentSLike;
     }
-    existingLikeForComment.myStatus = sendedLikeStatus;
-    await existingLikeForComment.save();
-    return existingLikeForComment;
+    existingCommentSLike.myStatus = sendedLikeStatus;
+    await existingCommentSLike.save();
+
+    console.log('============existingLikeForComment RETURN=========');
+    console.log(existingCommentSLike);
+
+    return existingCommentSLike;
   }
 }

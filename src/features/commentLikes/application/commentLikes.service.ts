@@ -37,7 +37,6 @@ export class CommentLikesServices {
       await newLikeForComment.save();
       return newLikeForComment;
     }
-
     return newLike;
   }
 
@@ -45,7 +44,6 @@ export class CommentLikesServices {
     commentId: string,
     userId: null | string,
   ): Promise<any> {
-
     const likesCount = await this.commentLikesRepository.countCommentLikes(
       commentId,
       likeStatusEnum.Like,
@@ -70,8 +68,8 @@ export class CommentLikesServices {
       // console.log("-------------------")
       // console.log("userId")
       // console.log(userId)
-                                        console.log("requesterUserLike")
-                                        console.log(requesterUserLike)
+      console.log('requesterUserLike');
+      console.log(requesterUserLike);
       myStatus = requesterUserLike?.myStatus
         ? requesterUserLike.myStatus
         : likeStatusEnum.None;

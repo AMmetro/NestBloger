@@ -137,7 +137,7 @@ export class PostCommentsController {
         { message: 'not found comment', field: 'comment' },
       ]);
     }
-    return res.sendStatus(204);
-    // return res.send(result);
+    // return res.sendStatus(204);
+    return res.send(result);
   }
 }

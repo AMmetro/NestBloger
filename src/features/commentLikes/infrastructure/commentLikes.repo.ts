@@ -65,10 +65,6 @@ export class CommentLikesRepository {
     }
   }
 
-  async test(): Promise<any | null> {
-    return 'hello';
-  }
-
   async countCommentLikes(
     commentId: string,
     myStatus: string,
@@ -109,4 +105,14 @@ export class CommentLikesRepository {
       return null;
     }
   }
+  async deleteAll(): Promise<any | null> {
+    try {
+      await this.commentLikeModel.deleteMany();
+      return true;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
 }
