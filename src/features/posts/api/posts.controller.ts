@@ -142,7 +142,6 @@ export class PostsController {
     return newPost;
   }
 
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   @Get(':id/comments') 
   @UseGuards(OptioanlAuthGuard)
   @HttpCode(200)
@@ -161,8 +160,8 @@ export class PostsController {
       userId,
     );
     if (!result) {
-      throw new BadRequestException([
-        { message: 'wrong creating comment', field: 'comment' },
+      throw new NotFoundException([
+        { message: 'not found comment', field: 'comment' },
       ]);
     }
     return res.status(200).send(result);

@@ -108,6 +108,10 @@ export class PostCommentsService {
     if (!postCommentForUpdate) {
       return null;
     }
+    if (postCommentForUpdate.commentatorInfo.userId === userCommentatorId)
+      throw new UnauthorizedException([
+        { message: 'not found comment', field: 'comment' },
+      ]);
     const updCommentModel = {
       ...postCommentForUpdate,
       content: content,
