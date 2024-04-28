@@ -95,7 +95,7 @@ export class CommentLikesRepository {
   async findLike(commentId: string, userId: string): Promise<any | null> {
     try {
       const like = await this.commentLikeModel.find({
-        postId: commentId,
+        commentId: commentId,
         myStatus: userId,
       });
       // if (!newestLikes) {
