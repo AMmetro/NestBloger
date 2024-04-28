@@ -37,28 +37,27 @@ export class PostCommentsService {
     commentId: string,
     userOptionalId: null | string,
   ): Promise<any> {
-
     const postComments =
       await this.postCommentsRepository.findComment(commentId);
     if (!postComments) {
       return null;
     }
-                                        // console.log('============postComments=========');
-                                        // console.log(postComments);
+    // console.log('============postComments=========');
+    // console.log(postComments);
     // работает
     // const composedCommentLikes = await this.postLikesServices.countPostLikes(
     //   commentId,
     //   userOptionalId,
     // );
-    
+
     // НЕработает
     const composedCommentLikes =
       await this.commentLikesServices.countCommentLikes(
         commentId,
         userOptionalId,
       );
-                                  // console.log('============composedCommentLikes=========');
-                                  // console.log(composedCommentLikes);
+    // console.log('============composedCommentLikes=========');
+    // console.log(composedCommentLikes);
 
     const resultComment = {
       id: commentId,
@@ -139,20 +138,14 @@ export class PostCommentsService {
     if (!existingLikeForComment) {
       const createdLikeForComment =
         await this.commentLikesRepository.createLike(createdLikeModel);
-
-      // console.log(createdLikeForComment);
-
-      if (createdLikeForComment.myStatus === sendedLikeStatus) {
-        return createdLikeModel;
-      }
-      createdLikeForComment.myStatus = sendedLikeStatus;
-      await createdLikeForComment.save();
       return createdLikeForComment;
+      // console.log(createdLikeForComment);
     }
-
-    // const xxx = await this.commentLikesRepository.findAllComment();
-
-    // return xxx;
-    return createdLikeModel;
+    if (existingLikeForComment.myStatus === sendedLikeStatus) {
+      return existingLikeForComment;
+    }
+    existingLikeForComment.myStatus = sendedLikeStatus;
+    await existingLikeForComment.save();
+    return existingLikeForComment;
   }
 }
