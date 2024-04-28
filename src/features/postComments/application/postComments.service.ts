@@ -113,9 +113,17 @@ export class PostCommentsService {
   ): Promise<any> {
     const existingLikeForComment =
       await this.commentLikesRepository.findComment(commentId);
-    if (!existingLikeForComment) {
-      return null;
-    }
+      console.log("commentId")
+      console.log(commentId)
+      console.log("existingLikeForComment")
+      console.log(existingLikeForComment)
+    // if (!existingLikeForComment) {
+    //   return null;
+    // }
+
+    console.log("existingLikeForComment")
+    console.log(existingLikeForComment)
+
     const createdLikeModel = {
       commentId: commentId,
       userId: userId,

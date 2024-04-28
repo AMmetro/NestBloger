@@ -17,8 +17,8 @@ export class CommentLikesRepository {
     // console.log('============newComment=========');
     // console.log(newComment);
     try {
-      const comment = await this.postCommentModel.findById(id);
-      // const postComment = await this.postCommentModel.find();
+      // const comment = await this.postCommentModel.findById(id);
+      const comment = await this.postCommentModel.find();
       // console.log('============postId=========');
       // console.log(postId);
       if (!comment) {

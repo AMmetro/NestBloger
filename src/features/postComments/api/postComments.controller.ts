@@ -78,12 +78,12 @@ export class PostCommentsController {
   }
 
 
-  @Get(':commentId/like-status')
+  @Get(':id/like-status')
   @UseGuards(OptioanlAuthGuard)
   async getLike(
     @Req() req: any,
     @Res() res: Response,
-    @Param('commentId') commentId: string,
+    @Param('id') commentId: string,
     // @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
     const userId = req.user?.id || null;
@@ -106,13 +106,13 @@ export class PostCommentsController {
 
 
 
-  @Put(':commentId/like-status')
+  @Put(':id/like-status')
   @UseGuards(JwtAuthGuard)
   async addLike(
     @Req() req: any,
     @Res() res: Response,
     @Body() likeModel: IncomLikeStatusDTO,
-    @Param('commentId') commentId: string,
+    @Param('id') commentId: string,
     // @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
     const userId = req.user?.id || null;
@@ -138,5 +138,6 @@ export class PostCommentsController {
       ]);
     }
     return res.sendStatus(204);
+    // return res.send(result);
   }
 }
