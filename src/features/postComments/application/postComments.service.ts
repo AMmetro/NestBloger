@@ -146,6 +146,6 @@ export class PostCommentsService {
     // const xxx = await this.commentLikesRepository.findAllComment();
 
     // return xxx;
-    // return createdLikeModel;
+    return createdLikeModel;
   }
 }
