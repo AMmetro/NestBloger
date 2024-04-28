@@ -47,6 +47,7 @@ import {
   CommentLikeMoongoose,
   CommentLikeSchema,
 } from 'src/features/commentLikes/domain/commentLikes.schema';
+import { CommentLikesServices } from 'src/features/commentLikes/application/commentLikes.service';
 
 @Module({
   imports: [
@@ -84,6 +85,7 @@ import {
     PostCommentsRepository,
     PostCommentsService,
     CommentLikesRepository,
+    CommentLikesServices,
   ],
 })
 export class TestsModule {}

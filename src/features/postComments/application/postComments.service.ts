@@ -15,6 +15,7 @@ import { PostCommentsRepository } from '../infrastructure/postComments.repo';
 import { PostRepository } from 'src/features/posts/infrastructure/post.repository';
 import { PostLikesServices } from 'src/features/postLikes/application/postLikes.service';
 import { CommentLikesRepository } from 'src/features/commentLikes/infrastructure/commentLikes.repo';
+import { CommentLikesServices } from 'src/features/commentLikes/application/commentLikes.service';
 // import { User } from '../users/api/dto/output/user.output.model';
 // import { UsersRepository } from '../users/infrastructure/users.repository';
 // import { RequestInputUserType } from '../users/api/dto/input/create-user.input.model';
@@ -25,7 +26,7 @@ export class PostCommentsService {
   constructor(
     // @InjectModel(User.name) private userModel: Model<User>,
     private postCommentsRepository: PostCommentsRepository,
-    private usersService: UsersService,
+    private commentLikesServices: CommentLikesServices,
     private postLikesServices: PostLikesServices,
     private usersRepository: UsersRepository,
     private readonly postRepository: PostRepository,
@@ -36,21 +37,29 @@ export class PostCommentsService {
     commentId: string,
     userOptionalId: null | string,
   ): Promise<any> {
+
     const postComments =
       await this.postCommentsRepository.findComment(commentId);
-
-    //     console.log('============userOptionalId=========');
-    // console.log(userOptionalId);
-    //     console.log('============comment=========');
-    // console.log(comment);
-
     if (!postComments) {
       return null;
     }
-    const composedCommentLikes = await this.postLikesServices.countPostLikes(
-      commentId,
-      userOptionalId,
-    );
+                                        // console.log('============postComments=========');
+                                        // console.log(postComments);
+    // работает
+    // const composedCommentLikes = await this.postLikesServices.countPostLikes(
+    //   commentId,
+    //   userOptionalId,
+    // );
+    
+    // НЕработает
+    const composedCommentLikes =
+      await this.commentLikesServices.countCommentLikes(
+        commentId,
+        userOptionalId,
+      );
+                                  // console.log('============composedCommentLikes=========');
+                                  // console.log(composedCommentLikes);
+
     const resultComment = {
       id: commentId,
       content: postComments.content,
@@ -131,8 +140,7 @@ export class PostCommentsService {
       const createdLikeForComment =
         await this.commentLikesRepository.createLike(createdLikeModel);
 
-        // console.log(createdLikeForComment);
-
+      // console.log(createdLikeForComment);
 
       if (createdLikeForComment.myStatus === sendedLikeStatus) {
         return createdLikeModel;
@@ -141,7 +149,6 @@ export class PostCommentsService {
       await createdLikeForComment.save();
       return createdLikeForComment;
     }
-
 
     // const xxx = await this.commentLikesRepository.findAllComment();
 

@@ -9,8 +9,6 @@ export class CommentLikesRepository {
   constructor(
     @InjectModel(CommentLikeMoongoose.name)
     private commentLikeModel: Model<CommentLike>,
-
-    // @InjectModel(Post.name) private postModel: Model<Post>
   ) {}
 
   async findComment(id: string): Promise<any | null> {
@@ -61,6 +59,49 @@ export class CommentLikesRepository {
         return null;
       }
       return comment;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  async test(): Promise<any | null> {
+    return 'hello';
+  }
+
+  async countCommentLikes(
+    commentId: string,
+    myStatus: string,
+  ): Promise<any | null> {
+    try {
+      const likesCount = await this.commentLikeModel.countDocuments({
+        commentId: commentId,
+        myStatus: myStatus,
+      });
+
+      // console.log('============likesCount=========');
+      // console.log(likesCount);
+
+      // if (!newestLikes) {
+      //   return null;
+      // }
+      return likesCount;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  async findLike(commentId: string, userId: string): Promise<any | null> {
+    try {
+      const likesCount = await this.commentLikeModel.countDocuments({
+        postId: commentId,
+        myStatus: userId,
+      });
+      // if (!newestLikes) {
+      //   return null;
+      // }
+      return likesCount;
     } catch (e) {
       console.log(e);
       return null;

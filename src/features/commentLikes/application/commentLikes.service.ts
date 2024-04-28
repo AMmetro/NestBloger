@@ -4,13 +4,11 @@ import { InjectModel } from '@nestjs/mongoose';
 // import { PostLikeMoongoose } from './postsLikes.schema';
 import { CommentLikesRepository } from '../infrastructure/commentLikes.repo';
 import { PostLikeMoongoose } from 'src/features/postLikes/domain/postsLikes.schema';
+import { likeStatusEnum } from '../domain/commentLikesTypes';
 
 @Injectable()
 export class CommentLikesServices {
-  constructor(
-    @InjectModel(PostLikeMoongoose.name)
-    private commentLikesRepository: CommentLikesRepository,
-  ) {}
+  constructor(private commentLikesRepository: CommentLikesRepository) {}
 
   async addLikeToComment(
     commentId: string,
@@ -41,6 +39,46 @@ export class CommentLikesServices {
     }
 
     return newLike;
+  }
+
+  async countCommentLikes(
+    commentId: string,
+    userId: null | string,
+  ): Promise<any> {
+
+    const likesCount = await this.commentLikesRepository.countCommentLikes(
+      commentId,
+      likeStatusEnum.Like,
+    );
+    // console.log('============likesCount=========');
+    // console.log(likesCount);
+
+    const dislikesCount = await this.commentLikesRepository.countCommentLikes(
+      commentId,
+      likeStatusEnum.Dislike,
+    );
+    let myStatus = likeStatusEnum.None;
+    if (userId) {
+      const requesterUserLike = await this.commentLikesRepository.findLike(
+        commentId,
+        userId,
+      );
+      // console.log("-------------------")
+      // console.log("userId")
+      // console.log(userId)
+      // console.log("requesterUserLike")
+      // console.log(requesterUserLike)
+      myStatus = requesterUserLike?.myStatus
+        ? requesterUserLike.myStatus
+        : likeStatusEnum.None;
+    }
+
+    const result = {
+      likesCount: likesCount,
+      dislikesCount: dislikesCount,
+      myStatus: myStatus,
+    };
+    return result;
   }
 
   // async addLikeToPost(

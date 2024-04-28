@@ -70,7 +70,10 @@ import { PostCommentsController } from './features/postComments/api/postComments
 import { PostCommentsService } from './features/postComments/application/postComments.service';
 import { CommentLikesServices } from './features/commentLikes/application/commentLikes.service';
 import { CommentLikesRepository } from './features/commentLikes/infrastructure/commentLikes.repo';
-import { CommentLikeMoongoose, CommentLikeSchema } from './features/commentLikes/domain/commentLikes.schema';
+import {
+  CommentLikeMoongoose,
+  CommentLikeSchema,
+} from './features/commentLikes/domain/commentLikes.schema';
 // import { AuthModule } from './features/auth/domain/auth.module';
 
 @Module({
