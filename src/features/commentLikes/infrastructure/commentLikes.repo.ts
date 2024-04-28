@@ -8,7 +8,7 @@ import { CommentLikeMoongoose } from '../domain/commentLikes.schema';
 export class CommentLikesRepository {
   constructor(
     @InjectModel(CommentLikeMoongoose.name)
-    private postCommentModel: Model<CommentLike>,
+    private commentLikeModel: Model<CommentLike>,
 
     // @InjectModel(Post.name) private postModel: Model<Post>
   ) {}
@@ -17,8 +17,26 @@ export class CommentLikesRepository {
     // console.log('============newComment=========');
     // console.log(newComment);
     try {
-      // const comment = await this.postCommentModel.findById(id);
-      const comment = await this.postCommentModel.find();
+      const comment = await this.commentLikeModel.findById(id);
+      // const comment = await this.postCommentModel.find();
+      // console.log('============postId=========');
+      // console.log(postId);
+      if (!comment) {
+        return null;
+      }
+      //   return postLikes.map((like) => PostLike.mapper(like));
+      return comment;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  async findAllComment(): Promise<any | null> {
+    // console.log('============newComment=========');
+    // console.log(newComment);
+    try {
+      const comment = await this.commentLikeModel.find();
       // console.log('============postId=========');
       // console.log(postId);
       if (!comment) {
@@ -34,7 +52,11 @@ export class CommentLikesRepository {
 
   async createLike(newComment: any): Promise<any | null> {
     try {
-      const comment = await this.postCommentModel.create(newComment);
+      // console.log('newComment');
+      // console.log(newComment);
+      const comment = await this.commentLikeModel.create(newComment);
+      // console.log('comment');
+      // console.log(comment);
       if (!comment) {
         return null;
       }

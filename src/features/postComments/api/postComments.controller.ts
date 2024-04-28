@@ -115,7 +115,7 @@ export class PostCommentsController {
     @Param('id') commentId: string,
     // @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
-    const userId = req.user?.id || null;
+    const userId = req.user?.userId || null;
     const likeStatus = likeModel.likeStatus;
     if (!likeStatus || !likeStatusEnum.hasOwnProperty(likeStatus)) {
       throw new BadRequestException([
@@ -137,7 +137,7 @@ export class PostCommentsController {
         { message: 'not found comment', field: 'comment' },
       ]);
     }
-    return res.sendStatus(204);
-    // return res.send(result);
+    // return res.sendStatus(204);
+    return res.send(result);
   }
 }
