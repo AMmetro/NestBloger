@@ -94,14 +94,14 @@ export class CommentLikesRepository {
 
   async findLike(commentId: string, userId: string): Promise<any | null> {
     try {
-      const likesCount = await this.commentLikeModel.countDocuments({
+      const like = await this.commentLikeModel.find({
         postId: commentId,
         myStatus: userId,
       });
       // if (!newestLikes) {
       //   return null;
       // }
-      return likesCount;
+      return like;
     } catch (e) {
       console.log(e);
       return null;
