@@ -101,7 +101,7 @@ export class PostCommentsController {
         { message: 'wrong creating comment', field: 'comment' },
       ]);
     }
-    return res.sendStatus(204);
+    return res.status(200).send(result);
   }
 
 
