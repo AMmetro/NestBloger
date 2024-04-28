@@ -4,7 +4,6 @@ import { Injectable } from '@nestjs/common';
 import { CommentLike } from '../domain/commentLikesTypes';
 import { CommentLikeMoongoose } from '../domain/commentLikes.schema';
 
-
 @Injectable()
 export class CommentLikesRepository {
   constructor(
@@ -12,11 +11,10 @@ export class CommentLikesRepository {
     private postCommentModel: Model<CommentLike>,
 
     // @InjectModel(Post.name) private postModel: Model<Post>
-
   ) {}
 
   async findComment(id: string): Promise<any | null> {
-    // console.log('============newComment========='); 
+    // console.log('============newComment=========');
     // console.log(newComment);
     try {
       const comment = await this.postCommentModel.findById(id);
@@ -36,25 +34,14 @@ export class CommentLikesRepository {
 
   async createLike(newComment: any): Promise<any | null> {
     try {
-
-      // const LikeInstance = new this.postCommentModel(newComment);
-      // LikeInstance.save();
-      // return LikeInstance;
-
-
       const comment = await this.postCommentModel.create(newComment);
       if (!comment) {
         return null;
       }
-     return comment;
+      return comment;
     } catch (e) {
       console.log(e);
       return null;
     }
   }
-
-
-
-
-
 }

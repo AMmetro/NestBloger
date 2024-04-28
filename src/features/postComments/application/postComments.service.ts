@@ -112,7 +112,7 @@ export class PostCommentsService {
     userId: string,
   ): Promise<any> {
     const existingLikeForComment =
-      await this.postCommentsRepository.findComment(commentId);
+      await this.commentLikesRepository.findComment(commentId);
     if (!existingLikeForComment) {
       return null;
     }
