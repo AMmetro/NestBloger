@@ -134,7 +134,7 @@ export class PostCommentsController {
     );
     if (!result) {
       throw new NotFoundException([
-        { message: 'wrong creating comment', field: 'comment' },
+        { message: 'not found comment', field: 'comment' },
       ]);
     }
     return res.sendStatus(204);

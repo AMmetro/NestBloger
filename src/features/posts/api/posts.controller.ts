@@ -143,7 +143,32 @@ export class PostsController {
   }
 
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  @Post(':id/comments') 
+  @Get(':id/comments') 
+  @UseGuards(OptioanlAuthGuard)
+  @HttpCode(200)
+  async getComment(
+    @Req() req: any,
+    @Res() res: Response,
+    @Param('id') postId: string,
+    // @Res({ passthrough: true }) res: Response,
+  ): Promise<any> {
+    const userId = req.user?.userId;
+    if (!postId) {
+      return res.sendStatus(401);
+    }
+     const result = await this.postCommentsService.composePostComment(
+      postId,
+      userId,
+    );
+    if (!result) {
+      throw new BadRequestException([
+        { message: 'wrong creating comment', field: 'comment' },
+      ]);
+    }
+    return res.status(200).send(result);
+  }
+
+  @Post(':id/comments')
   @UseGuards(JwtAuthGuard)
   @HttpCode(201)
   async createComment(
