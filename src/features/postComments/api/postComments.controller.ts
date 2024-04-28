@@ -77,7 +77,6 @@ export class PostCommentsController {
     return res.status(200).send(result);
   }
 
-
   @Get(':id/like-status')
   @UseGuards(OptioanlAuthGuard)
   async getLike(
@@ -103,8 +102,6 @@ export class PostCommentsController {
     }
     return res.status(200).send(result);
   }
-
-
 
   @Put(':id/like-status')
   @HttpCode(204)
@@ -140,5 +137,29 @@ export class PostCommentsController {
     }
     return res.sendStatus(204);
     // return res.send(result);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(204)
+  async deleteComment(
+    @Req() req: any,
+    @Res() res: Response,
+    @Param('id') commentsId: string,
+    // @Res({ passthrough: true }) res: Response,
+  ): Promise<any> {
+    // const userId = req.user?.userId || null;
+    if (!commentsId) {
+      throw new BadRequestException([
+        { message: 'not found commentsId', field: 'commentsId' },
+      ]);
+    }
+    const result = await this.postCommentsService.deleteComment(commentsId);
+    if (!result) {
+      throw new BadRequestException([
+        { message: 'wrong creating comment', field: 'comment' },
+      ]);
+    }
+    return res.sendStatus(204);
   }
 }

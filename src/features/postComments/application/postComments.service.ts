@@ -124,47 +124,36 @@ export class PostCommentsService {
     if (!existingPostComment) {
       return null;
     }
-
     const existingCommentLike = await this.commentLikesRepository.findLike(
       commentId,
       userId,
     );
-
-                                      console.log('============1111111111=========');
-                                      console.log(existingCommentLike);
-
-    const newLikeModel = { 
+    const newLikeModel = {
       commentId: commentId,
       userId: userId,
       myStatus: sendedLikeStatus,
       addedAt: new Date(),
     };
 
-     if (!existingCommentLike) {
+    if (!existingCommentLike) {
       const createdLikeForComment =
         await this.commentLikesRepository.createLike(newLikeModel);
-                                              console.log('============2222222222=========');
-                                              console.log(createdLikeForComment);
       return createdLikeForComment;
       // console.log(createdLikeForComment);
     }
-
-    console.log('============existingCommentLike=========');
-    console.log(existingCommentLike); 
-
     if (existingCommentLike.myStatus === sendedLikeStatus) {
       return existingCommentLike;
     }
     existingCommentLike.myStatus = sendedLikeStatus;
-
-    // const isLikeUpdated =
-      await this.commentLikesRepository.updLike(existingCommentLike);
-
-    // await existingCommentLike.save();
-
-    // console.log('============UPD RETURN=========');
-    // console.log(updExistingCommentLike);
-
+    await this.commentLikesRepository.updLike(existingCommentLike);
     return existingCommentLike;
+  }
+
+  async deleteComment(commentId: string): Promise<any> {
+    const isDeleted = await this.postCommentsRepository.deleteOne(commentId);
+    if (!isDeleted) {
+      return null;
+    }
+    return isDeleted;
   }
 }

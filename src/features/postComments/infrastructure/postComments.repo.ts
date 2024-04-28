@@ -11,11 +11,10 @@ export class PostCommentsRepository {
     private postCommentModel: Model<PostComment>,
 
     // @InjectModel(Post.name) private postModel: Model<Post>
-
   ) {}
 
   async findComment(id: string): Promise<any | null> {
-    // console.log('============newComment========='); 
+    // console.log('============newComment=========');
     // console.log(newComment);
     try {
       const postComment = await this.postCommentModel.findById(id);
@@ -47,8 +46,18 @@ export class PostCommentsRepository {
     }
   }
 
-
-
-
-
+  async deleteOne(commentId: string): Promise<any | null> {
+    try {
+      const isDeleted =
+        await this.postCommentModel.findByIdAndDelete(commentId);
+      if (!isDeleted) {
+        return null;
+      }
+      //   return postLikes.map((like) => PostLike.mapper(like));
+      return isDeleted;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
 }
