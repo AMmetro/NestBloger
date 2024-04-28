@@ -1,5 +1,6 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { ObjectId } from 'mongodb';
 import { Injectable } from '@nestjs/common';
 import { PostCommentMoongoose } from '../domain/postsComment.schema';
 import { PostComment } from '../domain/postCommentTypes';
@@ -46,6 +47,28 @@ export class PostCommentsRepository {
     }
   }
 
+  async update(newComment: any): Promise<any | null> {
+    try {
+      //**
+      //*  const Comment =  CommentInstance.findOne({_id:id})
+      //*  const Comment.content = updateContent
+      //*  await CommentInstance.save()
+      //**
+      const commentForUpd = await this.postCommentModel.updateOne(
+        { _id: new ObjectId(newComment.id) },
+        {
+          $set: {
+            content: newComment.content,
+          },
+        },
+      );
+      return !!commentForUpd.matchedCount;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
   async deleteOne(commentId: string): Promise<any | null> {
     try {
       const isDeleted =
@@ -53,10 +76,6 @@ export class PostCommentsRepository {
       if (!isDeleted) {
         return null;
       }
-
-      console.log("isDeleted in repo")
-      console.log(isDeleted)
-
       //   return postLikes.map((like) => PostLike.mapper(like));
       return isDeleted;
     } catch (e) {

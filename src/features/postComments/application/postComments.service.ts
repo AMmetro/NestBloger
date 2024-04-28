@@ -39,30 +39,14 @@ export class PostCommentsService {
   ): Promise<any> {
     const postComments =
       await this.postCommentsRepository.findComment(commentId);
-
-      // console.log('============postComments=========');
-      // console.log(postComments);
-
     if (!postComments) {
       return null;
     }
-    // console.log('============postComments=========');
-    // console.log(postComments);
-    // работает
-    // const composedCommentLikes = await this.postLikesServices.countPostLikes(
-    //   commentId,
-    //   userOptionalId,
-    // );
-
-    // НЕработает
     const composedCommentLikes =
       await this.commentLikesServices.countCommentLikes(
         commentId,
         userOptionalId,
       );
-    // console.log('============composedCommentLikes=========');
-    // console.log(composedCommentLikes);
-
     const resultComment = {
       id: commentId,
       content: postComments.content,
@@ -104,10 +88,6 @@ export class PostCommentsService {
     if (!createdComment) {
       return null;
     }
-
-    //   console.log('============createdComment=========');
-    // console.log(createdComment);
-
     return {
       ...createdComment,
       likesInfo: {
@@ -116,6 +96,27 @@ export class PostCommentsService {
         myStatus: 'None',
       },
     };
+  }
+
+  async updateComment(
+    commentId: string,
+    userCommentatorId: string,
+    content: string,
+  ): Promise<any> {
+    const postCommentForUpdate =
+      await this.postCommentsRepository.findComment(commentId);
+    if (!postCommentForUpdate) {
+      return null;
+    }
+    const updCommentModel = {
+      ...postCommentForUpdate,
+      content: content,
+    };
+    const isUpdated = await this.postCommentsRepository.update(updCommentModel);
+    if (!isUpdated) {
+      return null;
+    }
+    return isUpdated;
   }
 
   async addLikeToComment(
@@ -155,9 +156,9 @@ export class PostCommentsService {
 
   async deleteComment(commentId: string): Promise<any> {
     const isDeleted = await this.postCommentsRepository.deleteOne(commentId);
-    
-    console.log("isDeleted in service")
-    console.log(isDeleted)
+
+    console.log('isDeleted in service');
+    console.log(isDeleted);
     if (!isDeleted) {
       return null;
     }

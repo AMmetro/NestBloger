@@ -37,6 +37,7 @@ import {
   likeStatusEnum,
 } from 'src/features/postLikes/domain/postLikesTypes';
 import { CommentLikesServices } from 'src/features/commentLikes/application/commentLikes.service';
+import { CreateCommentDto } from '../domain/postCommentTypes';
 
 // Tag для swagger
 // @ApiTags('Users')
@@ -129,6 +130,38 @@ export class PostCommentsController {
       commentId,
       likeStatus,
       userId,
+    );
+    if (!result) {
+      throw new NotFoundException([
+        { message: 'not found comment', field: 'comment' },
+      ]);
+    }
+    return res.sendStatus(204);
+    // return res.send(result);
+  }
+
+
+  @Put(':id')
+  @HttpCode(204)
+  @UseGuards(JwtAuthGuard)
+  async updateComment(
+    @Req() req: any,
+    @Res() res: Response,
+    @Body() updContent: CreateCommentDto,
+    @Param('id') commentId: string,
+    // @Res({ passthrough: true }) res: Response,
+  ): Promise<any> {
+    const userId = req.user?.userId;
+    const { content } = updContent;
+    if (!commentId) {
+      throw new BadRequestException([
+        { message: 'not found comment for update', field: 'commentsId' },
+      ]);
+    }
+    const result = await this.postCommentsService.updateComment(
+      commentId,
+      userId,
+      content,
     );
     if (!result) {
       throw new NotFoundException([
