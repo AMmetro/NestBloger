@@ -107,6 +107,7 @@ export class PostCommentsController {
 
 
   @Put(':id/like-status')
+  @HttpCode(204)
   @UseGuards(JwtAuthGuard)
   async addLike(
     @Req() req: any,
