@@ -58,6 +58,10 @@ export class CommentLikesServices {
       likeStatusEnum.Dislike,
     );
     let myStatus = likeStatusEnum.None;
+
+    //     console.log('============userId=========');
+    // console.log(userId);
+
     if (userId) {
       const requesterUserLike = await this.commentLikesRepository.findLike(
         commentId,
@@ -66,8 +70,8 @@ export class CommentLikesServices {
       // console.log("-------------------")
       // console.log("userId")
       // console.log(userId)
-      // console.log("requesterUserLike")
-      // console.log(requesterUserLike)
+                                        console.log("requesterUserLike")
+                                        console.log(requesterUserLike)
       myStatus = requesterUserLike?.myStatus
         ? requesterUserLike.myStatus
         : likeStatusEnum.None;
