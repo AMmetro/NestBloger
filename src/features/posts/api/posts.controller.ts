@@ -298,6 +298,9 @@ export class PostsController {
       res.sendStatus(404);
     }
     const isDeleted = await this.postRepository.deleteById(postId);
+    
+    console.log("isDeleted in controler")
+    console.log(isDeleted)
     if (!isDeleted) {
       res.sendStatus(404);
     }

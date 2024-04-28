@@ -53,6 +53,10 @@ export class PostCommentsRepository {
       if (!isDeleted) {
         return null;
       }
+
+      console.log("isDeleted in repo")
+      console.log(isDeleted)
+
       //   return postLikes.map((like) => PostLike.mapper(like));
       return isDeleted;
     } catch (e) {

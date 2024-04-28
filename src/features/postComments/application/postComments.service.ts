@@ -39,6 +39,10 @@ export class PostCommentsService {
   ): Promise<any> {
     const postComments =
       await this.postCommentsRepository.findComment(commentId);
+
+      // console.log('============postComments=========');
+      // console.log(postComments);
+
     if (!postComments) {
       return null;
     }
@@ -151,6 +155,9 @@ export class PostCommentsService {
 
   async deleteComment(commentId: string): Promise<any> {
     const isDeleted = await this.postCommentsRepository.deleteOne(commentId);
+    
+    console.log("isDeleted in service")
+    console.log(isDeleted)
     if (!isDeleted) {
       return null;
     }

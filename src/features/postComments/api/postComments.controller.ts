@@ -70,8 +70,8 @@ export class PostCommentsController {
       userOptionalId,
     );
     if (!result) {
-      throw new BadRequestException([
-        { message: 'wrong creating comment', field: 'comment' },
+      throw new NotFoundException([
+        { message: 'not found comment', field: 'comment' },
       ]);
     }
     return res.status(200).send(result);
