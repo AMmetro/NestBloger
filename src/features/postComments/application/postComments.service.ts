@@ -166,6 +166,9 @@ export class PostCommentsService {
 
   async deleteComment(commentId: string, userId: string): Promise<any> {
     const comment = await this.postCommentsRepository.findComment(commentId);
+    if (!comment) {
+      return 404;
+    }
 
     console.log('comment 1111111111');
     console.log(comment);
@@ -174,7 +177,7 @@ export class PostCommentsService {
 
     if (comment.commentatorInfo.userId !== userId) {
       console.log('222222222');
-      return null;
+      return 403;
     }
     const deletedComment =
       await this.postCommentsRepository.deleteOne(commentId);

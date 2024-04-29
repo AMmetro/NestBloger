@@ -196,9 +196,14 @@ export class PostCommentsController {
     console.log('result in controler');
     console.log(deletedComment);
 
-    if (!deletedComment) {
+    if (deletedComment === 403) {
       throw new ForbiddenException([
-        { message: 'wrong creating comment', field: 'comment' },
+        { message: 'wrong user id', field: 'comment' },
+      ]);
+    }
+    if (deletedComment === 404) {
+      throw new NotFoundException([
+        { message: 'wrong comment id', field: 'comment' },
       ]);
     }
     return res.sendStatus(204);
