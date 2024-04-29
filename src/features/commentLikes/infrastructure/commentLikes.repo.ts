@@ -35,7 +35,7 @@ export class CommentLikesRepository {
     // console.log(newComment);
     try {
       const comment = await this.commentLikeModel.find({
-        id: userId,
+        userId: userId,
         commentId: commentId,
       });
       // const comment = await this.postCommentModel.find();
