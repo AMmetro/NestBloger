@@ -65,11 +65,6 @@ export class CommentLikesServices {
         commentId,
         userId,
       );
-      // console.log("-------------------")
-      // console.log("userId")
-      // console.log(userId)
-      console.log('requesterUserLike');
-      console.log(requesterUserLike);
       myStatus = requesterUserLike?.myStatus
         ? requesterUserLike.myStatus
         : likeStatusEnum.None;

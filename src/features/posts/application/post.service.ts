@@ -141,12 +141,23 @@ export class PostsService {
         //   }),
         // ]);
 
+
+
+
         let currentLikeStatus = likeStatusEnum.None;
         if (userId) {
           const currentLike = await this.commentLikesRepository.findUserComment(
             userId,
             comment.id,
           );
+
+          // console.log("currentLike")
+          // console.log(currentLike)
+          // console.log("userId")
+          // console.log(userId)
+          // console.log("comment.id")
+          // console.log(comment.id)
+
           currentLikeStatus = currentLike
             ? currentLike.myStatus
             : likeStatusEnum.None;

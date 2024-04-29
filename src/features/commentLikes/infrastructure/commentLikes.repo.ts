@@ -34,13 +34,20 @@ export class CommentLikesRepository {
     // console.log('============newComment=========');
     // console.log(newComment);
     try {
-      const comment = await this.commentLikeModel.find({
-        userId: userId,
+      // const comment = await this.commentLikeModel.find();
+      const comment = await this.commentLikeModel.findOne({
         commentId: commentId,
+        userId: userId,
       });
+      // const comment = await this.commentLikeModel.find({
+      //   userId: '662fef220fde802d7e31d809',
+      //   commentId: '662fef1a0fde802d7e31d7dc',
+      // });
       // const comment = await this.postCommentModel.find();
-      // console.log('============postId=========');
-      // console.log(postId);
+
+      console.log('============comment=========');
+      console.log(comment);
+
       if (!comment) {
         return null;
       }
@@ -89,7 +96,6 @@ export class CommentLikesRepository {
 
   async updLike(updLike: any): Promise<any | null> {
     try {
- 
       // const likeId = updLike;
 
       console.log('updLike');
@@ -130,7 +136,7 @@ export class CommentLikesRepository {
       return likesCount;
     } catch (e) {
       console.log(e);
-      return null; 
+      return null;
     }
   }
 
@@ -152,7 +158,6 @@ export class CommentLikesRepository {
     }
   }
 
-
   async deleteAll(): Promise<any | null> {
     try {
       await this.commentLikeModel.deleteMany();
@@ -162,5 +167,4 @@ export class CommentLikesRepository {
       return null;
     }
   }
-
 }

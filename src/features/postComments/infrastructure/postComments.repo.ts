@@ -53,6 +53,7 @@ export class PostCommentsRepository {
       //*  const Comment =  CommentInstance.findOne({_id:id})
       //*  const Comment.content = updateContent
       //*  await CommentInstance.save()
+      //*  В НЕСТ В КЛАССЕ НУЖНО ПОПИСЫВАТЬ МЕТОД SAVE CREATE  и т.д.
       //**
       const commentForUpd = await this.postCommentModel.updateOne(
         { _id: new ObjectId(newComment.id) },
