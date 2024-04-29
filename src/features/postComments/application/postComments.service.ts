@@ -2,6 +2,7 @@ import { WithId } from 'mongodb';
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -106,17 +107,13 @@ export class PostCommentsService {
   ): Promise<any> {
     const postCommentForUpdate =
       await this.postCommentsRepository.findComment(commentId);
-
-      console.log("postCommentForUpdate")
-      console.log(postCommentForUpdate)
-
     if (!postCommentForUpdate) {
       return null;
     }
     if (postCommentForUpdate.commentatorInfo.userId !== userCommentatorId){
                                               console.log("!!!!!!!!!!!!!!!!!!!!!!!!")
 
-      throw new UnauthorizedException([
+      throw new ForbiddenException([
         { message: 'not found comment', field: 'comment' },
       ]);
     }
