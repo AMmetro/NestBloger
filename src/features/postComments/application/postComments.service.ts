@@ -1,17 +1,5 @@
-import { WithId } from 'mongodb';
-import {
-  BadRequestException,
-  ConflictException,
-  ForbiddenException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-// import { InjectModel } from '@nestjs/mongoose';
-// import { User } from './users.schema';
-import { JwtService } from '@nestjs/jwt';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { UsersRepository } from 'src/features/users/infrastructure/users.repository';
-import { UsersService } from 'src/features/users/application/users.service';
-import { DevicesServices } from 'src/features/devices/application/devices.service';
 import { PostCommentsRepository } from '../infrastructure/postComments.repo';
 import { PostRepository } from 'src/features/posts/infrastructure/post.repository';
 import { PostLikesServices } from 'src/features/postLikes/application/postLikes.service';
@@ -20,7 +8,6 @@ import { CommentLikesServices } from 'src/features/commentLikes/application/comm
 @Injectable()
 export class PostCommentsService {
   constructor(
-    // @InjectModel(User.name) private userModel: Model<User>,
     private postCommentsRepository: PostCommentsRepository,
     private commentLikesServices: CommentLikesServices,
     private postLikesServices: PostLikesServices,
@@ -147,7 +134,6 @@ export class PostCommentsService {
       const createdLikeForComment =
         await this.commentLikesRepository.createLike(newLikeModel);
       return createdLikeForComment;
-      // console.log(createdLikeForComment);
     }
     if (existingCommentLike.myStatus === sendedLikeStatus) {
       return existingCommentLike;

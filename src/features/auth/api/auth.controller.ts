@@ -35,6 +35,7 @@ import { OptioanlAuthGuard } from 'src/common/guards/optionalAuth.guard';
 import { LocalAuthGuard } from 'src/common/guards/local.guard';
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { BasicAuthGuard } from 'src/common/guards/basic.guard';
+import { UsersRepository } from 'src/features/users/infrastructure/users.repository';
 
 // Tag для swagger
 // @ApiTags('Users')
@@ -45,7 +46,7 @@ export class AuthController {
   // usersService: UsersService;
   constructor(
     // private readonly usersQueryRepository: UsersQueryRepository,
-    // private readonly usersRepository: UsersRepository,
+    private readonly usersRepository: UsersRepository,
     private readonly authService: AuthService,
   ) {
     // this.usersService = usersService;
@@ -110,14 +111,16 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async aboutMe(
     // @Param('id') userId: string,
-    @Request() req: AuthUserInputModel,
-    // @Res({ passthrough: true }) res: Response,
+    @Req() req: any,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    const { loginOrEmail } = req;
-    const { password } = req;
-
-    // generate coocies
-    return 'coocies';
+    const me = await this.usersRepository.getById(req.user!.id);
+    if (!me) {
+      res.sendStatus(401);
+      return;
+    }
+    const meModel = { userId: me.id, login: me.login, email: me.email };
+    res.status(200).send(meModel);
   }
 
   @Post('/login')
@@ -144,7 +147,7 @@ export class AuthController {
       })
       .status(200)
       .send({ accessToken: tokens.AccessToken });
-      // .send(tokens);
+    // .send(tokens);
   }
 
   @Post('/registration')

@@ -12,17 +12,11 @@ export class CommentLikesRepository {
   ) {}
 
   async findComment(id: string): Promise<any | null> {
-    // console.log('============newComment=========');
-    // console.log(newComment);
     try {
       const comment = await this.commentLikeModel.findById(id);
-      // const comment = await this.postCommentModel.find();
-      // console.log('============postId=========');
-      // console.log(postId);
       if (!comment) {
         return null;
       }
-      //   return postLikes.map((like) => PostLike.mapper(like));
       return comment;
     } catch (e) {
       console.log(e);
@@ -31,27 +25,14 @@ export class CommentLikesRepository {
   }
 
   async findUserComment(userId: string, commentId): Promise<any | null> {
-    // console.log('============newComment=========');
-    // console.log(newComment);
     try {
-      // const comment = await this.commentLikeModel.find();
       const comment = await this.commentLikeModel.findOne({
         commentId: commentId,
         userId: userId,
       });
-      // const comment = await this.commentLikeModel.find({
-      //   userId: '662fef220fde802d7e31d809',
-      //   commentId: '662fef1a0fde802d7e31d7dc',
-      // });
-      // const comment = await this.postCommentModel.find();
-
-      console.log('============comment=========');
-      console.log(comment);
-
       if (!comment) {
         return null;
       }
-      //   return postLikes.map((like) => PostLike.mapper(like));
       return comment;
     } catch (e) {
       console.log(e);
@@ -60,16 +41,11 @@ export class CommentLikesRepository {
   }
 
   async findAllComment(): Promise<any | null> {
-    // console.log('============newComment=========');
-    // console.log(newComment);
     try {
       const comment = await this.commentLikeModel.find();
-      // console.log('============postId=========');
-      // console.log(postId);
       if (!comment) {
         return null;
       }
-      //   return postLikes.map((like) => PostLike.mapper(like));
       return comment;
     } catch (e) {
       console.log(e);
@@ -79,11 +55,7 @@ export class CommentLikesRepository {
 
   async createLike(newComment: any): Promise<any | null> {
     try {
-      // console.log('newComment');
-      // console.log(newComment);
       const comment = await this.commentLikeModel.create(newComment);
-      // console.log('comment');
-      // console.log(comment);
       if (!comment) {
         return null;
       }
@@ -96,17 +68,10 @@ export class CommentLikesRepository {
 
   async updLike(updLike: any): Promise<any | null> {
     try {
-      // const likeId = updLike;
-
-      console.log('updLike');
-      console.log(updLike);
-
       const like = await this.commentLikeModel.updateOne(
         { _id: updLike._id },
         { $set: { myStatus: updLike.myStatus } },
       );
-      console.log('SAVED LIKE');
-      console.log(like);
       if (!like.modifiedCount) {
         return null;
       }
@@ -126,13 +91,6 @@ export class CommentLikesRepository {
         commentId: commentId,
         myStatus: myStatus,
       });
-
-      // console.log('============likesCount=========');
-      // console.log(likesCount);
-
-      // if (!newestLikes) {
-      //   return null;
-      // }
       return likesCount;
     } catch (e) {
       console.log(e);
@@ -142,15 +100,10 @@ export class CommentLikesRepository {
 
   async findLike(commentId: string, userId: string): Promise<any | null> {
     try {
-      // const like2 = await this.commentLikeModel.find({ commentId: commentId });
       const like = await this.commentLikeModel.findOne({
         commentId: commentId,
         userId: userId,
       });
-      // if (!newestLikes) {
-      //   return null;
-      // }
-
       return like;
     } catch (e) {
       console.log(e);

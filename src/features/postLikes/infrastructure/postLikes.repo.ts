@@ -16,10 +16,6 @@ export class PostLikesRepository {
   async findAllByPostId(postId: string): Promise<any | null> {
     try {
       const postLikes = await this.postLikesModel.find({ postId: postId });
-      // console.log('============postId=========');
-      // console.log(postId);
-      // console.log('============postLikes=========');
-      // console.log(postLikes);
       if (!postLikes) {
         return null;
       }
@@ -66,14 +62,9 @@ export class PostLikesRepository {
         return null;
       }
 
-      //       console.log('newestLikes original');
-      // console.log(newestLikes);
-
       return newestLikes.map((like) => {
         return PostLike.mapper(like);
       });
-      // return newestLikes;
-      // return this.postLikesModel;
     } catch (e) {
       console.log(e);
       return null;
@@ -86,9 +77,6 @@ export class PostLikesRepository {
         postId: postId,
         myStatus: myStatus,
       });
-      // if (!newestLikes) {
-      //   return null;
-      // }
       return likesCount;
     } catch (e) {
       console.log(e);

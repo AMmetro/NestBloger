@@ -1,9 +1,6 @@
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-// import { Post } from './posts.types';
-// import { Blog, MappedBlogType } from 'src/blogs/blog.types';
-// import { PostRepository } from './posts.repo';
 import { BlogRepository } from 'src/blogs/blog.repo';
 import { createPostDTO } from 'src/blogs/blog.types';
 
@@ -114,35 +111,10 @@ export class PostsService {
     }
     const сommentsWithLikes = await Promise.all(
       postComments.items.map(async (comment) => {
-        // const likesCount = await CommentLikesModel.countDocuments({
-        //   commentId: comment.id,
-        //   myStatus: likeStatusEnum.Like,
-        // });
-        // const dislikesCount = await CommentLikesModel.countDocuments({
-        //   commentId: comment.id,
-        //   myStatus: likeStatusEnum.Dislike,
-        // });
-
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
         const countLikes = await this.commentLikesServices.countCommentLikes(
           comment.id,
           userId,
         );
-
-        // const [likesCount, dislikesCount] = await Promise.all([
-        //   this.commentLikesRepository.countDocuments({
-        //     commentId: comment.id,
-        //     myStatus: likeStatusEnum.Like,
-        //   }),
-        //   this.commentLikesRepository.countDocuments({
-        //     commentId: comment.id,
-        //     myStatus: likeStatusEnum.Dislike,
-        //   }),
-        // ]);
-
-
-
 
         let currentLikeStatus = likeStatusEnum.None;
         if (userId) {
@@ -150,14 +122,6 @@ export class PostsService {
             userId,
             comment.id,
           );
-
-          // console.log("currentLike")
-          // console.log(currentLike)
-          // console.log("userId")
-          // console.log(userId)
-          // console.log("comment.id")
-          // console.log(comment.id)
-
           currentLikeStatus = currentLike
             ? currentLike.myStatus
             : likeStatusEnum.None;

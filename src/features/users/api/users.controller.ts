@@ -34,13 +34,10 @@ import { User } from './dto/output/user.output.model';
 // Установка guard на весь контроллер
 //@UseGuards(AuthGuard)
 export class UsersController {
-  // usersService: UsersService;
   constructor(
-    // private readonly usersQueryRepository: UsersQueryRepository,
     private readonly usersRepository: UsersRepository, 
     private readonly usersService: UsersService
   ) {
-    // this.usersService = usersService;
   }
 
   @Get()
@@ -66,7 +63,6 @@ export class UsersController {
   @Post()
   @HttpCode(201)
   async createUser(
-    // @Body() reqBody: RequestInputUserType,
     @Body() createModel: UserCreateModel,
     @Res({ passthrough: true }) res: Response,
   ) {
@@ -81,9 +77,6 @@ export class UsersController {
     if (!createdUser) {
       res.sendStatus(404);
       return;
-      // throw new BadRequestException([
-      //   { message: 'Cant`t create user', field: 'user' },
-      // ]);
     }
     return User.userNoEmailConfirmation(createdUser);
   }

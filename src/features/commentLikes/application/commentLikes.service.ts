@@ -56,10 +56,6 @@ export class CommentLikesServices {
       likeStatusEnum.Dislike,
     );
     let myStatus = likeStatusEnum.None;
-
-    //     console.log('============userId=========');
-    // console.log(userId);
-
     if (userId) {
       const requesterUserLike = await this.commentLikesRepository.findLike(
         commentId,
@@ -77,40 +73,4 @@ export class CommentLikesServices {
     };
     return result;
   }
-
-  // async addLikeToPost(
-  //   postId: string,
-  //   userId: string,
-  //   sendedLikeStatus: string,
-  // ): Promise<any> {
-  //   // const existingLikeForPost = await this.postLikesModel.findOne({
-  //   //   postId: postId,
-  //   //   userId: userId,
-  //   // });
-  //   // const newLike = {
-  //   //   postId: postId,
-  //   //   userId: userId,
-  //   //   myStatus: sendedLikeStatus,
-  //   //   addedAt: new Date(),
-  //   // };
-
-  //   if (!existingLikeForPost) {
-  //     const LikeInstance = new this.postLikesModel(newLike);
-  //     LikeInstance.save();
-  //     return newLike;
-  //   }
-  //   if (existingLikeForPost.myStatus === sendedLikeStatus) {
-  //     return newLike;
-  //   }
-  //   existingLikeForPost.myStatus = sendedLikeStatus;
-  //   await existingLikeForPost.save();
-
-  //   // const xxx = await this.postLikesModel.find()
-
-  //   // console.log("=======xxx=======")
-  //   // console.log(xxx)
-
-  //   // newLike.myStatus = sendedLikeStatus;
-  //   return newLike;
-  // }
 }

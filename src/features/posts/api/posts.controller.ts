@@ -141,11 +141,6 @@ export class PostsController {
     if (!postId) {
       return res.sendStatus(401);
     }
-    // const result = await this.postCommentsService.composePostComment(
-    //   postId,
-    //   userId,
-    // );
-    // const result = await this.postsService.composePostById(postId, userId);
     const basicSortData = basicSortQuery(reqQuery);
     const result = await this.postsService.composePostComments(
       postId,
@@ -191,20 +186,8 @@ export class PostsController {
     return res.status(201).send(result);
   }
 
-  // @Delete()
-  // async deleteAll(): Promise<any> {
-  //   const countDelDoc = await this.blogsService.deleteAll();
-  //   return countDelDoc;
-  // }
-
-  // @Put(':id')
-  // updateBlog(@Param('id') userId: number, @Body() model: {}): any {
-  //   return
-  // }
-
   @Put(':id')
   @HttpCode(204)
-  // @UseGuards(JwtAuthGuard)
   async updatePost(
     @Param('id') postId: string,
     @Body() reqBody: CreatePostModel,
@@ -243,7 +226,6 @@ export class PostsController {
   async likePost(
     @Param('postId') postId: string,
     @Body() likeModel: IncomLikeStatusDTO,
-    // @Res({ passthrough: true }) res: Response,
     @Res() res: Response,
     @Req() req: any,
   ): Promise<any> {
@@ -262,24 +244,15 @@ export class PostsController {
     }
     const result = await this.postsService.addLike(postId, likeStatus, userId);
 
-    // console.log("result")
-    // console.log(result)
-
     if (!result) {
       return res.sendStatus(404);
-      // throw new BadRequestException([
-      //   { message: 'wrong like status', field: 'likeStatus' },
-      // ]);
     }
     return res.sendStatus(204);
-    //  return res.status(201).send(result);
   }
 
   @Delete(':id')
-  // @HttpCode(204)
   async deleteById(
     @Param('id') postId: string,
-    // @Res({ passthrough: true }) res: Response,
     @Res() res: Response,
   ): Promise<any> {
     if (!ObjectId.isValid(postId)) {
@@ -290,9 +263,6 @@ export class PostsController {
       res.sendStatus(404);
     }
     const isDeleted = await this.postRepository.deleteById(postId);
-    
-    console.log("isDeleted in controler")
-    console.log(isDeleted)
     if (!isDeleted) {
       res.sendStatus(404);
     }

@@ -1,7 +1,6 @@
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-// import { PostLikeMoongoose } from './postsLikes.schema';
 import { likeStatusEnum } from 'src/features/postLikes/domain/postLikesTypes';
 import { PostLikesRepository } from 'src/features/postLikes/infrastructure/postLikes.repo';
 import { PostLikeMoongoose } from '../domain/postsLikes.schema';
@@ -68,13 +67,6 @@ export class PostLikesServices {
     }
     existingLikeForPost.myStatus = sendedLikeStatus;
     await existingLikeForPost.save();
-
-    // const xxx = await this.postLikesModel.find()
-
-    // console.log("=======xxx=======")
-    // console.log(xxx)
-
-    // newLike.myStatus = sendedLikeStatus;
     return newLike;
   }
 }
