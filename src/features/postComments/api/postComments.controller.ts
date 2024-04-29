@@ -158,12 +158,12 @@ export class PostCommentsController {
         { message: 'not found comment for update', field: 'commentsId' },
       ]);
     }
-    const result = await this.postCommentsService.updateComment(
+    const isUpdated = await this.postCommentsService.updateComment(
       commentId,
       userId,
       content,
     );
-    if (!result) {
+    if (!isUpdated) {
       throw new NotFoundException([
         { message: 'not found comment', field: 'comment' },
       ]);

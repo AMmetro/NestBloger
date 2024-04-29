@@ -16,6 +16,7 @@ import { PostRepository } from 'src/features/posts/infrastructure/post.repositor
 import { PostLikesServices } from 'src/features/postLikes/application/postLikes.service';
 import { CommentLikesRepository } from 'src/features/commentLikes/infrastructure/commentLikes.repo';
 import { CommentLikesServices } from 'src/features/commentLikes/application/commentLikes.service';
+import { log } from 'console';
 // import { User } from '../users/api/dto/output/user.output.model';
 // import { UsersRepository } from '../users/infrastructure/users.repository';
 // import { RequestInputUserType } from '../users/api/dto/input/create-user.input.model';
@@ -105,17 +106,25 @@ export class PostCommentsService {
   ): Promise<any> {
     const postCommentForUpdate =
       await this.postCommentsRepository.findComment(commentId);
+
+      console.log("postCommentForUpdate")
+      console.log(postCommentForUpdate)
+
     if (!postCommentForUpdate) {
       return null;
     }
-    if (postCommentForUpdate.commentatorInfo.userId !== userCommentatorId)
+    if (postCommentForUpdate.commentatorInfo.userId !== userCommentatorId){
+                                              console.log("!!!!!!!!!!!!!!!!!!!!!!!!")
+
       throw new UnauthorizedException([
         { message: 'not found comment', field: 'comment' },
       ]);
+    }
     const updCommentModel = {
       ...postCommentForUpdate,
       content: content,
     };
+
     const isUpdated = await this.postCommentsRepository.update(updCommentModel);
     if (!isUpdated) {
       return null;

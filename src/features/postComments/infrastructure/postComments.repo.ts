@@ -25,8 +25,7 @@ export class PostCommentsRepository {
       if (!postComment) {
         return null;
       }
-      //   return postLikes.map((like) => PostLike.mapper(like));
-      return postComment;
+      return PostComment.mapper(postComment);
     } catch (e) {
       console.log(e);
       return null;
@@ -62,7 +61,7 @@ export class PostCommentsRepository {
           },
         },
       );
-      return !!commentForUpd.matchedCount;
+      return !!commentForUpd.modifiedCount;
     } catch (e) {
       console.log(e);
       return null;
