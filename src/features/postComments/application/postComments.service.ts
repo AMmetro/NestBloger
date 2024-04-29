@@ -110,8 +110,8 @@ export class PostCommentsService {
     if (!postCommentForUpdate) {
       return null;
     }
-    if (postCommentForUpdate.commentatorInfo.userId !== userCommentatorId){
-                                              console.log("!!!!!!!!!!!!!!!!!!!!!!!!")
+    if (postCommentForUpdate.commentatorInfo.userId !== userCommentatorId) {
+      console.log('!!!!!!!!!!!!!!!!!!!!!!!!');
 
       throw new ForbiddenException([
         { message: 'not found comment', field: 'comment' },
@@ -165,17 +165,19 @@ export class PostCommentsService {
   }
 
   async deleteComment(commentId: string, userId: string): Promise<any> {
-
     const comment = await this.postCommentsRepository.findComment(commentId);
-    if (comment.id !== userId) {
+
+    // console.log('comment 1111111111');
+    // console.log(comment);
+    // console.log('userId');
+    // console.log(userId);
+
+    if (comment.commentatorInfo.userId !== userId) {
+      // console.log('222222222');
       return null;
     }
-    const isDeleted = await this.postCommentsRepository.deleteOne(commentId);
-    // console.log('isDeleted in service');
-    // console.log(isDeleted);
-    // if (!isDeleted) {
-    //   return null;
-    // }
-    return isDeleted;
+    const deletedComment =
+      await this.postCommentsRepository.deleteOne(commentId);
+    return deletedComment;
   }
 }

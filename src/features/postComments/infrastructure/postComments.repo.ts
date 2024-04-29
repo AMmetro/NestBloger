@@ -70,13 +70,13 @@ export class PostCommentsRepository {
 
   async deleteOne(commentId: string): Promise<any | null> {
     try {
-      const isDeleted =
+      const deletedComment =
         await this.postCommentModel.findByIdAndDelete(commentId);
-      if (!isDeleted) {
+      if (!deletedComment) {
         return null;
       }
       //   return postLikes.map((like) => PostLike.mapper(like));
-      return isDeleted;
+      return deletedComment;
     } catch (e) {
       console.log(e);
       return null;

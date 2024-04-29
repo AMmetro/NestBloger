@@ -188,11 +188,11 @@ export class PostCommentsController {
         { message: 'not found commentsId', field: 'commentsId' },
       ]);
     }
-    const result = await this.postCommentsService.deleteComment(
+    const deletedComment = await this.postCommentsService.deleteComment(
       commentsId,
       userId,
     );
-    if (!result) {
+    if (!deletedComment) {
       throw new ForbiddenException([
         { message: 'wrong creating comment', field: 'comment' },
       ]);
