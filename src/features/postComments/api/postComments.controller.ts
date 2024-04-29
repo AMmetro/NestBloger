@@ -192,6 +192,10 @@ export class PostCommentsController {
       commentsId,
       userId,
     );
+
+    console.log('result in controler');
+    console.log(deletedComment);
+
     if (!deletedComment) {
       throw new ForbiddenException([
         { message: 'wrong creating comment', field: 'comment' },

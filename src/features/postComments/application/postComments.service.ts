@@ -161,19 +161,19 @@ export class PostCommentsService {
     }
     existingCommentLike.myStatus = sendedLikeStatus;
     await this.commentLikesRepository.updLike(existingCommentLike);
-    return existingCommentLike;
+    return existingCommentLike; 
   }
 
   async deleteComment(commentId: string, userId: string): Promise<any> {
     const comment = await this.postCommentsRepository.findComment(commentId);
 
-    // console.log('comment 1111111111');
-    // console.log(comment);
-    // console.log('userId');
-    // console.log(userId);
+    console.log('comment 1111111111');
+    console.log(comment);
+    console.log('userId');
+    console.log(userId);
 
     if (comment.commentatorInfo.userId !== userId) {
-      // console.log('222222222');
+      console.log('222222222');
       return null;
     }
     const deletedComment =
