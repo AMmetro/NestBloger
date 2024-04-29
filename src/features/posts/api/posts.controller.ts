@@ -48,21 +48,6 @@ export class PostsController {
     private readonly postCommentsService: PostCommentsService,
   ) {}
 
-  // @Post(':id/posts')
-  // @HttpCode(201)
-  // async createPost(
-  //   @Param('id') userId: number,
-  //   @Body() reqBody: any,
-  // ): Promise<any> {
-
-  //   const createPostModel = {
-  //     title: reqBody.title,
-  //     shortDescription: reqBody.shortDescription,
-  //     content: reqBody.content,
-  //   };
-  //   return "createdPost";
-  // }
-
   @Get()
   @UseGuards(OptioanlAuthGuard)
   async getAll(
@@ -145,13 +130,14 @@ export class PostsController {
   @Get(':id/comments')
   @UseGuards(OptioanlAuthGuard)
   @HttpCode(200)
-  async getComment(
+  async getAllComments(
     @Req() req: any,
     @Res() res: Response,
+    @Query() reqQuery: any,
     @Param('id') postId: string,
     // @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
-    const userId = req.user?.userId || null;
+    const userOptionalId = req.user?.userId || null;
     if (!postId) {
       return res.sendStatus(401);
     }
@@ -159,7 +145,13 @@ export class PostsController {
     //   postId,
     //   userId,
     // );
-    const result = await this.postsService.composePostById(postId, userId);
+    // const result = await this.postsService.composePostById(postId, userId);
+    const basicSortData = basicSortQuery(reqQuery);
+    const result = await this.postsService.composePostComments(
+      postId,
+      basicSortData,
+      userOptionalId,
+    );
     if (!result) {
       throw new NotFoundException([
         { message: 'not found post', field: 'post' },

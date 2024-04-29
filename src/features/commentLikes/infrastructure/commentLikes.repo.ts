@@ -30,6 +30,28 @@ export class CommentLikesRepository {
     }
   }
 
+  async findUserComment(userId: string, commentId): Promise<any | null> {
+    // console.log('============newComment=========');
+    // console.log(newComment);
+    try {
+      const comment = await this.commentLikeModel.find({
+        id: userId,
+        commentId: commentId,
+      });
+      // const comment = await this.postCommentModel.find();
+      // console.log('============postId=========');
+      // console.log(postId);
+      if (!comment) {
+        return null;
+      }
+      //   return postLikes.map((like) => PostLike.mapper(like));
+      return comment;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
   async findAllComment(): Promise<any | null> {
     // console.log('============newComment=========');
     // console.log(newComment);

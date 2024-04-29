@@ -13,6 +13,10 @@ import { PostRepository } from '../infrastructure/post.repository';
 import { PostLikesServices } from 'src/features/postLikes/application/postLikes.service';
 import { UsersRepository } from 'src/features/users/infrastructure/users.repository';
 import { likeStatusEnum } from 'src/features/postLikes/domain/postLikesTypes';
+import { OutputBasicSortQueryType } from 'src/base/utils/sortQeryUtils';
+import { PostCommentsRepository } from 'src/features/postComments/infrastructure/postComments.repo';
+import { CommentLikesRepository } from 'src/features/commentLikes/infrastructure/commentLikes.repo';
+import { CommentLikesServices } from 'src/features/commentLikes/application/commentLikes.service';
 
 @Injectable()
 export class PostsService {
@@ -23,6 +27,9 @@ export class PostsService {
     private usersRepository: UsersRepository,
     private postLikesRepository: PostLikesRepository,
     private postLikesServices: PostLikesServices,
+    private postCommentsRepository: PostCommentsRepository,
+    private commentLikesRepository: CommentLikesRepository,
+    private commentLikesServices: CommentLikesServices,
   ) {}
 
   async createPost(blogId: string, reqData: createPostDTO) {
@@ -71,7 +78,6 @@ export class PostsService {
     if (!post) {
       return null;
     }
-
     const postLikesInfo = await this.postLikesServices.countPostLikes(
       postId,
       userOptionalId,
@@ -80,22 +86,7 @@ export class PostsService {
       postId,
       likeStatusEnum.Like,
     );
-
-    // const newestLikesWithUser =
-    //   await this.postLikesRepository.addUserDataToLike(newestLikes);
     const newestLikesWithUser = await this.addUserDataToLike(newestLikes);
-
-    // const newestLikesWithUser = await Promise.all(
-    //   newestLikes.map(async (like) => {
-    //     const likeUserLogin = await this.usersRepository.getById(like.userId);
-    //     return {
-    //       addedAt: like.addedAt,
-    //       userId: like.userId,
-    //       login: likeUserLogin.login,
-    //     };
-    //   }),
-    // );
-
     const extendedLikesInfo = {
       likesCount: postLikesInfo.likesCount,
       dislikesCount: postLikesInfo.dislikesCount,
@@ -103,6 +94,76 @@ export class PostsService {
       newestLikes: newestLikesWithUser,
     };
     return { ...post, extendedLikesInfo: extendedLikesInfo };
+  }
+
+  async composePostComments(
+    postId: string,
+    basicSortData: OutputBasicSortQueryType,
+    userId: string | null,
+  ): Promise<any> {
+    const sortData = { id: postId, ...basicSortData };
+
+    const currentPost = await this.postRepository.findById(postId);
+    if (!currentPost) {
+      return null;
+    }
+    const postComments =
+      await this.postCommentsRepository.getPostComments(sortData);
+    if (!postComments) {
+      return null;
+    }
+    const сommentsWithLikes = await Promise.all(
+      postComments.items.map(async (comment) => {
+        // const likesCount = await CommentLikesModel.countDocuments({
+        //   commentId: comment.id,
+        //   myStatus: likeStatusEnum.Like,
+        // });
+        // const dislikesCount = await CommentLikesModel.countDocuments({
+        //   commentId: comment.id,
+        //   myStatus: likeStatusEnum.Dislike,
+        // });
+
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        const countLikes = await this.commentLikesServices.countCommentLikes(
+          comment.id,
+          userId,
+        );
+
+        // const [likesCount, dislikesCount] = await Promise.all([
+        //   this.commentLikesRepository.countDocuments({
+        //     commentId: comment.id,
+        //     myStatus: likeStatusEnum.Like,
+        //   }),
+        //   this.commentLikesRepository.countDocuments({
+        //     commentId: comment.id,
+        //     myStatus: likeStatusEnum.Dislike,
+        //   }),
+        // ]);
+
+        let currentLikeStatus = likeStatusEnum.None;
+        if (userId) {
+          const currentLike = await this.commentLikesRepository.findUserComment(
+            userId,
+            comment.id,
+          );
+          currentLikeStatus = currentLike
+            ? currentLike.myStatus
+            : likeStatusEnum.None;
+        }
+
+        return {
+          ...comment,
+          likesInfo: {
+            likesCount: countLikes.likesCount,
+            dislikesCount: countLikes.dislikesCount,
+            myStatus: currentLikeStatus,
+          },
+        };
+      }),
+    );
+    const postCommentsWithLikes = { ...postComments, items: сommentsWithLikes };
+    return postCommentsWithLikes;
   }
 
   async addLikesToPosts(postsNoLikes: any, userId: any): Promise<any> {
@@ -139,31 +200,12 @@ export class PostsService {
     if (!postForLike) {
       return null;
     }
-
-    // console.log("postForLike")
-    // console.log(postForLike)
-
     const createdLike = await this.postLikesServices.addLikeToPost(
       postId,
       userId,
       sendedLikeStatus,
     );
-
-    console.log('createdLike');
-    console.log(createdLike);
-
     return createdLike;
-
-    // if (createdLikeResponse.status !== ResultCode.Success) {
-    //   return {
-    //     status: createdLikeResponse.status,
-    //     errorMessage: createdLikeResponse.errorMessage,
-    //   };
-    // }
-    // return {
-    //   status: ResultCode.Success,
-    //   data: createdLikeResponse.data,
-    // };
   }
 
   async composeAllPosts(
@@ -173,49 +215,14 @@ export class PostsService {
     const allPostsObject = await this.postRepository.getBlogPosts(
       postsRequestsSortData,
     );
-
     if (!allPostsObject) {
       return null;
     }
-
     const postsWithLikes = await this.addLikesToPosts(
       allPostsObject.items,
       userId,
     );
-
     return { ...allPostsObject, items: postsWithLikes };
-
-    // const postsWithLikes = await Promise.all(
-    //   allPostsObject.items.map(async (post) => {
-
-    //     const newestLikes = await PostLikesModel.find({
-    //       postId: post.id,
-    //       myStatus: likeStatusEnum.Like,
-    //     })
-    //       // 1 asc старая запись в начале
-    //       // -1 descend новая в начале
-    //       .sort({ addedAt: -1 })
-    //       .limit(3)
-    //       .lean();
-
-    //     const newestLikesWithUser = await newestLikesServices.addUserDataToLike(newestLikes)
-
-    //     const countLikes = await PostLikesServices.countLikes(post.id, userId)
-
-    //     const extendedLikesInfo = {
-    //       newestLikes: newestLikesWithUser,
-    //       likesCount: countLikes.likesCount,
-    //       dislikesCount: countLikes.dislikesCount,
-    //       myStatus: countLikes.myStatus,
-    //     };
-    //     return { ...post, extendedLikesInfo };
-    //   })
-    // );
-
-    // return {
-    //   status: ResultCode.Success,
-    //   data: { ...allPostsObject, items: postsWithLikes },
-    // };
   }
 
   async findAll(): Promise<any> {
