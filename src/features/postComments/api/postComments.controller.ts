@@ -16,6 +16,7 @@ import {
   BadRequestException,
   Put,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 // import { UsersRepository } from '../infrastructure/users.repository';
 import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
@@ -171,6 +172,7 @@ export class PostCommentsController {
     // return res.send(result);
   }
 
+  // !!!!!!!!!!!!!
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
@@ -180,15 +182,18 @@ export class PostCommentsController {
     @Param('id') commentsId: string,
     // @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
-    // const userId = req.user?.userId || null;
+    const userId = req.user?.userId || null;
     if (!commentsId) {
       throw new BadRequestException([
         { message: 'not found commentsId', field: 'commentsId' },
       ]);
     }
-    const result = await this.postCommentsService.deleteComment(commentsId);
+    const result = await this.postCommentsService.deleteComment(
+      commentsId,
+      userId,
+    );
     if (!result) {
-      throw new NotFoundException([
+      throw new ForbiddenException([
         { message: 'wrong creating comment', field: 'comment' },
       ]);
     }

@@ -164,14 +164,18 @@ export class PostCommentsService {
     return existingCommentLike;
   }
 
-  async deleteComment(commentId: string): Promise<any> {
-    const isDeleted = await this.postCommentsRepository.deleteOne(commentId);
+  async deleteComment(commentId: string, userId: string): Promise<any> {
 
-    console.log('isDeleted in service');
-    console.log(isDeleted);
-    if (!isDeleted) {
+    const comment = await this.postCommentsRepository.findComment(commentId);
+    if (comment.id !== userId) {
       return null;
     }
+    const isDeleted = await this.postCommentsRepository.deleteOne(commentId);
+    // console.log('isDeleted in service');
+    // console.log(isDeleted);
+    // if (!isDeleted) {
+    //   return null;
+    // }
     return isDeleted;
   }
 }
