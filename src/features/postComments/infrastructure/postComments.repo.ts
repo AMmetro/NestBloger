@@ -88,8 +88,8 @@ export class PostCommentsRepository {
         page: pageNumber,
         pageSize: pageSize,
         totalCount: totalCount,
-        // items: comments.map(commentMapper),
-        items: comments,
+        items: comments.map(PostComment.mapper),
+        // items: comments,
       };
     } catch (e) {
       console.log(e);
