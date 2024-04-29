@@ -35,6 +35,7 @@ export class PostCommentsService {
   ): Promise<any> {
     const postComments =
       await this.postCommentsRepository.findComment(commentId);
+
     if (!postComments) {
       return null;
     }

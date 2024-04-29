@@ -112,39 +112,7 @@ export class PostsService {
           post.id,
           likeStatusEnum.Like,
         );
-        // const newestLikesWithUser =
-        //   await newestLikesServices.addUserDataToLike(newestLikes);
-
         const newestLikesWithUser = await this.addUserDataToLike(newestLikes);
-
-
-        // const allLikes = await this.postLikesRepository.findAllByPostId(
-        //   post.id,
-        // );
-        console.log("post.postId");
-        console.log(post.id);
-        console.log("userId");
-        console.log(userId);
-        // console.log("allLikes");
-        // console.log(allLikes);
-        // console.log("newestLikes");
-        // console.log(newestLikes);
-        // console.log("newestLikesWithUser");
-        // console.log(newestLikesWithUser);
-
-        // const newestLikesWithUser = await Promise.all(
-        //   newestLikes.map(async (like) => {
-        //     const likeUserLogin = await this.usersRepository.getById(
-        //       like.userId,
-        //     );
-        //     return {
-        //       addedAt: like.addedAt,
-        //       userId: like.userId,
-        //       login: likeUserLogin.login,
-        //     };
-        //   }),
-        // );
-
         const countLikes = await this.postLikesServices.countPostLikes(
           post.id,
           userId,

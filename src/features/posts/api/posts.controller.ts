@@ -155,13 +155,14 @@ export class PostsController {
     if (!postId) {
       return res.sendStatus(401);
     }
-    const result = await this.postCommentsService.composePostComment(
-      postId,
-      userId,
-    );
+    // const result = await this.postCommentsService.composePostComment(
+    //   postId,
+    //   userId,
+    // );
+    const result = await this.postsService.composePostById(postId, userId);
     if (!result) {
       throw new NotFoundException([
-        { message: 'not found comment', field: 'comment' },
+        { message: 'not found post', field: 'post' },
       ]);
     }
     return res.status(200).send(result);

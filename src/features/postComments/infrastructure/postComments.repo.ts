@@ -20,8 +20,8 @@ export class PostCommentsRepository {
     try {
       const postComment = await this.postCommentModel.findById(id);
       // const postComment = await this.postCommentModel.find();
-      // console.log('============postId=========');
-      // console.log(postId);
+                                          // console.log('============postComment=========');
+                                          // console.log(postComment);
       if (!postComment) {
         return null;
       }
