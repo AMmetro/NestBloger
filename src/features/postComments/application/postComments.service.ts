@@ -17,12 +17,6 @@ import { PostRepository } from 'src/features/posts/infrastructure/post.repositor
 import { PostLikesServices } from 'src/features/postLikes/application/postLikes.service';
 import { CommentLikesRepository } from 'src/features/commentLikes/infrastructure/commentLikes.repo';
 import { CommentLikesServices } from 'src/features/commentLikes/application/commentLikes.service';
-import { log } from 'console';
-// import { User } from '../users/api/dto/output/user.output.model';
-// import { UsersRepository } from '../users/infrastructure/users.repository';
-// import { RequestInputUserType } from '../users/api/dto/input/create-user.input.model';
-
-// Для провайдера всегда необходимо применять декоратор @Injectable() и регистрировать в модуле
 @Injectable()
 export class PostCommentsService {
   constructor(
@@ -111,8 +105,6 @@ export class PostCommentsService {
       return null;
     }
     if (postCommentForUpdate.commentatorInfo.userId !== userCommentatorId) {
-      console.log('!!!!!!!!!!!!!!!!!!!!!!!!');
-
       throw new ForbiddenException([
         { message: 'not found comment', field: 'comment' },
       ]);
@@ -161,7 +153,7 @@ export class PostCommentsService {
     }
     existingCommentLike.myStatus = sendedLikeStatus;
     await this.commentLikesRepository.updLike(existingCommentLike);
-    return existingCommentLike; 
+    return existingCommentLike;
   }
 
   async deleteComment(commentId: string, userId: string): Promise<any> {
@@ -169,14 +161,7 @@ export class PostCommentsService {
     if (!comment) {
       return 404;
     }
-
-    console.log('comment 1111111111');
-    console.log(comment);
-    console.log('userId');
-    console.log(userId);
-
     if (comment.commentatorInfo.userId !== userId) {
-      console.log('222222222');
       return 403;
     }
     const deletedComment =

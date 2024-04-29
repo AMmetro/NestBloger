@@ -142,7 +142,7 @@ export class PostsController {
     return newPost;
   }
 
-  @Get(':id/comments') 
+  @Get(':id/comments')
   @UseGuards(OptioanlAuthGuard)
   @HttpCode(200)
   async getComment(
@@ -151,11 +151,11 @@ export class PostsController {
     @Param('id') postId: string,
     // @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
-    const userId = req.user?.userId;
+    const userId = req.user?.userId || null;
     if (!postId) {
       return res.sendStatus(401);
     }
-     const result = await this.postCommentsService.composePostComment(
+    const result = await this.postCommentsService.composePostComment(
       postId,
       userId,
     );

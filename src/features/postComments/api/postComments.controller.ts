@@ -172,7 +172,6 @@ export class PostCommentsController {
     // return res.send(result);
   }
 
-  // !!!!!!!!!!!!!
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
