@@ -29,32 +29,32 @@ export const jwtServise = {
   async createAccessTokenJWT(user: OutputUserType, deviceId: string) {
     throw new Error('Not implemented!!!');
 
-    const token = jwt.sign(
-      { userId: user.id, deviceId },
-      // appConfig.JWT_ACSS_SECRET,
-      appSettings.api.JWT_ACSS_SECRET,
-      {
-        expiresIn: '10m',
-      },
-    );
-    return token;
+    // const token = jwt.sign(
+    //   { userId: user.id, deviceId },
+    //   // appConfig.JWT_ACSS_SECRET,
+    //   appSettings.api.JWT_ACSS_SECRET,
+    //   {
+    //     expiresIn: '10m',
+    //   },
+    // );
+    return "token";
     //     return {
     //       resultCode: 0,
     //       data: { token: token },
     //     };
   },
 
-  async createRefreshTokenJWT(user: OutputUserType, deviceId: string) {
-    const token: any = jwt.sign(
-      { userId: user.id, deviceId },
-      // appConfig.JWT_REFRESH_SECRET,
-      appSettings.api.JWT_REFRESH_SECRET,
-      {
-        expiresIn: '20m',
-      },
-    );
-    return token;
-  },
+  // async createRefreshTokenJWT(user: OutputUserType, deviceId: string) {
+  //   const token: any = jwt.sign(
+  //     { userId: user.id, deviceId },
+  //     // appConfig.JWT_REFRESH_SECRET,
+  //     appSettings.api.JWT_REFRESH_SECRET,
+  //     {
+  //       expiresIn: '20m',
+  //     },
+  //   );
+  //   return token;
+  // },
 
   async getUserFromAcssesToken(token: string): Promise<JWTDecodedType | null> {
     try {

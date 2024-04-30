@@ -103,11 +103,11 @@ export class AuthService {
       userId: user._id.toString(),
     };
     const AccessToken = this.jwtService.sign(payload, {
-      expiresIn: '3600s',
+      expiresIn: appConfigLocal.JWT_ACCESS_EXPIRE_LOCAL,
       secret: appConfigLocal.JWT_ACSS_SECRET_LOCAL,
     });
     const RefreshToken = this.jwtService.sign(payload, {
-      expiresIn: '3600s',
+      expiresIn: appConfigLocal.JWT_REFRESH_EXPIRE_LOCAL,
       secret: appConfigLocal.JWT_REFRESH_SECRET_LOCAL,
     });
 

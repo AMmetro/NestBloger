@@ -40,12 +40,13 @@ export class PostCommentsRepository {
 
   async update(newComment: any): Promise<any | null> {
     try {
-      //**
-      //*  const Comment =  CommentInstance.findOne({_id:id})
-      //*  const Comment.content = updateContent
-      //*  await CommentInstance.save()
-      //*  В НЕСТ В КЛАССЕ НУЖНО ПОПИСЫВАТЬ МЕТОД SAVE CREATE  и т.д.
-      //**
+      //@@ класс возвращает await this.postCommentModel.find() и у него есть методы
+      //@ updateOne и т.п. не возвращает класс с методами
+      //@ либо можно создать новый класс:
+      //@ const someComment = new this.postCommentModel();
+      //@ someComment.save()
+      //@ ТАК ЖЕ В САМОМ КЛАССЕ МОЖНО ПОПИСЫВАТЬ МЕТОД SAVE CREATE т.д. и потом вызвать
+      //@@
       const commentForUpd = await this.postCommentModel.updateOne(
         { _id: new ObjectId(newComment.id) },
         {

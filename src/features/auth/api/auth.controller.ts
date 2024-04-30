@@ -102,19 +102,42 @@ export class AuthController {
   ) {
     const { loginOrEmail } = req;
     const { password } = req;
-
     // generate coocies
     return 'i am admin';
   }
 
-  @Post('/me')
+  @Post('/refresh-token')
+  @UseGuards(BasicAuthGuard)
+  async fffffffffff(
+    // @Param('id') userId: string,
+    @Request() req: AuthUserInputModel,
+    // @Res({ passthrough: true }) res: Response,
+  ) {
+    const { loginOrEmail } = req;
+    const { password } = req;
+    // generate coocies
+    return 'i am admin';
+  }
+
+  @Post('/me') 
   @UseGuards(JwtAuthGuard)
+  // @UseGuards(OptioanlAuthGuard)
   async aboutMe(
     // @Param('id') userId: string,
     @Req() req: any,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const me = await this.usersRepository.getById(req.user!.id);
+
+    const userId = req.user.userId;
+
+    console.log("userId")
+    console.log(userId);
+ 
+    const me = await this.usersRepository.getById(userId);
+
+    console.log("me")
+    console.log(me)
+
     if (!me) {
       res.sendStatus(401);
       return;

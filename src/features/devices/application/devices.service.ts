@@ -35,31 +35,31 @@ export class DevicesServices {
       newDeviceId,
     );
 
-    const refreshToken = await jwtServise.createRefreshTokenJWT(
-      loginUser,
-      newDeviceId,
-    );
+    // const refreshToken = await jwtServise.createRefreshTokenJWT(
+    //   loginUser,
+    //   newDeviceId,
+    // );
 
-    const decodedRefreshToken =
-      await jwtServise.getUserFromRefreshToken(refreshToken);
+    // const decodedRefreshToken =
+    //   await jwtServise.getUserFromRefreshToken(refreshToken);
 
-    const newDevices = {
-      userId: loginUser.id,
-      deviceId: newDeviceId,
-      ip: userIp,
-      title: userAgent,
-      lastActiveDate: new Date(decodedRefreshToken!.exp * 1000),
-      tokenCreatedAt: new Date(decodedRefreshToken!.iat * 1000),
-    };
+    // const newDevices = {
+    //   userId: loginUser.id,
+    //   deviceId: newDeviceId,
+    //   ip: userIp,
+    //   title: userAgent,
+    //   lastActiveDate: new Date(decodedRefreshToken!.exp * 1000),
+    //   tokenCreatedAt: new Date(decodedRefreshToken!.iat * 1000),
+    // };
 
-    const createdDeviceId = await this.devicesRepository.create(newDevices);
+    // const createdDeviceId = await this.devicesRepository.create(newDevices);
 
     //  возможна ошибка при переходе на мангус
     // if (!createdDeviceId) {
-    if (!createdDeviceId._id) {
-      return null;
-    }
+    // if (!createdDeviceId._id) {
+    //   return null;
+    // }
     // // return createdDeviceId.insertedId.toString();
-    return { newAT: accessToken, newRT: refreshToken };
+    // return { newAT: accessToken, newRT: refreshToken };
   }
 }
