@@ -74,6 +74,7 @@ import {
   CommentLikeMoongoose,
   CommentLikeSchema,
 } from './features/commentLikes/domain/commentLikes.schema';
+// import { AuthJwtService } from './base/utils/createAccessTokenJWT';
 // import { AuthModule } from './features/auth/domain/auth.module';
 
 @Module({
@@ -143,6 +144,7 @@ import {
     PostCommentsService,
     CommentLikesServices,
     CommentLikesRepository,
+    // AuthJwtService,
   ],
   // exports: [JwtModule];
 })

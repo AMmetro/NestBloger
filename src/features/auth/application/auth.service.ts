@@ -19,6 +19,7 @@ import { User } from '../api/dto/output/user.output.model';
 import { add } from 'date-fns/add';
 import { emailAdaper } from 'src/base/utils/emailAdaper';
 import { appConfigLocal } from 'src/settings/appConfig';
+// import { AuthJwtService } from 'src/base/utils/createAccessTokenJWT';
 // import { User } from '../users/api/dto/output/user.output.model';
 // import { UsersRepository } from '../users/infrastructure/users.repository';
 // import { RequestInputUserType } from '../users/api/dto/input/create-user.input.model';
@@ -32,6 +33,8 @@ export class AuthService {
     private usersService: UsersService,
     private devicesServices: DevicesServices,
     private jwtService: JwtService,
+    // private authJwtService: AuthJwtService,
+    // private authService: AuthService,
   ) {}
 
   // async create(createUserModel: RequestInputUserType): Promise<any> {
@@ -84,6 +87,19 @@ export class AuthService {
     return User.userMapper(user);
   }
 
+  async generateAccessAndRefresf(payload: any): Promise<any> {
+    const AccessToken = this.jwtService.sign(payload, {
+      expiresIn: appConfigLocal.JWT_ACCESS_EXPIRE_LOCAL,
+      secret: appConfigLocal.JWT_ACSS_SECRET_LOCAL,
+    });
+    const RefreshToken = this.jwtService.sign(payload, {
+      expiresIn: appConfigLocal.JWT_REFRESH_EXPIRE_LOCAL,
+      secret: appConfigLocal.JWT_REFRESH_SECRET_LOCAL,
+    });
+
+    return { AccessToken: AccessToken, RefreshToken: RefreshToken };
+  }
+
   async loginUser(
     authData: AuthUserInputModel,
     userAgent: string,
@@ -99,6 +115,7 @@ export class AuthService {
       return null;
     }
 
+    // заменить  на в generateAccessAndRefresf
     const payload = {
       userId: user._id.toString(),
     };
@@ -271,26 +288,95 @@ export class AuthService {
     if (jwtUserData && jwtUserData.userId) {
       const user = await this.usersRepository.getById(jwtUserData.userId);
       if (!user) {
-        return null
+        return null;
       }
       return user;
-    //   if (!jwtUserData.deviceId) {
-    //     return {
-    //       status: ResultCode.Unauthorised,
-    //       errorMessage: 'Not found deviceId' + jwtUserData.deviceId,
-    //     };
-    //   }
+      //   if (!jwtUserData.deviceId) {
+      //     return {
+      //       status: ResultCode.Unauthorised,
+      //       errorMessage: 'Not found deviceId' + jwtUserData.deviceId,
+      //     };
+      //   }
+      //   return {
+      //     status: ResultCode.Success,
+      //     data: { ...user, deviceId: jwtUserData.deviceId, iat: jwtUserData.iat },
+      //   };
+      // }
+
+      // return {
+      //   status: ResultCode.Unauthorised,
+      //   errorMessage: 'JWT is broken',
+      // };
+    }
+  }
+
+  async refreshToken(userId: string): Promise<any> {
+    // ненужен - перенесен в гард
+    // const claimantInfo = await jwtServise.getUserFromRefreshToken(token);
+
+    // console.log("token")
+    // console.log(token)
+    // console.log("claimantInfo")
+    // console.log(claimantInfo)
+
+    // if (!claimantInfo?.deviceId) {
     //   return {
-    //     status: ResultCode.Success,
-    //     data: { ...user, deviceId: jwtUserData.deviceId, iat: jwtUserData.iat },
+    //     status: ResultCode.Unauthorised,
+    //     errorMessage: 'Not user device info in token',
     //   };
     // }
+    // if (!claimantInfo?.userId) {
+    //   return {
+    //     status: ResultCode.Unauthorised,
+    //     errorMessage: 'Not correct id in token',
+    //   };
+    // }
+    // const userId = claimantInfo.userId;
+    const user = await this.usersRepository.getById(userId);
+    if (!user) {
+      return null;
+    }
 
+    // const newAccessToken = await jwtServise.createAccessTokenJWT(
+    //   user,
+    //   claimantInfo.deviceId,
+    // )
+    console.log('user');
+    console.log(user);
+
+    const payload = {
+      userId: user.id,
+    };
+
+    const newAccessToken = await this.generateAccessAndRefresf(payload);
+
+    console.log('newAccessToken');
+    console.log(newAccessToken);
+
+    // const newRefreshToken = await jwtServise.createRefreshTokenJWT(
+    //   user,
+    //   claimantInfo.deviceId,
+    // );
+    // const decodedRefreshToken =
+    //   await jwtServise.getUserFromRefreshToken(newRefreshToken);
+    // const deviceLastActiveDate = new Date(decodedRefreshToken!.exp * 1000);
+    // const tokenCreatedAt = new Date(decodedRefreshToken!.iat * 1000);
+
+    // const deviceUpdate = await DevicesServices.updateDevicesTokens(
+    //   claimantInfo.deviceId,
+    //   deviceLastActiveDate,
+    //   tokenCreatedAt,
+    // );
+    // if (deviceUpdate.status !== ResultCode.Success) {
+    //   return {
+    //     status: ResultCode.ServerError,
+    //     errorMessage: `Can't update devices lastActiveDate field`,
+    //   };
+    // }
     // return {
-    //   status: ResultCode.Unauthorised,
-    //   errorMessage: 'JWT is broken',
+    //   status: ResultCode.Success,
+    //   data: { newAccessToken, newRefreshToken },
     // };
+    return newAccessToken;
   }
-}
-
 }

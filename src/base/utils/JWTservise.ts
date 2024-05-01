@@ -4,6 +4,10 @@ import * as bcrypt from 'bcrypt';
 import { appSettings } from 'src/settings/app-settings';
 import { appConfigLocal } from 'src/settings/appConfig';
 
+
+// import { Injectable, UnauthorizedException } from '@nestjs/common';
+// import { JwtService } from '@nestjs/jwt';
+
 export type OutputUserType = {
   id: string;
   login: string;
@@ -58,6 +62,7 @@ export const jwtServise = {
 
   async getUserFromAcssesToken(token: string): Promise<JWTDecodedType | null> {
     try {
+
       const jwtUserData: any = jwt.verify(
         token,
         appConfigLocal.JWT_ACSS_SECRET_LOCAL,
@@ -82,6 +87,7 @@ export const jwtServise = {
     }
   },
 
+  // НЕИСПОЛЬЗУЕТМЯ!!!!
   async getUserFromRefreshToken(token: string): Promise<JWTDecodedType | null> {
     try {
       const result: any = jwt.verify(
@@ -105,6 +111,8 @@ export const jwtServise = {
       // const outUser = {userId: result.userId, deviceId: result.deviceId}
       return result;
     } catch (e) {
+                            console.log("eeeee")
+                            console.log(e)
       return null;
     }
   },

@@ -48,6 +48,7 @@ import {
   CommentLikeSchema,
 } from 'src/features/commentLikes/domain/commentLikes.schema';
 import { CommentLikesServices } from 'src/features/commentLikes/application/commentLikes.service';
+// import { AuthJwtService } from 'src/base/utils/createAccessTokenJWT';
 
 @Module({
   imports: [
@@ -86,6 +87,7 @@ import { CommentLikesServices } from 'src/features/commentLikes/application/comm
     PostCommentsService,
     CommentLikesRepository,
     CommentLikesServices,
+    // AuthJwtService,
   ],
 })
 export class TestsModule {}

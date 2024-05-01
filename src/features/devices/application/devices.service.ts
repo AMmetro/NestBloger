@@ -2,7 +2,7 @@ import { WithId, ObjectId } from 'mongodb';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 // import { User } from './users.schema';
-import { jwtServise } from 'src/base/utils/JWTservise';
+// import { jwtServise } from 'src/base/utils/JWTservise';
 import { randomUUID } from 'crypto';
 import { OutputUserType } from '../api/dto/output/user.output.model';
 import { DevicesMongoose } from '../domain/devices.entity';
@@ -30,10 +30,10 @@ export class DevicesServices {
   ): Promise<any> {
     const newDeviceId = randomUUID();
 
-    const accessToken = await jwtServise.createAccessTokenJWT(
-      loginUser,
-      newDeviceId,
-    );
+    // const accessToken = await jwtServise.createAccessTokenJWT(
+    //   loginUser,
+    //   newDeviceId,
+    // );
 
     // const refreshToken = await jwtServise.createRefreshTokenJWT(
     //   loginUser,

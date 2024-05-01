@@ -12,9 +12,13 @@ import {
   Req,
   Res,
   UseGuards,
-  Request,
   BadRequestException,
+  UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
+
+import { Request } from 'express';
+
 // import { UsersRepository } from '../infrastructure/users.repository';
 import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
 // import { QueryUserInputModel, RequestInputUserType, UserCreateModel } from './dto/input/create-user.input.model';
@@ -31,11 +35,11 @@ import {
 } from './dto/input/auth.input.model';
 import { UsersService } from 'src/features/users/application/users.service';
 import { AuthService } from '../application/auth.service';
-import { OptioanlAuthGuard } from 'src/common/guards/optionalAuth.guard';
 import { LocalAuthGuard } from 'src/common/guards/local.guard';
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { BasicAuthGuard } from 'src/common/guards/basic.guard';
 import { UsersRepository } from 'src/features/users/infrastructure/users.repository';
+import { CookiesJwtAuthGuard } from 'src/base/utils/jwtService';
 
 // Tag для swagger
 // @ApiTags('Users')
@@ -97,29 +101,64 @@ export class AuthController {
   @UseGuards(BasicAuthGuard)
   async forSuperAdmin(
     // @Param('id') userId: string,
-    @Request() req: AuthUserInputModel,
+    @Body() input: { password: string; loginOrEmail: string },
     // @Res({ passthrough: true }) res: Response,
   ) {
-    const { loginOrEmail } = req;
-    const { password } = req;
+    const { loginOrEmail } = input;
+    const { password } = input;
     // generate coocies
     return 'i am admin';
   }
 
   @Post('/refresh-token')
-  @UseGuards(BasicAuthGuard)
-  async fffffffffff(
+  @UseGuards(CookiesJwtAuthGuard)
+  // @UseGuards(OptioanlAuthGuard)
+  // @UseGuards(JwtAuthGuard)
+  async generateNewAccesAndRefresh(
     // @Param('id') userId: string,
-    @Request() req: AuthUserInputModel,
-    // @Res({ passthrough: true }) res: Response,
+    @Req() request: Request,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    const { loginOrEmail } = req;
-    const { password } = req;
-    // generate coocies
-    return 'i am admin';
+    // @ts-ignore
+    const userId = request.user?.userId;
+    if (!userId) {
+      return UnauthorizedException
+    }
+    // console.log("userId")
+    // console.log(userId)
+
+    // const oldRefreshToken = request.cookies.refreshToken;
+    // if (!oldRefreshToken) {
+    //   res.sendStatus(401);
+    //   return;
+    // }
+    const result = await this.authService.refreshToken(userId);
+
+        console.log("result")
+    console.log(result)
+
+    if (!result) {
+      return NotFoundException;
+    }
+
+    return result;
+
+  //   if (result.status === ResultCode.Success) {
+  //     res
+  //       .cookie("refreshToken", result.data.newRefreshToken, {
+  //         httpOnly: true,
+  //         secure: true,
+  //       })
+  //       .status(200)
+  //       .send({ accessToken: result.data.newAccessToken });
+  //     return;
+  //   } else {
+  //     sendCustomError(res, result);
+  //   }
+  // }
   }
 
-  @Post('/me') 
+  @Get('/me') 
   @UseGuards(JwtAuthGuard)
   // @UseGuards(OptioanlAuthGuard)
   async aboutMe(
@@ -127,17 +166,8 @@ export class AuthController {
     @Req() req: any,
     @Res({ passthrough: true }) res: Response,
   ) {
-
     const userId = req.user.userId;
-
-    console.log("userId")
-    console.log(userId);
- 
     const me = await this.usersRepository.getById(userId);
-
-    console.log("me")
-    console.log(me)
-
     if (!me) {
       res.sendStatus(401);
       return;
@@ -169,7 +199,9 @@ export class AuthController {
         secure: true,
       })
       .status(200)
-      .send({ accessToken: tokens.AccessToken });
+      .send({
+        accessToken: tokens.AccessToken,
+      });
     // .send(tokens);
   }
 

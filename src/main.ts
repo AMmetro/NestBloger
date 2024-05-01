@@ -4,12 +4,17 @@ import { AppModule } from './app.module';
 import { appSettings } from './settings/app-settings';
 import { applyAppSettings } from './settings/apply-app-setting';
 import { useContainer } from 'class-validator';
+import * as cookieParser from 'cookie-parser';
+
+
  
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   applyAppSettings(app);
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
+
+  app.use(cookieParser());
 
   app.enableCors();
   await app.listen(appSettings.api.APP_PORT, () =>
