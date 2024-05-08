@@ -32,9 +32,6 @@ export class DevicesRepository {
       if (!device) {
         return null;
       }
-      // const device = await this.devicesModel.find();
-
-      // return device;
       return Devices.mapper(device);
     } catch (e) {
       console.log(e);

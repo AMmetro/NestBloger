@@ -66,31 +66,6 @@ export class BlogsService {
       blogPostsWithPagination.items,
       optionalUserId,
     );
-    // ----------------перенести в пост сервис ?----------------------------------------------------
-
-    // const postsWithLikes = await Promise.all(
-    //   blogPostsWithPagination.items.map(async (post) => {
-    //     const newestLikes = await this.postLikesRepository.findNewestLikes(
-    //       post.postId,
-    //       'like',
-    //     );
-    //     // const newestLikesWithUser =
-    //     //   await newestLikesServices.addUserDataToLike(newestLikes);
-    //     const countLikes = await this.postLikesServices.countPostLikes(
-    //       post.id,
-    //       userId,
-    //     );
-    //     const extendedLikesInfo = {
-    //       likesCount: countLikes.likesCount,
-    //       dislikesCount: countLikes.dislikesCount,
-    //       myStatus: countLikes.myStatus,
-    //       // newestLikes: newestLikesWithUser,
-    //       newestLikes: newestLikes,
-    //     };
-    //     return { ...post, extendedLikesInfo: extendedLikesInfo };
-    //   }),
-    // );
-
     return { ...blogPostsWithPagination, items: postsWithLikes };
   }
 

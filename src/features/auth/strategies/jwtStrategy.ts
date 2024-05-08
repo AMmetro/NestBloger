@@ -22,20 +22,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    // const userSearchData = {
-    //   loginOrEmail: login,
-    //   password: password,
-    // };
-
-    // console.log("-----------------gwt strategy ----------------------")
-    // console.log(payload)
     const user = await this.usersRepository.getById(payload.userId);
     if (!user) {
       throw new UnauthorizedException();
     }
-    // @ @
-    // @ payload складывает значения в объект user {}
-    // @ @
+    //**
+    //* payload складывает значения в объект user {}
+    //**
     return { userId: payload.userId };
   }
 }

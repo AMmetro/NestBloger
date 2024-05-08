@@ -13,17 +13,15 @@ import {
   Req,
 } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
-import { Blog, IncomBlogDto, createPostDTO } from './blog.types';
-// import { PostsService } from 'src/post/posts.service';
+import { Blog, IncomBlogDto } from './blog.types';
 import { Response } from 'express';
 import { BlogRepository } from './blog.repo';
 import { ObjectId } from 'mongodb';
 import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
 import { BasicAuthGuard } from 'src/common/guards/basic.guard';
 import { PostsService } from 'src/features/posts/application/post.service';
-import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { OptioanlAuthGuard } from 'src/common/guards/optionalAuth.guard';
-import { CreatePostForSpecifiedBlogModel, CreatePostModel } from 'src/features/posts/api/dto/input/create-user.input.model';
+import { CreatePostForSpecifiedBlogModel } from 'src/features/posts/api/dto/input/create-user.input.model';
 
 @Controller('blogs')
 export class BlogsController {
@@ -134,7 +132,6 @@ export class BlogsController {
     return updatedBlog;
   }
 
-
   @Delete(':id')
   @UseGuards(BasicAuthGuard)
   @HttpCode(204)
@@ -176,18 +173,6 @@ export class BlogsController {
     if (!blog) {
       res.sendStatus(404);
     }
-
-
-    // const blog = await this.blogsService.findOne(blogId);
-    // if (!blog) {
-    //   res.sendStatus(404);
-    // }
-    // !!!!!!!!!!
-                                        //     console.log('-----------------blog------------');
-                                        // console.log(blog);
-    // const resultBlog = Blog.mapper(blog);
     return blog;
   }
-
-
 }

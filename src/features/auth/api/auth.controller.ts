@@ -47,55 +47,10 @@ import { CookiesJwtAuthGuard } from 'src/base/utils/jwtService';
 // Установка guard на весь контроллер
 // @UseGuards(OptioanlAuthGuard)
 export class AuthController {
-  // usersService: UsersService;
   constructor(
-    // private readonly usersQueryRepository: UsersQueryRepository,
     private readonly usersRepository: UsersRepository,
     private readonly authService: AuthService,
-  ) {
-    // this.usersService = usersService;
-  }
-
-  // @Get()
-  // @HttpCode(200)
-  // async getAllUsers(
-  //   @Query() reqQuery: QueryUserInputModel,
-  //   @Res({ passthrough: true }) res: Response,
-  // ) {
-  //   const basicSortData = basicSortQuery(reqQuery);
-  //   const sortData = {
-  //     ...basicSortData,
-  //     searchEmailTerm: reqQuery.searchEmailTerm ?? null,
-  //     searchLoginTerm: reqQuery.searchLoginTerm ?? null,
-  //   };
-  //   const users = await this.usersRepository.getAll(sortData);
-  //   if (users === null) {
-  //     res.sendStatus(404);
-  //     return;
-  //   }
-  //   return users;
-  // }
-
-  // @Post()
-  // @HttpCode(201)
-  // async createUser(
-  //   // @Body() reqBody: RequestInputUserType,
-  //   @Body() createModel: UserCreateModel,
-  //   @Res({ passthrough: true }) res: Response,
-  // ) {
-  //   const { login, password, email } = createModel;
-  //   const InputUserModel = {
-  //     login: login,
-  //     password: password,
-  //     email: email,
-  //   };
-  //   const createdUser = await this.usersService.create(InputUserModel);
-  //   if (!createdUser) {
-  //     res.sendStatus(404);
-  //     return;
-  //   }
-  //   return createdUser;
-  // }
+  ) {}
 
   @Get('/superAdmin')
   @UseGuards(BasicAuthGuard)
@@ -112,28 +67,15 @@ export class AuthController {
 
   @Post('/refresh-token')
   @UseGuards(CookiesJwtAuthGuard)
-  // @UseGuards(OptioanlAuthGuard)
-  // @UseGuards(JwtAuthGuard)
-  async generateNewAccesAndRefresh( 
-    // @Param('id') userId: string,
+  async generateNewAccesAndRefresh(
     @Req() request: any,
     @Res({ passthrough: true }) res: Response,
   ) {
-    // const payload = await this.authService.getPayloadFromJWT()
-
     const userId = request.user?.userId;
     const deviceId = request.user?.deviceId;
     if (!userId || !deviceId) {
       throw UnauthorizedException;
     }
-                            // console.log('userId');
-                            // console.log(userId);
-
-    // const oldRefreshToken = request.cookies.refreshToken;
-    // if (!oldRefreshToken) {
-    //   res.sendStatus(401);
-    //   return;
-    // }
     const newAccessAndRefreshPair = await this.authService.refreshToken(
       userId,
       deviceId,
@@ -153,12 +95,7 @@ export class AuthController {
 
   @Get('/me')
   @UseGuards(JwtAuthGuard)
-  // @UseGuards(OptioanlAuthGuard)
-  async aboutMe(
-    // @Param('id') userId: string,
-    @Req() req: any,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async aboutMe(@Req() req: any, @Res({ passthrough: true }) res: Response) {
     const userId = req.user.userId;
     const me = await this.usersRepository.getById(userId);
     if (!me) {
@@ -172,14 +109,7 @@ export class AuthController {
   @Post('/logout')
   @HttpCode(204)
   @UseGuards(CookiesJwtAuthGuard)
-  async logoutUser(
-    // @Param('id') userId: string,
-    // @Body() reqBody: AuthUserInputModel,
-    @Res() res: Response,
-    @Req() req: any,
-  ) {
-    // console.log('===req===');
-    // console.log(req.user);
+  async logoutUser(@Res() res: Response, @Req() req: any) {
     const userId = req.user?.userId;
     const deviceId = req.user?.deviceId;
     if (!userId || !deviceId) {
@@ -191,16 +121,8 @@ export class AuthController {
       throw NotFoundException;
     }
     return res.clearCookie('refreshToken').sendStatus(204);
-    // const result = await userServices.logout(oldRefreshToken);
-    // if (result.status === ResultCode.Success) {
-    //   res.clearCookie("refreshToken").sendStatus(204);
-    //   return;
-    // } else {
-    //   sendCustomError(res, result);
-    // }
   }
 
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   @Post('/login')
   // @HttpCode(204)
   @UseGuards(LocalAuthGuard)
@@ -237,7 +159,6 @@ export class AuthController {
       .send({
         accessToken: tokens.AccessToken,
       });
-    // .send({ accessToken: tokens.AccessToken })
   }
 
   @Post('/registration')
@@ -258,7 +179,6 @@ export class AuthController {
   @Post('/registration-email-resending')
   @HttpCode(204)
   async registrationEmailResending(
-    // @Param('id') userId: string,
     @Body() reqBody: { email: string },
     @Res({ passthrough: true }) res: Response,
   ) {
@@ -273,7 +193,6 @@ export class AuthController {
   @Post('/registration-confirmation')
   @HttpCode(204)
   async registrationConfirmation(
-    // @Param('id') userId: string,
     @Body() reqBody: { code: string },
     @Res({ passthrough: true }) res: Response,
   ) {
@@ -282,7 +201,6 @@ export class AuthController {
       res.sendStatus(401);
       return;
     }
-    // !!!!!!!!!!!!!!!!!!!
     const isConfirmed = await this.authService.confirmEmail(code);
     if (!isConfirmed) {
       throw new BadRequestException();

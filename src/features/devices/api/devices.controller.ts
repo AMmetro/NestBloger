@@ -170,28 +170,7 @@ export class DevicesController {
       userId,
       deviceId,
     );
-
     return res.sendStatus(204);
-
-    // const deviceIsDeleted = await this.authService.logout(userId, deviceId);
-
-    // if (!deviceIsDeleted) {
-    //   throw NotFoundException;
-    // }
-    // return res.clearCookie('refreshToken').sendStatus(204);
-
-    // const isUser = await this.usersRepository.getById(userId);
-    // if (!isUser) {
-    //   res.sendStatus(404);
-    //   return;
-    // }
-    // const isDeleted = await this.usersRepository.deleteUserById(userId);
-    // if (isDeleted === null) {
-    //   res.sendStatus(404);
-    //   return;
-    // }
-    // res.sendStatus(204);
-    // return;
   }
 
   @Delete('devices/:id')
@@ -206,18 +185,7 @@ export class DevicesController {
     if (!deviceId) {
       throw UnauthorizedException; 
     }
-    // const userId = req.user?.userId;
-    // if (!userId || !deviceId) {
-    //   throw UnauthorizedException; 
-    // }
-    // const userId = null 
-    console.log('userId');
-    console.log(userId);
-    console.log('deviceId');
-    console.log(deviceId);
     const device = await this.devicesRepository.getById(deviceId);
-    console.log('device');
-    console.log(device);
     if (!device) {
       throw new NotFoundException();
     }

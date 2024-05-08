@@ -78,25 +78,8 @@ export class DevicesServices {
     deviceId: string,
     // ): Promise<{ newAT: string; newRT: string } | null> {
   ): Promise<any> {
-    // const newDevices = {
-    //   userId: loginUser.id,
-    //   deviceId: newDeviceId,
-    //   ip: userIp,
-    //   title: userAgent,
-    //   lastActiveDate: new Date(decodedRefreshToken!.exp * 1000),
-    //   tokenCreatedAt: new Date(decodedRefreshToken!.iat * 1000),
-    // };
-
     const device = await this.devicesRepository.getById(deviceId);
     return device;
-
-    //  возможна ошибка при переходе на мангус
-    // if (!createdDeviceId) {
-    // if (!createdDeviceId._id) {
-    //   return null;
-    // }
-    // // return createdDeviceId.insertedId.toString();
-    // return { newAT: accessToken, newRT: refreshToken };
   }
 
   async updateDevicesTokens(
@@ -124,15 +107,6 @@ export class DevicesServices {
     userId: string,
     // ): Promise<{ newAT: string; newRT: string } | null> {
   ): Promise<any> {
-    // const newDevices = {
-    //   userId: loginUser.id,
-    //   deviceId: newDeviceId,
-    //   ip: userIp,
-    //   title: userAgent,
-    //   lastActiveDate: new Date(decodedRefreshToken!.exp * 1000),
-    //   tokenCreatedAt: new Date(decodedRefreshToken!.iat * 1000),
-    // };
-
     const device = await this.devicesRepository.getById(deviceId);
     if (!device?.deviceId) {
       return null;
@@ -145,13 +119,5 @@ export class DevicesServices {
       deviceId: deviceId,
     });
     return !!isDelete.deletedCount;
-
-    //  возможна ошибка при переходе на мангус
-    // if (!createdDeviceId) {
-    // if (!createdDeviceId._id) {
-    //   return null;
-    // }
-    // // return createdDeviceId.insertedId.toString();
-    // return { newAT: accessToken, newRT: refreshToken };
   }
 }

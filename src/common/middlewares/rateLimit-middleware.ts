@@ -1,7 +1,7 @@
-// @@
-// @ In NEST MAY USE TROTLER:
-// @ https://www.npmjs.com/package/@nestjs/throttler
-// @@
+//**
+//* In NEST MAY USE TROTLER:
+//* https://www.npmjs.com/package/@nestjs/throttler
+//**
 
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';

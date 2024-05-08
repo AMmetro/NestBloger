@@ -169,7 +169,6 @@ export class PostCommentsController {
       ]);
     }
     return res.sendStatus(204);
-    // return res.send(result);
   }
 
   @Delete(':id')

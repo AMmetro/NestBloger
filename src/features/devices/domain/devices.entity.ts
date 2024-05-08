@@ -11,29 +11,22 @@ export class Devices {
 
   static mapper(device): any {
     return {
-      // id: device._id.toString(),
       ip: device.ip,
       title: device.title,
       userId: device.userId,
       deviceId: device.deviceId,
       lastActiveDate: device.lastActiveDate,
       tokenCreatedAt: device.tokenCreatedAt,
-      // createdAt: device.createdAt.toISOString(),
     };
   }
   static allDevicesMapper(device): any {
     return {
-      // id: device._id.toString(),
       ip: device.ip,
       title: device.title,
       deviceId: device.deviceId,
       lastActiveDate: device.lastActiveDate,
-      // tokenCreatedAt: device.tokenCreatedAt,
-      // createdAt: device.createdAt.toISOString(),
     };
   }
-
-
 }
 
 export type DevicesDocument = HydratedDocument<DevicesMongoose>;

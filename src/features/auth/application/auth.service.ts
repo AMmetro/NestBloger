@@ -8,7 +8,7 @@ import {
 // import { InjectModel } from '@nestjs/mongoose';
 // import { User } from './users.schema';
 import { JwtService } from '@nestjs/jwt';
-import { hashServise, jwtServise } from 'src/base/utils/JWTservise';
+import { hashServise } from 'src/base/utils/JWTservise';
 import { randomUUID } from 'crypto';
 import { UsersRepository } from 'src/features/users/infrastructure/users.repository';
 import { RequestInputUserType } from 'src/features/users/api/dto/input/create-user.input.model';
@@ -19,10 +19,6 @@ import { User } from '../api/dto/output/user.output.model';
 import { add } from 'date-fns/add';
 import { emailAdaper } from 'src/base/utils/emailAdaper';
 import { appConfigLocal } from 'src/settings/appConfig';
-// import { AuthJwtService } from 'src/base/utils/createAccessTokenJWT';
-// import { User } from '../users/api/dto/output/user.output.model';
-// import { UsersRepository } from '../users/infrastructure/users.repository';
-// import { RequestInputUserType } from '../users/api/dto/input/create-user.input.model';
 
 // Для провайдера всегда необходимо применять декоратор @Injectable() и регистрировать в модуле
 @Injectable()
@@ -36,34 +32,6 @@ export class AuthService {
     // private authJwtService: AuthJwtService,
     // private authService: AuthService,
   ) {}
-
-  // async create(createUserModel: RequestInputUserType): Promise<any> {
-  //   const { login, password, email } = createUserModel;
-  //   const passwordSalt = await hashServise.generateSalt();
-  //   const passwordHash = await hashServise.generateHash(password, passwordSalt);
-  //   const newUserModal = {
-  //     login: login,
-  //     email: email,
-  //     passwordHash: passwordHash,
-  //     passwordSalt: passwordSalt,
-  //     createdAt: new Date(),
-  //     emailConfirmation: {
-  //       confirmationCode: randomUUID(),
-  //       expirationDate: new Date().toISOString(),
-  //       isConfirmed: true,
-  //     },
-  //   };
-  //   const newUserId =
-  //     await this.usersRepository.createWithOutConfirmation(newUserModal);
-  //   if (!newUserId) {
-  //     return null;
-  //   }
-  //   const createdUser = await this.usersRepository.getById(newUserId);
-  //   if (!createdUser) {
-  //     return null;
-  //   }
-  //   return createdUser;
-  // }
 
   async validateUser(authUserData: AuthUserInputModel): Promise<any> {
     const userSearchData = {
@@ -133,13 +101,6 @@ export class AuthService {
       newAccessAndRefreshPair.RefreshToken,
     );
 
-    // {
-    //   userId: '6634dd3e39c7bedfe36cf810',
-    //   newDeviceId: '1e4a323d-9419-4426-8654-8d23257f1f9e',
-    //   iat: 1714752360,
-    //   exp: 1714752380
-    // }
-
     const newDevicesModel = {
       userId: decodedRefreshToken.userId,
       deviceId: decodedRefreshToken.deviceId,
@@ -150,40 +111,7 @@ export class AuthService {
     };
 
     const newDevice = this.devicesServices.createdDevice(newDevicesModel);
-
-    // console.log('newAccessAndRefreshPair');
-    // console.log(newAccessAndRefreshPair);
-    // console.log('decodedRefreshToken');
-    // console.log(decodedRefreshToken);
-
-    // const twoTokensWithDeviceId = await DevicesServices.createdDevice(
-    //   authUsers,
-    //   userAgent,
-    //   userIp,
-    // );
-
     return newAccessAndRefreshPair;
-
-    // const twoTokensWithDeviceId = await this.devicesServices.createdDevice(
-    //   authUsers,
-    //   userAgent,
-    //   userIp,
-    // );
-
-    // if (!twoTokensWithDeviceId) {
-    //   // return {
-    //   //   status: ResultCode.Conflict,
-    //   //   errorMessage: `Can't create new session (with devices) for user`,
-    //   // };
-    // }
-    //   return twoTokensWithDeviceId;
-    //   // return {
-    //   //   status: ResultCode.Success,
-    //   //   data: {
-    //   //     newAT: twoTokensWithDeviceId.newAT,
-    //   //     newRT: twoTokensWithDeviceId.newRT,
-    //   //   },
-    //   // };
   }
 
   async registrationUserWithConfirmation(
@@ -316,9 +244,6 @@ export class AuthService {
 
   async logout(userId: string, deviceId: string): Promise<any> {
     const claimantInfo = await this.usersRepository.getById(userId);
-
-    // console.log('claimantInfo');
-    // console.log(claimantInfo);
 
     if (!claimantInfo?.id) {
       return null;

@@ -5,7 +5,6 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { log } from 'console';
 import { Request, Response } from 'express';
 import { appSettings } from 'src/settings/app-settings';
 
