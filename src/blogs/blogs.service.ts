@@ -62,8 +62,6 @@ export class BlogsService {
       basicSortData,
       blogId,
     );
-
-                                  console.log("======start=====");
     const postsWithLikes = await this.postsService.addLikesToPosts(
       blogPostsWithPagination.items,
       optionalUserId,

@@ -4,14 +4,17 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpCode,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
   Query,
   Req,
   Res,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
@@ -30,6 +33,9 @@ import { ObjectId } from 'mongodb';
 import { Request, Response } from 'express';
 import { UsersService } from 'src/features/users/application/users.service';
 import { UsersRepository } from 'src/features/users/infrastructure/users.repository';
+import { DevicesRepository } from '../infrastructure/devices.repository';
+import { CookiesJwtAuthGuard } from 'src/base/utils/jwtService';
+import { DevicesServices } from '../application/devices.service';
 
 // Tag для swagger
 // @ApiTags('Users')
@@ -42,28 +48,39 @@ export class DevicesController {
     // private readonly usersQueryRepository: UsersQueryRepository,
     private readonly usersRepository: UsersRepository,
     private readonly usersService: UsersService,
+    private readonly devicesRepository: DevicesRepository,
+    private readonly devicesServices: DevicesServices,
   ) {
     // this.usersService = usersService;
   }
 
-  @Get()
+  @Get('devices')
   @HttpCode(200)
-  async getAllUsers(
+  @UseGuards(CookiesJwtAuthGuard)
+  async getAllDevices(
     @Query() reqQuery: QueryUserInputModel,
     @Res({ passthrough: true }) res: Response,
+    @Req() req: any,
   ) {
-    const basicSortData = basicSortQuery(reqQuery);
-    const sortData = {
-      ...basicSortData,
-      searchEmailTerm: reqQuery.searchEmailTerm ?? null,
-      searchLoginTerm: reqQuery.searchLoginTerm ?? null,
-    };
-    const users = await this.usersRepository.getAll(sortData);
-    if (users === null) {
+    // const basicSortData = basicSortQuery(reqQuery);
+    // const sortData = {
+    //   ...basicSortData,
+    //   searchEmailTerm: reqQuery.searchEmailTerm ?? null,
+    //   searchLoginTerm: reqQuery.searchLoginTerm ?? null,
+    // };
+
+    const userId = req.user?.userId;
+    // const deviceId = req.user?.deviceId;
+    if (!userId) {
+      throw new UnauthorizedException();
+    }
+
+    const devices = await this.devicesRepository.getAll(userId);
+    if (devices === null) {
       res.sendStatus(404);
       return;
     }
-    return users;
+    return devices;
   }
 
   @Post()
@@ -90,27 +107,130 @@ export class DevicesController {
     return createdUser;
   }
 
-  @Delete(':id')
-  async deleteUserById(
-    @Param('id') userId: string,
-    @Res({ passthrough: true }) res: Response,
+  // @Delete('devices')
+  // @HttpCode(204)
+  // async getAllDevices2(
+  //   @Query() reqQuery: QueryUserInputModel,
+  //   @Res({ passthrough: true }) res: Response,
+  // ) {
+  //   // const basicSortData = basicSortQuery(reqQuery);
+  //   // const sortData = {
+  //   //   ...basicSortData,
+  //   //   searchEmailTerm: reqQuery.searchEmailTerm ?? null,
+  //   //   searchLoginTerm: reqQuery.searchLoginTerm ?? null,
+  //   // };
+  //   const devices = await this.devicesRepository.getAll();
+  //   if (devices === null) {
+  //     res.sendStatus(404);
+  //     return;
+  //   }
+  //   return devices;
+  // }
+
+  // НЕ ПРОПУСКАЕТ КОНТРОЛЫ НИЖЕ СЕБЯ!!!!!!!!!!!!!!!!!!!!
+  // должно быть со слэшом айди  ????
+  // @Delete(':id')
+  // async deleteUserById(
+  //   @Param('id') userId: string,
+  //   @Res({ passthrough: true }) res: Response,
+  // ) {
+  //   if (!ObjectId.isValid(userId)) {
+  //     res.sendStatus(404);
+  //     return;
+  //   }
+  //   const isUser = await this.usersRepository.getById(userId);
+  //   if (!isUser) {
+  //     res.sendStatus(404);
+  //     return;
+  //   }
+  //   const isDeleted = await this.usersRepository.deleteUserById(userId);
+  //   if (isDeleted === null) {
+  //     res.sendStatus(404);
+  //     return;
+  //   }
+  //   res.sendStatus(204);
+  //   return;
+  // }
+
+  @Delete('/devices')
+  @HttpCode(204)
+  @UseGuards(CookiesJwtAuthGuard)
+  async deleteAllOtherDevices(
+    // @Param('id') userId: string,
+    @Res() res: Response,
+    @Req() req: any,
   ) {
-    if (!ObjectId.isValid(userId)) {
-      res.sendStatus(404);
-      return;
+    // return res.sendStatus(202);
+    const userId = req.user?.userId;
+    const deviceId = req.user?.deviceId;
+    if (!userId || !deviceId) {
+      throw new UnauthorizedException();
     }
-    const isUser = await this.usersRepository.getById(userId);
-    if (!isUser) {
-      res.sendStatus(404);
-      return;
+    const result = await this.devicesServices.deleteAllOtherDevices(
+      userId,
+      deviceId,
+    );
+
+    return res.sendStatus(204);
+
+    // const deviceIsDeleted = await this.authService.logout(userId, deviceId);
+
+    // if (!deviceIsDeleted) {
+    //   throw NotFoundException;
+    // }
+    // return res.clearCookie('refreshToken').sendStatus(204);
+
+    // const isUser = await this.usersRepository.getById(userId);
+    // if (!isUser) {
+    //   res.sendStatus(404);
+    //   return;
+    // }
+    // const isDeleted = await this.usersRepository.deleteUserById(userId);
+    // if (isDeleted === null) {
+    //   res.sendStatus(404);
+    //   return;
+    // }
+    // res.sendStatus(204);
+    // return;
+  }
+
+  @Delete('devices/:id')
+  @HttpCode(204)
+  @UseGuards(CookiesJwtAuthGuard)
+  async deleteDevice(
+    @Param('id') deviceId: string,
+    @Res({ passthrough: true }) res: Response,
+    @Req() req: any,
+  ) {
+    const userId = req.user?.userId;
+    if (!deviceId) {
+      throw UnauthorizedException; 
     }
-    const isDeleted = await this.usersRepository.deleteUserById(userId);
-    if (isDeleted === null) {
-      res.sendStatus(404);
-      return;
+    // const userId = req.user?.userId;
+    // if (!userId || !deviceId) {
+    //   throw UnauthorizedException; 
+    // }
+    // const userId = null 
+    console.log('userId');
+    console.log(userId);
+    console.log('deviceId');
+    console.log(deviceId);
+    const device = await this.devicesRepository.getById(deviceId);
+    console.log('device');
+    console.log(device);
+    if (!device) {
+      throw new NotFoundException();
     }
-    res.sendStatus(204);
-    return;
+
+    const result = await this.devicesServices.deleteDeviceById(
+      deviceId,
+      userId,
+    );
+    if (!result) {
+      throw new ForbiddenException();
+    }
+
+    return res.sendStatus(204);
   }
 
   // @Get()

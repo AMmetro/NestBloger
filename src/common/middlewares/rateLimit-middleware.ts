@@ -12,7 +12,7 @@ import { RateLimitRepository } from 'src/features/rateLimit/infrastructure/rateL
 export class RateLimitMiddleware implements NestMiddleware {
   constructor(private rateLimitRepository: RateLimitRepository) {}
   async use(req: Request, res: Response, next: NextFunction) {
-    console.log('Request... in RATE LIMIT');
+    // console.log('Request... in RATE LIMIT');
 
     const URL = req.originalUrl;
     const ip = req.ip || 'unknown';

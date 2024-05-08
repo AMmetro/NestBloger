@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { WithId, ObjectId } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { DevicesDocument, DevicesMongoose } from '../domain/devices.entity';
+import {
+  Devices,
+  DevicesDocument,
+  DevicesMongoose,
+} from '../domain/devices.entity';
 
 @Injectable()
 export class DevicesRepository {
@@ -21,5 +24,82 @@ export class DevicesRepository {
       console.log(e);
       return null;
     }
+  }
+
+  async getById(deviceId: any): Promise<any | null> {
+    try {
+      const device = await this.devicesModel.findOne({ deviceId: deviceId });
+      if (!device) {
+        return null;
+      }
+      // const device = await this.devicesModel.find();
+
+      // return device;
+      return Devices.mapper(device);
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  async getAll(userId: string): Promise<any | null> {
+    try {
+      const devices = await this.devicesModel.find({ userId: userId });
+      return devices.map(Devices.allDevicesMapper);
+      // return device;
+      // return PostClass.mapper(post);
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  async refreshDeviceTokens(
+    deviceId: string,
+    deviceLastActiveDate: Date,
+    tokenCreatedAt: Date,
+  ): Promise<boolean> {
+    const updateDevice = await this.devicesModel.updateOne(
+      { deviceId: deviceId },
+      {
+        $set: {
+          lastActiveDate: deviceLastActiveDate,
+          tokenCreatedAt: tokenCreatedAt,
+        },
+      },
+    );
+    return !!updateDevice.modifiedCount;
+  }
+
+  async deleteDeviceById(deviceId: any): Promise<any | null> {
+    try {
+      const device = await this.devicesModel.deleteOne(deviceId);
+      return device;
+      // return PostClass.mapper(post);
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+  async deleteAll(): Promise<any | null> {
+    try {
+      const device = await this.devicesModel.deleteMany();
+      return device;
+      // return PostClass.mapper(post);
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  async deleteAllOtherDevices(
+    userId: string,
+    deviceId: string
+  ): Promise<any | string> {
+    const deleteDevices = await this.devicesModel.deleteMany({
+      deviceId: { $ne: deviceId },
+      userId: userId,
+    });
+    return !!deleteDevices.deletedCount; 
   }
 }

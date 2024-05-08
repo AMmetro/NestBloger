@@ -76,18 +76,26 @@ export class AuthService {
     if (!user) {
       return null;
     }
+
     const userLogInPasswordHash = await hashServise.generateHash(
       authUserData.password,
       user.passwordSalt,
     );
-
     if (user.passwordHash !== userLogInPasswordHash || !user) {
+      console.log('user.passwordHash !== userLogInPasswordHash');
       return null;
     }
     return User.userMapper(user);
   }
 
-  async generateAccessAndRefresf(payload: any): Promise<any> {
+  async getPayloadFromJWT(token: any): Promise<any> {
+    const payload = await this.jwtService.verifyAsync(token, {
+      secret: appConfigLocal.JWT_ACSS_SECRET_LOCAL,
+    });
+    return payload;
+  }
+
+  async generateAccessAndRefresh(payload: any): Promise<any> {
     const AccessToken = this.jwtService.sign(payload, {
       expiresIn: appConfigLocal.JWT_ACCESS_EXPIRE_LOCAL,
       secret: appConfigLocal.JWT_ACSS_SECRET_LOCAL,
@@ -114,21 +122,47 @@ export class AuthService {
     if (!user) {
       return null;
     }
-
-    // заменить  на в generateAccessAndRefresf
+    const newDeviceId = randomUUID();
     const payload = {
       userId: user._id.toString(),
+      deviceId: newDeviceId,
     };
-    const AccessToken = this.jwtService.sign(payload, {
-      expiresIn: appConfigLocal.JWT_ACCESS_EXPIRE_LOCAL,
-      secret: appConfigLocal.JWT_ACSS_SECRET_LOCAL,
-    });
-    const RefreshToken = this.jwtService.sign(payload, {
-      expiresIn: appConfigLocal.JWT_REFRESH_EXPIRE_LOCAL,
-      secret: appConfigLocal.JWT_REFRESH_SECRET_LOCAL,
-    });
+    const newAccessAndRefreshPair =
+      await this.generateAccessAndRefresh(payload);
+    const decodedRefreshToken = await this.getPayloadFromJWT(
+      newAccessAndRefreshPair.RefreshToken,
+    );
 
-    return { AccessToken: AccessToken, RefreshToken: RefreshToken };
+    // {
+    //   userId: '6634dd3e39c7bedfe36cf810',
+    //   newDeviceId: '1e4a323d-9419-4426-8654-8d23257f1f9e',
+    //   iat: 1714752360,
+    //   exp: 1714752380
+    // }
+
+    const newDevicesModel = {
+      userId: decodedRefreshToken.userId,
+      deviceId: decodedRefreshToken.deviceId,
+      ip: userIp,
+      title: userAgent,
+      lastActiveDate: new Date(decodedRefreshToken!.exp * 1000),
+      tokenCreatedAt: new Date(decodedRefreshToken!.iat * 1000),
+    };
+
+    const newDevice = this.devicesServices.createdDevice(newDevicesModel);
+
+    // console.log('newAccessAndRefreshPair');
+    // console.log(newAccessAndRefreshPair);
+    // console.log('decodedRefreshToken');
+    // console.log(decodedRefreshToken);
+
+    // const twoTokensWithDeviceId = await DevicesServices.createdDevice(
+    //   authUsers,
+    //   userAgent,
+    //   userIp,
+    // );
+
+    return newAccessAndRefreshPair;
 
     // const twoTokensWithDeviceId = await this.devicesServices.createdDevice(
     //   authUsers,
@@ -256,20 +290,22 @@ export class AuthService {
         { message: 'code already confirmed', field: 'code' },
       ]);
     }
-    // if (userForConfirmation.emailConfirmation.expirationDate < new Date()) {
-    //   return {
-    //     status: ResultCode.ClientError,
-    //     errorMessage: JSON.stringify({
-    //       errorsMessages: [
-    //         { message: `Confirmation code ${code} expired`, field: 'code' },
-    //       ],
-    //     }),
-    //   };
-    // }
+    if (userForConfirmation.emailConfirmation.expirationDate < new Date()) {
+      throw new BadRequestException();
+      // return {
+      //   status: ResultCode.ClientError,
+      //   errorMessage: JSON.stringify({
+      //     errorsMessages: [
+      //       { message: `Confirmation code ${code} expired`, field: 'code' },
+      //     ],
+      //   }),
+      // };
+    }
     const isConfirmed = await this.usersRepository.confirmRegistration(
       userForConfirmation.id,
     );
     if (!isConfirmed) {
+      return null
       // return {
       //   status: ResultCode.Conflict,
       //   errorMessage: `Confirmation code ${code}`,
@@ -278,95 +314,67 @@ export class AuthService {
     return true;
   }
 
-  async checkAcssesToken(authRequest: string): Promise<any> {
-    const token = authRequest.split(' ');
-    const authMethod = token[0];
-    if (authMethod !== 'Bearer') {
+  async logout(userId: string, deviceId: string): Promise<any> {
+    const claimantInfo = await this.usersRepository.getById(userId);
+
+    // console.log('claimantInfo');
+    // console.log(claimantInfo);
+
+    if (!claimantInfo?.id) {
       return null;
     }
-    const jwtUserData = await jwtServise.getUserFromAcssesToken(token[1]);
-    if (jwtUserData && jwtUserData.userId) {
-      const user = await this.usersRepository.getById(jwtUserData.userId);
-      if (!user) {
-        return null;
-      }
-      return user;
-      //   if (!jwtUserData.deviceId) {
-      //     return {
-      //       status: ResultCode.Unauthorised,
-      //       errorMessage: 'Not found deviceId' + jwtUserData.deviceId,
-      //     };
-      //   }
-      //   return {
-      //     status: ResultCode.Success,
-      //     data: { ...user, deviceId: jwtUserData.deviceId, iat: jwtUserData.iat },
-      //   };
-      // }
-
-      // return {
-      //   status: ResultCode.Unauthorised,
-      //   errorMessage: 'JWT is broken',
-      // };
+    const device = await this.devicesServices.getDevice(deviceId);
+    if (!device) {
+      return null;
     }
+    if (device.userId !== claimantInfo.id) {
+      return null;
+      // status: ResultCode.Forbidden,
+      // errorMessage: "Try to delete the deviceId of other user",
+    }
+    const isDeleted = await this.devicesServices.deleteDeviceById(
+      deviceId,
+      userId,
+    );
+    if (!isDeleted) {
+      null;
+    }
+    return isDeleted;
   }
 
-  async refreshToken(userId: string): Promise<any> {
-    // ненужен - перенесен в гард
-    // const claimantInfo = await jwtServise.getUserFromRefreshToken(token);
-
-    // console.log("token")
-    // console.log(token)
-    // console.log("claimantInfo")
-    // console.log(claimantInfo)
-
-    // if (!claimantInfo?.deviceId) {
-    //   return {
-    //     status: ResultCode.Unauthorised,
-    //     errorMessage: 'Not user device info in token',
-    //   };
-    // }
-    // if (!claimantInfo?.userId) {
-    //   return {
-    //     status: ResultCode.Unauthorised,
-    //     errorMessage: 'Not correct id in token',
-    //   };
-    // }
-    // const userId = claimantInfo.userId;
+  async refreshToken(userId: string, deviceId: string): Promise<any> {
     const user = await this.usersRepository.getById(userId);
     if (!user) {
       return null;
     }
-
-    // const newAccessToken = await jwtServise.createAccessTokenJWT(
-    //   user,
-    //   claimantInfo.deviceId,
-    // )
-    console.log('user');
-    console.log(user);
-
+    const device = await this.devicesServices.getDevice(deviceId);
+    if (!device) {
+      return null;
+    }
     const payload = {
       userId: user.id,
+      deviceId: deviceId,
     };
 
-    const newAccessToken = await this.generateAccessAndRefresf(payload);
+    const newAccessAndRefreshPair =
+      await this.generateAccessAndRefresh(payload);
 
-    console.log('newAccessToken');
-    console.log(newAccessToken);
+    const decodedRefreshToken = await this.getPayloadFromJWT(
+      newAccessAndRefreshPair.RefreshToken,
+    );
 
-    // const newRefreshToken = await jwtServise.createRefreshTokenJWT(
-    //   user,
-    //   claimantInfo.deviceId,
-    // );
-    // const decodedRefreshToken =
-    //   await jwtServise.getUserFromRefreshToken(newRefreshToken);
-    // const deviceLastActiveDate = new Date(decodedRefreshToken!.exp * 1000);
-    // const tokenCreatedAt = new Date(decodedRefreshToken!.iat * 1000);
+    const deviceLastActiveDate = new Date(decodedRefreshToken!.exp * 1000);
+    const tokenCreatedAt = new Date(decodedRefreshToken!.iat * 1000);
 
-    // const deviceUpdate = await DevicesServices.updateDevicesTokens(
-    //   claimantInfo.deviceId,
-    //   deviceLastActiveDate,
-    //   tokenCreatedAt,
-    // );
+    const deviceUpdate = await this.devicesServices.updateDevicesTokens(
+      deviceId,
+      deviceLastActiveDate,
+      tokenCreatedAt,
+    );
+    if (!deviceUpdate) {
+      return null;
+    }
+    return newAccessAndRefreshPair;
     // if (deviceUpdate.status !== ResultCode.Success) {
     //   return {
     //     status: ResultCode.ServerError,
@@ -377,6 +385,5 @@ export class AuthService {
     //   status: ResultCode.Success,
     //   data: { newAccessToken, newRefreshToken },
     // };
-    return newAccessToken;
   }
 }

@@ -114,51 +114,44 @@ export class AuthController {
   @UseGuards(CookiesJwtAuthGuard)
   // @UseGuards(OptioanlAuthGuard)
   // @UseGuards(JwtAuthGuard)
-  async generateNewAccesAndRefresh(
+  async generateNewAccesAndRefresh( 
     // @Param('id') userId: string,
-    @Req() request: Request,
+    @Req() request: any,
     @Res({ passthrough: true }) res: Response,
   ) {
-    // @ts-ignore
+    // const payload = await this.authService.getPayloadFromJWT()
+
     const userId = request.user?.userId;
-    if (!userId) {
-      return UnauthorizedException
+    const deviceId = request.user?.deviceId;
+    if (!userId || !deviceId) {
+      throw UnauthorizedException;
     }
-    // console.log("userId")
-    // console.log(userId)
+                            // console.log('userId');
+                            // console.log(userId);
 
     // const oldRefreshToken = request.cookies.refreshToken;
     // if (!oldRefreshToken) {
     //   res.sendStatus(401);
     //   return;
     // }
-    const result = await this.authService.refreshToken(userId);
-
-        console.log("result")
-    console.log(result)
-
-    if (!result) {
-      return NotFoundException;
+    const newAccessAndRefreshPair = await this.authService.refreshToken(
+      userId,
+      deviceId,
+    );
+    if (!newAccessAndRefreshPair) {
+      throw NotFoundException;
     }
-
-    return result;
-
-  //   if (result.status === ResultCode.Success) {
-  //     res
-  //       .cookie("refreshToken", result.data.newRefreshToken, {
-  //         httpOnly: true,
-  //         secure: true,
-  //       })
-  //       .status(200)
-  //       .send({ accessToken: result.data.newAccessToken });
-  //     return;
-  //   } else {
-  //     sendCustomError(res, result);
-  //   }
-  // }
+    res
+      .cookie('refreshToken', newAccessAndRefreshPair.RefreshToken, {
+        httpOnly: true,
+        secure: true,
+      })
+      .status(200)
+      .send({ accessToken: newAccessAndRefreshPair.AccessToken });
+    return;
   }
 
-  @Get('/me') 
+  @Get('/me')
   @UseGuards(JwtAuthGuard)
   // @UseGuards(OptioanlAuthGuard)
   async aboutMe(
@@ -176,18 +169,60 @@ export class AuthController {
     res.status(200).send(meModel);
   }
 
+  @Post('/logout')
+  @HttpCode(204)
+  @UseGuards(CookiesJwtAuthGuard)
+  async logoutUser(
+    // @Param('id') userId: string,
+    // @Body() reqBody: AuthUserInputModel,
+    @Res() res: Response,
+    @Req() req: any,
+  ) {
+    // console.log('===req===');
+    // console.log(req.user);
+    const userId = req.user?.userId;
+    const deviceId = req.user?.deviceId;
+    if (!userId || !deviceId) {
+      throw NotFoundException;
+    }
+    const deviceIsDeleted = await this.authService.logout(userId, deviceId);
+
+    if (!deviceIsDeleted) {
+      throw NotFoundException;
+    }
+    return res.clearCookie('refreshToken').sendStatus(204);
+    // const result = await userServices.logout(oldRefreshToken);
+    // if (result.status === ResultCode.Success) {
+    //   res.clearCookie("refreshToken").sendStatus(204);
+    //   return;
+    // } else {
+    //   sendCustomError(res, result);
+    // }
+  }
+
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   @Post('/login')
-  @HttpCode(200)
+  // @HttpCode(204)
   @UseGuards(LocalAuthGuard)
-  async signinUser(
+  async loginUser(
     // @Param('id') userId: string,
     @Body() reqBody: AuthUserInputModel,
     @Res() res: Response,
+    @Req() req: any,
   ) {
-    // const { password, loginOrEmail } = reqBody;
-    const userAgent = 'unknown';
-    const userIp = 'unknown';
-    const tokens = await this.authService.loginUser(reqBody, userAgent, userIp);
+    const { password, loginOrEmail } = reqBody;
+    if (!password || !loginOrEmail) {
+      res.sendStatus(400);
+      return;
+    }
+    const authData = { loginOrEmail: loginOrEmail, password: password };
+    const userAgent = (res.locals.ua = req.get('User-Agent') || 'unknown');
+    const userIp = req.ip || 'unknown';
+    const tokens = await this.authService.loginUser(
+      authData,
+      userAgent,
+      userIp,
+    );
     if (!tokens) {
       throw new BadRequestException([
         { message: 'not found user', field: 'user' },
@@ -202,7 +237,7 @@ export class AuthController {
       .send({
         accessToken: tokens.AccessToken,
       });
-    // .send(tokens);
+    // .send({ accessToken: tokens.AccessToken })
   }
 
   @Post('/registration')
@@ -249,6 +284,10 @@ export class AuthController {
     }
     // !!!!!!!!!!!!!!!!!!!
     const isConfirmed = await this.authService.confirmEmail(code);
+    if (!isConfirmed) {
+      throw new BadRequestException();
+    }
+    res.sendStatus(204);
   }
 
   // @Get()

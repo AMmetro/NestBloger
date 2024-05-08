@@ -80,10 +80,7 @@ export class PostsController {
   ) {
     // ----------------------------------------------------------------------------
     const optionalUserId = req.user?.userId || null;
-    // console.log("req.user")
-    // console.log(req.user);
-    // console.log("optionalUserId")
-    // console.log(optionalUserId);
+
     if (!postId) {
       throw new BadRequestException([
         { message: 'not found user id', field: 'userId' },

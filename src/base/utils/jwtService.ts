@@ -10,6 +10,7 @@ import { AuthService } from 'src/features/auth/application/auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { appConfigLocal } from 'src/settings/appConfig';
+import { DevicesRepository } from 'src/features/devices/infrastructure/devices.repository';
 
 // // Custom guard
 // // https://docs.nestjs.com/guards
@@ -20,9 +21,6 @@ import { appConfigLocal } from 'src/settings/appConfig';
 //     context: ExecutionContext,
 //   ): boolean | Promise<boolean> | Observable<boolean> {
 //     const request = context.switchToHttp().getRequest();
-
-//     console.log("ttttttttttttttttttttt");
-
 //     // return false;
 //     // throw new UnauthorizedException();
 
@@ -40,23 +38,48 @@ import { appConfigLocal } from 'src/settings/appConfig';
 
 @Injectable()
 export class CookiesJwtAuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    private devicesRepository: DevicesRepository,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromCookies(request);
-    // const optionalToken = token || 'abc';
+
     if (!token) {
-      return true;
+      throw new UnauthorizedException();
+      // если возвращать false то ошибка будет 403
+      // return false;
     }
     try {
+      // только достать paylodad из токена -> decode
+      // const test = this.jwtService.decode(token)
       const payload = await this.jwtService.verifyAsync(token, {
         secret: appConfigLocal.JWT_ACSS_SECRET_LOCAL,
       });
+
+      const deviceId = payload.deviceId;
+      // const isDevice = await this.devicesRepository.find({
+      //   deviceId: deviceId,
+      // });
+      const isDevice = await this.devicesRepository.getById(deviceId);
+
+      if (!isDevice) {
+        throw new UnauthorizedException();
+      }
+
+      const tokenIAT = new Date(payload.iat * 1000);
+
+      if (tokenIAT.toISOString() !== isDevice.tokenCreatedAt.toISOString()) {
+        throw new UnauthorizedException();
+      }
       request['user'] = payload;
       return true;
     } catch (e) {
-      return true;
+      // если возвращать false то ошибка будет 403
+      // return false;
+      throw new UnauthorizedException();
     }
   }
 

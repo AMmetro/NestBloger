@@ -4,10 +4,6 @@ import * as bcrypt from 'bcrypt';
 import { appSettings } from 'src/settings/app-settings';
 import { appConfigLocal } from 'src/settings/appConfig';
 
-
-// import { Injectable, UnauthorizedException } from '@nestjs/common';
-// import { JwtService } from '@nestjs/jwt';
-
 export type OutputUserType = {
   id: string;
   login: string;
@@ -60,62 +56,62 @@ export const jwtServise = {
   //   return token;
   // },
 
-  async getUserFromAcssesToken(token: string): Promise<JWTDecodedType | null> {
-    try {
+  // async getUserFromAcssesToken(token: string): Promise<JWTDecodedType | null> {
+  //   try {
 
-      const jwtUserData: any = jwt.verify(
-        token,
-        appConfigLocal.JWT_ACSS_SECRET_LOCAL,
-        // appSettings.api.JWT_ACSS_SECRET,
-        (err, decoded) => {
-          if (err) {
-            if (err.name === 'TokenExpiredError') {
-              console.log('Access Token expired');
-              return 'Access Token expired';
-            } else {
-              console.log('Access Token is broken');
-              return 'Access Token is broken';
-            }
-          } else {
-            return decoded;
-          }
-        },
-      );
-      return jwtUserData;
-    } catch (e) {
-      return null;
-    }
-  },
+  //     const jwtUserData: any = jwt.verify(
+  //       token,
+  //       appConfigLocal.JWT_ACSS_SECRET_LOCAL,
+  //       // appSettings.api.JWT_ACSS_SECRET,
+  //       (err, decoded) => {
+  //         if (err) {
+  //           if (err.name === 'TokenExpiredError') {
+  //             console.log('Access Token expired');
+  //             return 'Access Token expired';
+  //           } else {
+  //             console.log('Access Token is broken');
+  //             return 'Access Token is broken';
+  //           }
+  //         } else {
+  //           return decoded;
+  //         }
+  //       },
+  //     );
+  //     return jwtUserData;
+  //   } catch (e) {
+  //     return null;
+  //   }
+  // },
 
   // НЕИСПОЛЬЗУЕТМЯ!!!!
-  async getUserFromRefreshToken(token: string): Promise<JWTDecodedType | null> {
-    try {
-      const result: any = jwt.verify(
-        token,
-        // appConfig.JWT_REFRESH_SECRET,
-        appSettings.api.JWT_REFRESH_SECRET,
-        (err, decoded) => {
-          if (err) {
-            if (err.name === 'TokenExpiredError') {
-              console.log('Token expired');
-              return 'Token expired';
-            } else {
-              console.log('Token is broken');
-              return 'Token is broken';
-            }
-          } else {
-            return decoded;
-          }
-        },
-      );
-      // const outUser = {userId: result.userId, deviceId: result.deviceId}
-      return result;
-    } catch (e) {
-                            console.log("eeeee")
-                            console.log(e)
-      return null;
-    }
-  },
+  // async getUserFromRefreshToken(token: string): Promise<JWTDecodedType | null> {
+  //   try {
+  //     const result: any = jwt.verify(
+  //       token,
+  //       // appConfig.JWT_REFRESH_SECRET,
+  //       appSettings.api.JWT_REFRESH_SECRET,
+  //       (err, decoded) => {
+  //         if (err) {
+  //           if (err.name === 'TokenExpiredError') {
+  //             console.log('Token expired');
+  //             return 'Token expired';
+  //           } else {
+  //             console.log('Token is broken');
+  //             return 'Token is broken';
+  //           }
+  //         } else {
+  //           return decoded;
+  //         }
+  //       },
+  //     );
+  //     // const outUser = {userId: result.userId, deviceId: result.deviceId}
+  //     return result;
+  //   } catch (e) {
+  //                           console.log("eeeee")
+  //                           console.log(e)
+  //     return null;
+  //   }
+  // },
 };
 
 export const hashServise = {

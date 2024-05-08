@@ -23,26 +23,9 @@ export class DevicesServices {
   ) {}
 
   async createdDevice(
-    loginUser: OutputUserType,
-    userAgent: string,
-    userIp: string,
+    newDevicesModel: any,
     // ): Promise<{ newAT: string; newRT: string } | null> {
   ): Promise<any> {
-    const newDeviceId = randomUUID();
-
-    // const accessToken = await jwtServise.createAccessTokenJWT(
-    //   loginUser,
-    //   newDeviceId,
-    // );
-
-    // const refreshToken = await jwtServise.createRefreshTokenJWT(
-    //   loginUser,
-    //   newDeviceId,
-    // );
-
-    // const decodedRefreshToken =
-    //   await jwtServise.getUserFromRefreshToken(refreshToken);
-
     // const newDevices = {
     //   userId: loginUser.id,
     //   deviceId: newDeviceId,
@@ -52,7 +35,116 @@ export class DevicesServices {
     //   tokenCreatedAt: new Date(decodedRefreshToken!.iat * 1000),
     // };
 
-    // const createdDeviceId = await this.devicesRepository.create(newDevices);
+    const createdDevice = await this.devicesRepository.create(newDevicesModel);
+
+    // console.log('createdDevice');
+    // console.log(createdDevice);
+
+    return createdDevice;
+
+    //  возможна ошибка при переходе на мангус
+    // if (!createdDeviceId) {
+    // if (!createdDeviceId._id) {
+    //   return null;
+    // }
+    // // return createdDeviceId.insertedId.toString();
+    // return { newAT: accessToken, newRT: refreshToken };
+  }
+
+  async deleteAllOtherDevices(
+    userId: string,
+    deviceId: string,
+  ): Promise<any | string> {
+    const deleteDevices = await this.devicesRepository.deleteAllOtherDevices(
+      userId,
+      deviceId,
+    );
+
+    if (!deleteDevices) {
+      return null;
+    }
+    // return {
+    //   status: ResultCode.NotFound,
+    //   errorMessage: "Cant find devices for delete",
+    // };
+    return deleteDevices;
+  }
+  // return {
+  //   status: ResultCode.Success,
+  //   data: true,
+  // };
+
+  async getDevice(
+    deviceId: string,
+    // ): Promise<{ newAT: string; newRT: string } | null> {
+  ): Promise<any> {
+    // const newDevices = {
+    //   userId: loginUser.id,
+    //   deviceId: newDeviceId,
+    //   ip: userIp,
+    //   title: userAgent,
+    //   lastActiveDate: new Date(decodedRefreshToken!.exp * 1000),
+    //   tokenCreatedAt: new Date(decodedRefreshToken!.iat * 1000),
+    // };
+
+    const device = await this.devicesRepository.getById(deviceId);
+    return device;
+
+    //  возможна ошибка при переходе на мангус
+    // if (!createdDeviceId) {
+    // if (!createdDeviceId._id) {
+    //   return null;
+    // }
+    // // return createdDeviceId.insertedId.toString();
+    // return { newAT: accessToken, newRT: refreshToken };
+  }
+
+  async updateDevicesTokens(
+    deviceId: string,
+    deviceLastActiveDate: Date,
+    tokenCreatedAt: Date,
+  ): Promise<any | string> {
+    const updateDevices = await this.devicesRepository.refreshDeviceTokens(
+      deviceId,
+      deviceLastActiveDate,
+      tokenCreatedAt,
+    );
+    if (!updateDevices) {
+      return null;
+      // status: ResultCode.NotFound,
+      // errorMessage: "Cant update devices lastActiveDate field",
+    }
+    return true;
+    // status: ResultCode.Success,
+    // data: true,
+  }
+
+  async deleteDeviceById(
+    deviceId: string,
+    userId: string,
+    // ): Promise<{ newAT: string; newRT: string } | null> {
+  ): Promise<any> {
+    // const newDevices = {
+    //   userId: loginUser.id,
+    //   deviceId: newDeviceId,
+    //   ip: userIp,
+    //   title: userAgent,
+    //   lastActiveDate: new Date(decodedRefreshToken!.exp * 1000),
+    //   tokenCreatedAt: new Date(decodedRefreshToken!.iat * 1000),
+    // };
+
+    const device = await this.devicesRepository.getById(deviceId);
+    if (!device?.deviceId) {
+      return null;
+    }
+    if (device.userId !== userId) {
+      return null;
+    }
+
+    const isDelete = await this.devicesRepository.deleteDeviceById({
+      deviceId: deviceId,
+    });
+    return !!isDelete.deletedCount;
 
     //  возможна ошибка при переходе на мангус
     // if (!createdDeviceId) {

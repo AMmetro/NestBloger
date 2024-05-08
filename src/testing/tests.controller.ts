@@ -18,6 +18,7 @@
 import { Controller, Delete, HttpCode } from '@nestjs/common';
 import { BlogsService } from 'src/blogs/blogs.service';
 import { CommentLikesRepository } from 'src/features/commentLikes/infrastructure/commentLikes.repo';
+import { DevicesRepository } from 'src/features/devices/infrastructure/devices.repository';
 import { PostRepository } from 'src/features/posts/infrastructure/post.repository';
 import { UsersRepository } from 'src/features/users/infrastructure/users.repository';
 
@@ -28,6 +29,7 @@ export class TestController {
     private postRepository: PostRepository,
     private usersRepository: UsersRepository,
     private commentLikesRepository: CommentLikesRepository,
+    private devicesRepository: DevicesRepository,
   ) {}
   @Delete('/all-data')
   @HttpCode(204)
@@ -35,6 +37,7 @@ export class TestController {
     await this.blogsService.deleteAll();
     await this.postRepository.deleteAll();
     await this.usersRepository.deleteAll();
+    await this.devicesRepository.deleteAll();
     await this.commentLikesRepository.deleteAll();
   }
 }

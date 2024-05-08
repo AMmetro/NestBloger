@@ -21,8 +21,6 @@ import { appConfigLocal } from 'src/settings/appConfig';
 //   ): boolean | Promise<boolean> | Observable<boolean> {
 //     const request = context.switchToHttp().getRequest();
 
-//     console.log("ttttttttttttttttttttt");
-
 //     // return false;
 //     // throw new UnauthorizedException();
 
