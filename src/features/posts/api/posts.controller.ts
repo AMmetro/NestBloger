@@ -90,10 +90,6 @@ export class PostsController {
       postId,
       optionalUserId,
     );
-
-    // console.log("post result")
-    // console.log(post)
-
     if (!post) {
       // почему это не возвращает 404 а возвращает 400 ????
       // throw new NotFoundException([
