@@ -35,26 +35,36 @@
 // }
 
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { UserSQL } from '../domain/userSQL.entity';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+// import { UserSQL } from '../domain/userSQL.entity';
 
 @Injectable()
-export class SaService {
+export class SaService { // this is our repo
   constructor(
-    @InjectRepository(UserSQL)
-    private usersRepository: Repository<UserSQL>,
+    // @InjectRepository(UserSQL)
+    // private usersRepository: Repository<UserSQL>,
+    @InjectDataSource() private dataSource: DataSource,
   ) {}
 
-  findAll(): Promise<UserSQL[]> {
-    return this.usersRepository.find();
+  async findAll(): Promise<any> {
+    //return this.usersRepository.find();
+
+    const query = `
+    SELECT "id", "lastName"
+ from "users"
+ -- WHERE "id"
+     `;
+
+    const responce = await this.dataSource.query(query);
+    return responce;
   }
 
-  findOne(id: number): Promise<UserSQL | null> {
-    return this.usersRepository.findOneBy({ id });
-  }
+//   findOne(id: number): Promise<UserSQL | null> {
+//     return this.usersRepository.findOneBy({ id });
+//   }
 
-  async remove(id: number): Promise<void> {
-    await this.usersRepository.delete(id);
-  }
+//   async remove(id: number): Promise<void> {
+//     await this.usersRepository.delete(id);
+//   }
 }

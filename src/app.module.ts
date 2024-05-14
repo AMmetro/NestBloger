@@ -98,10 +98,10 @@ import { UserSQL } from './features/sa/domain/userSQL.entity';
       password: 'admin',
       // database: 'nestBloger',
       database: 'dymich',
-      entities: [UserSQL],
+      // entities: [UserSQL],
       // для ROW должно быть false
       autoLoadEntities: false,
-      // для ROW должно быть false
+      // для ROW должно быть falseIncubator
       synchronize: false,
     }),
 
