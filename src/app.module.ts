@@ -1,4 +1,4 @@
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 // @@
 // @ так чтобы (построение зависимостей дерева графов) process.env при старте происходил в первую очередь
 // @ const configModule = ConfigModule.forRoot
@@ -13,25 +13,16 @@ import {
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-// import { UsersModule } from './users/users.module';
 import { TestsModule } from './testing/tests.module';
 import { BlogMongoose, BlogSchema } from './blogs/blogs.schema';
-// import { Post, PostSchema } from './post/posts.schema';
 import { BlogsService } from './blogs/blogs.service';
-// import { PostsService } from './post/posts.service';
 import { BlogsController } from './blogs/blog.controller';
-// import { PostRepository } from './post/posts.repo';
 import { TestController } from './testing/tests.controller';
 import { BlogRepository } from './blogs/blog.repo';
-// import { PostsController } from './post/posts.controller';
-
-// import { appConfig } from './settings/appConfig';
 import { UsersRepository } from './features/users/infrastructure/users.repository';
 import { PostLikesRepository } from './features/postLikes/infrastructure/postLikes.repo';
 import { UserMongoose, UserSchema } from './features/users/domain/user.entity';
 import { UsersController } from './features/users/api/users.controller';
-// import { UsersService } from './features/application/users.service';
-// import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { appSettings } from './settings/app-settings';
 import { AuthMiddleware } from './common/middlewares/auth/basicAuth-middleware';
 import { AuthController } from './features/auth/api/auth.controller';
@@ -65,7 +56,10 @@ import { JwtStrategy } from './features/auth/strategies/jwtStrategy';
 import { PassportModule } from '@nestjs/passport';
 import { CustomBlogIdvalidation } from './common/decorators/validate/isBlogExist';
 import { PostCommentsRepository } from './features/postComments/infrastructure/postComments.repo';
-import { PostCommentMoongoose, PostCommentSchema } from './features/postComments/domain/postsComment.schema';
+import {
+  PostCommentMoongoose,
+  PostCommentSchema,
+} from './features/postComments/domain/postsComment.schema';
 import { PostCommentsController } from './features/postComments/api/postComments.controller';
 import { PostCommentsService } from './features/postComments/application/postComments.service';
 import { CommentLikesServices } from './features/commentLikes/application/commentLikes.service';
@@ -74,6 +68,12 @@ import {
   CommentLikeMoongoose,
   CommentLikeSchema,
 } from './features/commentLikes/domain/commentLikes.schema';
+import DatabaseModule from './database/postgress/database.module';
+import { SaController } from './features/sa/api/sa.controller';
+// import { SaService } from './features/sa/application/sa.service';
+// import UsersSQLRepository from './features/sa/infrastructure/users.repository';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserSQL } from './features/sa/domain/userSQL.entity';
 
 @Module({
   imports: [
@@ -87,6 +87,37 @@ import {
     // ),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({}),
+
+    // TypeOrmModule.forRoot(), UsersModule
+
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost',
+      port: 5432,
+      username: 'root',
+      password: 'admin',
+      // database: 'nestBloger',
+      database: 'dymich',
+      entities: [UserSQL],
+      // для ROW должно быть false
+      autoLoadEntities: false,
+      // для ROW должно быть false
+      synchronize: false,
+    }),
+
+    //** подключение к базе SQL напрямую без typeorm
+    //* DatabaseModule.forRootAsync({
+    //*   imports: [ConfigModule],
+    //*   inject: [ConfigService],
+    //*   useFactory: (configService: ConfigService) => ({
+    //*     host: configService.get('POSTGRES_HOST'),
+    //*     port: configService.get('POSTGRES_PORT'),
+    //*     database: configService.get('POSTGRES_DB'),
+    //*     user: 'admin',
+    //*     password: '1111',
+    //*   }),
+    //* }),
+    // **
     MongooseModule.forRoot(
       'mongodb+srv://metroexpress:suradet842@cluster0.gkpqpve.mongodb.net/?retryWrites=true&w=majority',
     ),
@@ -112,6 +143,7 @@ import {
     UsersController,
     AuthController,
     PostCommentsController,
+    SaController,
   ],
   providers: [
     // {
@@ -142,6 +174,8 @@ import {
     PostCommentsService,
     CommentLikesServices,
     CommentLikesRepository,
+    // SaService,
+    // UsersSQLRepository,
     // AuthJwtService,
   ],
   // exports: [JwtModule];
