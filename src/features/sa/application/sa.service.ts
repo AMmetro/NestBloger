@@ -35,36 +35,47 @@
 // }
 
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
+import { SaRepository } from '../infrastructure/users.repository';
 // import { UserSQL } from '../domain/userSQL.entity';
 
 @Injectable()
-export class SaService { // this is our repo
+export class SaService {
+  // this is our repo
+  // constructor(
+  //   // @InjectRepository(UserSQL)
+  //   // private usersRepository: Repository<UserSQL>,
+  //   @InjectDataSource() private dataSource: DataSource,
+  // ) {}
   constructor(
-    // @InjectRepository(UserSQL)
-    // private usersRepository: Repository<UserSQL>,
-    @InjectDataSource() private dataSource: DataSource,
+    // @InjectModel(DevicesMongoose.name)
+    private saRepository: SaRepository,
+    // private usersRepository: UsersRepository,
   ) {}
 
-  async findAll(): Promise<any> {
-    //return this.usersRepository.find();
-
-    const query = `
-    SELECT "id", "lastName"
- from "users"
- -- WHERE "id"
-     `;
-
-    const responce = await this.dataSource.query(query);
-    return responce;
+  async getAll(sortData: any): Promise<any> {
+    const users = await this.saRepository.findAll(sortData);
+    return users;
   }
 
-//   findOne(id: number): Promise<UserSQL | null> {
-//     return this.usersRepository.findOneBy({ id });
-//   }
+  async createUser(
+    login: string,
+    email: string,
+    password: string,
+  ): Promise<any> {
+    const users = await this.saRepository.createUser(login, email, password);
+    return users;
+  }
 
-//   async remove(id: number): Promise<void> {
-//     await this.usersRepository.delete(id);
-//   }
+  // async deleteUserBy(login: string): Promise<any> {
+  //   const users = await this.saRepository.createUser(login);
+  //   return users;
+  // }
+
+  async deleteAllUsers(): Promise<any> {
+    const users = await this.saRepository.deleteAll();
+    return users;
+  }
 }

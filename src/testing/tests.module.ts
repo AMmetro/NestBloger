@@ -48,6 +48,8 @@ import {
   CommentLikeSchema,
 } from 'src/features/commentLikes/domain/commentLikes.schema';
 import { CommentLikesServices } from 'src/features/commentLikes/application/commentLikes.service';
+import { SaController } from 'src/features/sa/api/sa.controller';
+import { SaService } from 'src/features/sa/application/sa.service';
 
 @Module({
   imports: [
@@ -67,6 +69,8 @@ import { CommentLikesServices } from 'src/features/commentLikes/application/comm
     PostsController,
     UsersController,
     DevicesController,
+    SaController,
+
   ],
   providers: [
     BlogsService,
@@ -86,7 +90,9 @@ import { CommentLikesServices } from 'src/features/commentLikes/application/comm
     PostCommentsService,
     CommentLikesRepository,
     CommentLikesServices,
+    SaService,
     // AuthJwtService,
   ],
+  exports: [SaService],
 })
 export class TestsModule {}

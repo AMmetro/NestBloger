@@ -28,34 +28,58 @@ import { ObjectId } from 'mongodb';
 // import { NumberPipe } from '../../../common/pipes/number.pipe';
 // import { AuthGuard } from '../../../common/guards/auth.guard';
 import { Request, Response } from 'express';
+import { SaService } from '../application/sa.service';
 // import { UsersService } from '../application/users.service';
-// import { SaService } from '../application/sa.service';
 
 @Controller('sa')
-// Установка guard на весь контроллер
-//@UseGuards(AuthGuard)
 export class SaController {
-  constructor() {} // private readonly usersService: UsersService, // private readonly saService: SaService,
+  constructor(private readonly saService: SaService) {}
 
-  @Get()
+  @Get('users')
   @HttpCode(200)
   async getAllUsers(
     @Query() reqQuery: QueryUserInputModel,
-    // @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    // return 'users22';
-
     const basicSortData = basicSortQuery(reqQuery);
     const sortData = {
       ...basicSortData,
       searchEmailTerm: reqQuery.searchEmailTerm ?? null,
       searchLoginTerm: reqQuery.searchLoginTerm ?? null,
     };
-    // const users = await this.saService.getAll(sortData);
-    //   if (users === null) {
-    //     res.sendStatus(404);
-    //     return;
-    //   }
-    //   return users;
+    const users = await this.saService.getAll(sortData);
+    if (users === null) {
+      res.sendStatus(404);
+      return;
+    }
+    return users;
+  }
+
+  @Post('users')
+  @HttpCode(200)
+  async postUsers(
+    @Body() reqBody: RequestInputUserType,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { login, email, password } = reqBody;
+
+    const createdUser = await this.saService.createUser(login, email, password);
+    // if (users === null) {
+    //   res.sendStatus(404);
+    //   return;
+    // }
+    return createdUser;
+  }
+
+  @Delete('users')
+  @HttpCode(200)
+  async deleteAllUsers(@Res({ passthrough: true }) res: Response) {
+
+    const isDelete = await this.saService.deleteAllUsers();
+    // if (users === null) {
+    //   res.sendStatus(404);
+    //   return;
+    // }
+    return isDelete;
   }
 }

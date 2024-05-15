@@ -1,16 +1,23 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
-export class UserSQL {
-  @PrimaryGeneratedColumn()
-  id: number;
+// @Entity()
+// export class UserSQL {
+//   @PrimaryGeneratedColumn()
+//   id: number;
 
-  @Column()
-  firstName: string;
+//   @Column()
+//   login: string;
 
-  @Column()
-  lastName: string;
+//   @Column()
+//   passwordHash: string;
 
-  @Column({ default: true })
-  isActive: boolean;
-}
+//   @Column()
+//   passwordSalt: string;
+
+//   @Column()
+//   createdAt: Date;
+
+// @Prop({ _id: false, type: EmailConfirmation })
+// emailConfirmation: EmailConfirmation;
+
+// }

@@ -73,7 +73,9 @@ import { SaController } from './features/sa/api/sa.controller';
 // import { SaService } from './features/sa/application/sa.service';
 // import UsersSQLRepository from './features/sa/infrastructure/users.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserSQL } from './features/sa/domain/userSQL.entity';
+import { SaService } from './features/sa/application/sa.service';
+import { SaRepository } from './features/sa/infrastructure/users.repository';
+// import { UserSQL } from './features/sa/domain/userSQL.entity';
 
 @Module({
   imports: [
@@ -94,11 +96,10 @@ import { UserSQL } from './features/sa/domain/userSQL.entity';
       type: 'postgres',
       host: 'localhost',
       port: 5432,
-      username: 'root',
+      username: 'postgres',
       password: 'admin',
-      // database: 'nestBloger',
-      database: 'dymich',
-      entities: [UserSQL],
+      database: 'nestBloger',
+      // entities: [UserSQL],
       // для ROW должно быть false
       autoLoadEntities: false,
       // для ROW должно быть falseIncubator
@@ -174,7 +175,8 @@ import { UserSQL } from './features/sa/domain/userSQL.entity';
     PostCommentsService,
     CommentLikesServices,
     CommentLikesRepository,
-    // SaService,
+    SaService,
+    SaRepository,
     // UsersSQLRepository,
     // AuthJwtService,
   ],

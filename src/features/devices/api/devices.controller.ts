@@ -62,15 +62,7 @@ export class DevicesController {
     @Res({ passthrough: true }) res: Response,
     @Req() req: any,
   ) {
-    // const basicSortData = basicSortQuery(reqQuery);
-    // const sortData = {
-    //   ...basicSortData,
-    //   searchEmailTerm: reqQuery.searchEmailTerm ?? null,
-    //   searchLoginTerm: reqQuery.searchLoginTerm ?? null,
-    // };
-
     const userId = req.user?.userId;
-    // const deviceId = req.user?.deviceId;
     if (!userId) {
       throw new UnauthorizedException();
     }
