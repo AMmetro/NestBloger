@@ -1,24 +1,3 @@
-// import {UserDocument} from "../../../domain/user.entity";
-
-// export class UserOutputModel {
-//     id: string;
-//     name: string
-//     email: string
-// }
-
-// // MAPPERS
-
-// export const UserOutputModelMapper = (user: UserDocument): UserOutputModel => {
-//     const outputModel = new UserOutputModel();
-
-//     outputModel.id = user.id;
-//     outputModel.name = user.name;
-//     outputModel.email = user.email;
-
-//     return outputModel;
-// };
-
-
 type emailConfirmationType = {
   confirmationCode: string;
   expirationDate: any;
@@ -51,16 +30,16 @@ export class User {
 
   static userWithOutEmailConfirmationMapper(user) {
     return {
-      id: user._id.toString(),
+      id: user.id.toString(),
       login: user.login,
       email: user.email,
-      createdAt: user.createdAt,
+      createdAt: user.createdAt.toISOString(),
     };
   }
 
   static userNoEmailConfirmation(user) {
     return {
-      id: user.id,
+      id: user.id.toString(),
       login: user.login,
       email: user.email,
       createdAt: user.createdAt,

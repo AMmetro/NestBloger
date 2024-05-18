@@ -22,33 +22,10 @@ export class DevicesServices {
     // private usersRepository: UsersRepository,
   ) {}
 
-  async createdDevice(
-    newDevicesModel: any,
-    // ): Promise<{ newAT: string; newRT: string } | null> {
-  ): Promise<any> {
-    // const newDevices = {
-    //   userId: loginUser.id,
-    //   deviceId: newDeviceId,
-    //   ip: userIp,
-    //   title: userAgent,
-    //   lastActiveDate: new Date(decodedRefreshToken!.exp * 1000),
-    //   tokenCreatedAt: new Date(decodedRefreshToken!.iat * 1000),
-    // };
-
+  async createdDevice(newDevicesModel: any): Promise<any> {
     const createdDevice = await this.devicesRepository.create(newDevicesModel);
 
-    // console.log('createdDevice');
-    // console.log(createdDevice);
-
     return createdDevice;
-
-    //  возможна ошибка при переходе на мангус
-    // if (!createdDeviceId) {
-    // if (!createdDeviceId._id) {
-    //   return null;
-    // }
-    // // return createdDeviceId.insertedId.toString();
-    // return { newAT: accessToken, newRT: refreshToken };
   }
 
   async deleteAllOtherDevices(
@@ -102,16 +79,12 @@ export class DevicesServices {
     // data: true,
   }
 
-  async deleteDeviceById(
-    deviceId: string,
-    userId: string,
-    // ): Promise<{ newAT: string; newRT: string } | null> {
-  ): Promise<any> {
+  async deleteDeviceById(deviceId: string, userId: string): Promise<any> {
     const device = await this.devicesRepository.getById(deviceId);
     if (!device?.deviceId) {
       return null;
     }
-    if (device.userId !== userId) {
+    if (device.userId != userId) {
       return null;
     }
 

@@ -45,5 +45,5 @@ export type RequestInputUserType = {
   login: string;
   password: string;
   email: string;
+  isConfirmed?: boolean;
 };
-

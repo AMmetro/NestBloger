@@ -50,6 +50,7 @@ export class AuthController {
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly authService: AuthService,
+    private readonly usersService: UsersService,
   ) {}
 
   @Get('/superAdmin')
@@ -97,7 +98,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async aboutMe(@Req() req: any, @Res({ passthrough: true }) res: Response) {
     const userId = req.user.userId;
-    const me = await this.usersRepository.getById(userId);
+    const me = await this.authService.getUserById(userId);
     if (!me) {
       res.sendStatus(401);
       return;
@@ -124,7 +125,7 @@ export class AuthController {
   }
 
   @Post('/login')
-  // @HttpCode(204)
+  // @HttpCode(200)
   @UseGuards(LocalAuthGuard)
   async loginUser(
     // @Param('id') userId: string,
@@ -146,7 +147,7 @@ export class AuthController {
       userIp,
     );
     if (!tokens) {
-      throw new BadRequestException([
+      throw new UnauthorizedException([
         { message: 'not found user', field: 'user' },
       ]);
     }
@@ -173,7 +174,18 @@ export class AuthController {
       res.sendStatus(401);
       return;
     }
-    await this.authService.registrationUserWithConfirmation(reqBody);
+    const notConfirmedUser = { password, login, email, isConfirmed: false };
+    const result =
+      await this.authService.registrationUserWithConfirmation(notConfirmedUser);
+    // if (result.status === 400) {
+    //   throw new BadRequestException([
+    //     { message: 'email allready exist', field: 'email' }, 
+    //   ]);
+    // }
+    if (!result) {
+      throw new BadRequestException();
+    }
+    // res.sendStatus(204);
   }
 
   @Post('/registration-email-resending')

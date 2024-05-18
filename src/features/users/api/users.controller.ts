@@ -1,22 +1,21 @@
 // import { ApiTags } from '@nestjs/swagger';
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
   HttpCode,
   Param,
-  ParseIntPipe,
   Post,
   Query,
-  Req,
   Res,
-  UseGuards,
 } from '@nestjs/common';
 import { UsersRepository } from '../infrastructure/users.repository';
 import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
-import { QueryUserInputModel, RequestInputUserType, UserCreateModel } from './dto/input/create-user.input.model';
+import {
+  QueryUserInputModel,
+  UserCreateModel,
+} from './dto/input/create-user.input.model';
 import { ObjectId } from 'mongodb';
 // import { UsersQueryRepository } from '../infrastructure/users.query-repository';
 // import { UserCreateModel } from './models/input/create-user.input.model';
@@ -28,17 +27,14 @@ import { Request, Response } from 'express';
 import { UsersService } from '../application/users.service';
 import { User } from './dto/output/user.output.model';
 
-// Tag для swagger
-// @ApiTags('Users')
 @Controller('users')
 // Установка guard на весь контроллер
 //@UseGuards(AuthGuard)
 export class UsersController {
   constructor(
-    private readonly usersRepository: UsersRepository, 
-    private readonly usersService: UsersService
-  ) {
-  }
+    private readonly usersRepository: UsersRepository,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Get()
   @HttpCode(200)
@@ -73,7 +69,7 @@ export class UsersController {
       email: email,
     };
 
-    const createdUser = await this.usersService.create(InputUserModel);
+    const createdUser = await this.usersService.createNewUser(InputUserModel);
     if (!createdUser) {
       res.sendStatus(404);
       return;
@@ -103,78 +99,4 @@ export class UsersController {
     res.sendStatus(204);
     return;
   }
-
-  // @Get()
-  // async hello(
-  //   // Для работы с query применяя наш кастомный pipe
-  //   @Query('id', NumberPipe) id: number,
-  //   // Для работы с request (импорт Request из express)
-  //   @Req() req: Request,
-  //   // Для работы с response (импорт Response из express)
-  //   // При работе с данным декоратором необходимо установить passthrough: true
-  //   // чтобы работал механизм возврата ответа с помощью return data; или res.json(data)
-  //   @Res({ passthrough: true }) res: Response,
-  // ) {
-  //   return 'Hello';
-  // }
-
-  // @Post()
-  // @HttpCode(200)
-  // async create(
-  //   @Body() createModel: UserCreateModel,
-  //   @Res({ passthrough: true }) res: Response,
-  // ): Promise<UserOutputModel> {
-  //   const { login, password, email } = req.body;
-  //   const InputUserModel = {
-  //     login: login,
-  //     password: password,
-  //     email: email,
-  //   };
-  //   const createdUser = await userServices.create(InputUserModel);
-  //   if (!createdUser) {
-  //     res.sendStatus(400);
-  //     return;
-  //   }
-  //   const transformdedUser = {
-  //     id: createdUser.id,
-  //     login: createdUser.login,
-  //     email: createdUser.email,
-  //     createdAt: createdUser.createdAt,
-  //   };
-  //   res.status(201).send(transformdedUser);
-  // }
-
-  // :id в декораторе говорит nest о том что это параметр
-  // Можно прочитать с помощью @Param("id") и передать в property такое же название параметра
-  // Если property не указать, то вернется объект @Param()
-  // @Delete(':id')
-  // // Установка guard на данный роут
-  // @UseGuards(AuthGuard)
-  // // Pipes из коробки https://docs.nestjs.com/pipes#built-in-pipes
-  // async delete(@Param('id', ParseIntPipe) id: number) {
-  //   return id;
-  // }
-
-  // @Post()
-  // // Для переопределения default статус кода https://docs.nestjs.com/controllers#status-code
-  // @HttpCode(200)
-  // async create(@Body() createModel: UserCreateModel): Promise<UserOutputModel> {
-  //   const result = await this.usersService.create(
-  //     createModel.email,
-  //     createModel.name,
-  //   );
-
-  //   return await this.usersQueryRepository.getById(result);
-  // }
-
-  // // :id в декораторе говорит nest о том что это параметр
-  // // Можно прочитать с помощью @Param("id") и передать в property такое же название параметра
-  // // Если property не указать, то вернется объект @Param()
-  // @Delete(':id')
-  // // Установка guard на данный роут
-  // @UseGuards(AuthGuard)
-  // // Pipes из коробки https://docs.nestjs.com/pipes#built-in-pipes
-  // async delete(@Param('id', ParseIntPipe) id: number) {
-  //   return id;
-  // }
 }

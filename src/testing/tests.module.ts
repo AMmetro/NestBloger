@@ -4,9 +4,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { BlogMongoose, BlogSchema } from 'src/blogs/blogs.schema';
 import { BlogsController } from 'src/blogs/blog.controller';
 import { BlogsService } from 'src/blogs/blogs.service';
-// import { PostsService } from 'src/post/posts.service';
-// import { PostRepository } from 'src/post/posts.repo';
-// import { Post, PostSchema } from 'src/post/posts.schema';
 import { BlogRepository } from 'src/blogs/blog.repo';
 import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from 'src/features/users/infrastructure/users.repository';
@@ -16,7 +13,6 @@ import {
   UserSchema,
 } from 'src/features/users/domain/user.entity';
 import { UsersController } from 'src/features/users/api/users.controller';
-// import { PostsController } from 'src/post/posts.controller';
 import { UsersService } from 'src/features/users/application/users.service';
 import { DevicesServices } from 'src/features/devices/application/devices.service';
 import {
@@ -34,7 +30,6 @@ import {
   PostLikeSchema,
 } from 'src/features/postLikes/domain/postsLikes.schema';
 import { PostLikesServices } from 'src/features/postLikes/application/postLikes.service';
-// import { JwtStrategy } from 'src/features/auth/strategies/jwtStrategy';
 import { AuthService } from 'src/features/auth/application/auth.service';
 import { PostCommentsRepository } from 'src/features/postComments/infrastructure/postComments.repo';
 import {
@@ -70,7 +65,6 @@ import { SaService } from 'src/features/sa/application/sa.service';
     UsersController,
     DevicesController,
     SaController,
-
   ],
   providers: [
     BlogsService,
@@ -83,7 +77,6 @@ import { SaService } from 'src/features/sa/application/sa.service';
     UsersService,
     DevicesServices,
     DevicesRepository,
-    // JwtStrategy,
     AuthService,
     JwtService,
     PostCommentsRepository,
@@ -91,8 +84,7 @@ import { SaService } from 'src/features/sa/application/sa.service';
     CommentLikesRepository,
     CommentLikesServices,
     SaService,
-    // AuthJwtService,
   ],
-  exports: [SaService],
+  // exports: [SaService],
 })
 export class TestsModule {}

@@ -6,30 +6,23 @@ import {
   Delete,
   Get,
   HttpCode,
+  NotFoundException,
   Param,
-  ParseIntPipe,
   Post,
   Query,
-  Req,
   Res,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
 import {
   QueryUserInputModel,
-  RequestInputUserType,
   UserCreateModel,
 } from './dto/input/create-user.input.model';
-import { ObjectId } from 'mongodb';
-// import { UsersQueryRepository } from '../infrastructure/users.query-repository';
-// import { UserCreateModel } from './models/input/create-user.input.model';
-// import { UserOutputModel } from './models/output/user.output.model';
-// import { UsersService } from '../application/users.service';
-// import { NumberPipe } from '../../../common/pipes/number.pipe';
-// import { AuthGuard } from '../../../common/guards/auth.guard';
+
 import { Request, Response } from 'express';
 import { SaService } from '../application/sa.service';
-// import { UsersService } from '../application/users.service';
+import { BasicAuthGuard } from 'src/common/guards/basic.guard';
 
 @Controller('sa')
 export class SaController {
@@ -56,30 +49,52 @@ export class SaController {
   }
 
   @Post('users')
-  @HttpCode(200)
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(201)
   async postUsers(
-    @Body() reqBody: RequestInputUserType,
+    @Body() reqBody: UserCreateModel,
     @Res({ passthrough: true }) res: Response,
   ) {
     const { login, email, password } = reqBody;
 
+    if (!login || !email || !password) {
+      throw new BadRequestException();
+    }
+
     const createdUser = await this.saService.createUser(login, email, password);
-    // if (users === null) {
-    //   res.sendStatus(404);
-    //   return;
-    // }
+    if (!createdUser) {
+      res.sendStatus(404);
+      return;
+    }
     return createdUser;
   }
 
   @Delete('users')
+  @UseGuards(BasicAuthGuard)
   @HttpCode(200)
   async deleteAllUsers(@Res({ passthrough: true }) res: Response) {
-
     const isDelete = await this.saService.deleteAllUsers();
     // if (users === null) {
     //   res.sendStatus(404);
     //   return;
     // }
+    return isDelete;
+  }
+
+  @Delete('users/:id')
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(204)
+  async deleteUser(
+    @Res({ passthrough: true }) res: Response,
+    @Param('id') userId: string,
+  ) {
+    if (!userId) {
+      throw new UnauthorizedException();
+    }
+    const isDelete = await this.saService.deleteUser(userId);
+    if (!isDelete) {
+      throw new NotFoundException();
+    }
     return isDelete;
   }
 }

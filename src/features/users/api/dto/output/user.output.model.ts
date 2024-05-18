@@ -27,6 +27,7 @@ type emailConfirmationType = {
 
 export class User {
   constructor(
+    public id: number,
     public login: string,
     public passwordHash: string,
     public passwordSalt: string,
@@ -51,10 +52,10 @@ export class User {
 
   static userWithOutEmailConfirmationMapper(user) {
     return {
-      id: user._id.toString(),
+      id: user.id.toString(),
       login: user.login,
       email: user.email,
-      createdAt: user.createdAt,
+      createdAt: user.createdAt.toISOString(),
     };
   }
 
@@ -64,6 +65,14 @@ export class User {
       login: user.login,
       email: user.email,
       createdAt: user.createdAt,
+    };
+  }
+
+  static userAuthMe(user) {
+    return {
+      id: user.id.toString(),
+      login: user.login,
+      email: user.email,
     };
   }
 }

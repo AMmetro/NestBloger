@@ -15,22 +15,18 @@ import { RequestInputUserType } from 'src/features/users/api/dto/input/create-us
 import { AuthUserInputModel } from '../api/dto/input/auth.input.model';
 import { UsersService } from 'src/features/users/application/users.service';
 import { DevicesServices } from 'src/features/devices/application/devices.service';
-import { User } from '../api/dto/output/user.output.model';
-import { add } from 'date-fns/add';
 import { emailAdaper } from 'src/base/utils/emailAdaper';
 import { appConfigLocal } from 'src/settings/appConfig';
+import { User } from 'src/features/users/api/dto/output/user.output.model';
 
 // Для провайдера всегда необходимо применять декоратор @Injectable() и регистрировать в модуле
 @Injectable()
 export class AuthService {
   constructor(
-    // @InjectModel(User.name) private userModel: Model<User>,
     private usersRepository: UsersRepository,
     private usersService: UsersService,
     private devicesServices: DevicesServices,
     private jwtService: JwtService,
-    // private authJwtService: AuthJwtService,
-    // private authService: AuthService,
   ) {}
 
   async validateUser(authUserData: AuthUserInputModel): Promise<any> {
@@ -38,13 +34,11 @@ export class AuthService {
       login: authUserData.loginOrEmail,
       email: authUserData.loginOrEmail,
     };
-
-    const user: WithId<User> | null =
+    const user: User | null =
       await this.usersRepository.getOneByLoginOrEmail(userSearchData);
     if (!user) {
       return null;
     }
-
     const userLogInPasswordHash = await hashServise.generateHash(
       authUserData.password,
       user.passwordSalt,
@@ -53,7 +47,7 @@ export class AuthService {
       console.log('user.passwordHash !== userLogInPasswordHash');
       return null;
     }
-    return User.userMapper(user);
+    return User.userWithOutEmailConfirmationMapper(user);
   }
 
   async getPayloadFromJWT(token: any): Promise<any> {
@@ -85,14 +79,24 @@ export class AuthService {
       login: authData.loginOrEmail,
       email: authData.loginOrEmail,
     };
-    const user: WithId<User> | null =
+    const user: User | null =
       await this.usersRepository.getOneByLoginOrEmail(userSearchData);
     if (!user) {
       return null;
     }
+
+    const loginedUserPasswordHash = await hashServise.generateHash(
+      authData.password,
+      user.passwordSalt,
+    );
+
+    if (loginedUserPasswordHash !== user.passwordHash) {
+      return null;
+    }
+
     const newDeviceId = randomUUID();
     const payload = {
-      userId: user._id.toString(),
+      userId: user.id.toString(),
       deviceId: newDeviceId,
     };
     const newAccessAndRefreshPair =
@@ -109,29 +113,35 @@ export class AuthService {
       lastActiveDate: new Date(decodedRefreshToken!.exp * 1000),
       tokenCreatedAt: new Date(decodedRefreshToken!.iat * 1000),
     };
-
-    const newDevice = this.devicesServices.createdDevice(newDevicesModel);
+    await this.devicesServices.createdDevice(newDevicesModel);
     return newAccessAndRefreshPair;
+  }
+
+  async getUserById(userId: string): Promise<any> {
+    const user = await this.usersRepository.getById(userId);
+    if (!user) {
+      return null;
+    }
+    return User.userAuthMe(user);
   }
 
   async registrationUserWithConfirmation(
     registrationData: RequestInputUserType,
   ): Promise<any | null> {
-    const { login, password, email } = registrationData;
-    const userWithEmail: WithId<User> | null =
+    const userWithEmail: User | null =
       await this.usersRepository.getOneByLoginOrEmail({
         login: ' ',
-        email: email,
+        email: registrationData.email,
       });
     if (userWithEmail) {
       throw new BadRequestException([
         { message: 'email allready exist', field: 'email' },
       ]);
     }
-    const userWithLogin: WithId<User> | null =
+    const userWithLogin: User | null =
       await this.usersRepository.getOneByLoginOrEmail({
+        login: registrationData.login,
         email: ' ',
-        login: login,
       });
     if (userWithLogin) {
       throw new BadRequestException([
@@ -139,30 +149,11 @@ export class AuthService {
       ]);
     }
 
-    const passwordSalt = await hashServise.generateSalt();
-    const passwordHash = await hashServise.generateHash(password, passwordSalt);
-
-    const newUser = {
-      login: login,
-      email: email,
-      passwordHash: passwordHash,
-      passwordSalt: passwordSalt,
-      blackListToken: [],
-      createdAt: new Date(),
-      emailConfirmation: {
-        confirmationCode: randomUUID(),
-        expirationDate: add(new Date(), { hours: 1, minutes: 30 }),
-        isConfirmed: false,
-      },
-    };
-    const newUserId = await this.usersRepository.createUser(newUser);
-    if (!newUserId) {
-      return null;
-    }
+    const createdUser = await this.usersService.createNewUser(registrationData);
     const emailInfo = {
-      email: newUser.email,
+      email: createdUser.email,
       subject: 'confirm Email',
-      code: newUser.emailConfirmation.confirmationCode,
+      code: createdUser.confirmationCode,
     };
     await emailAdaper.sendEmailRecoveryMessage(emailInfo);
     return true;
@@ -170,7 +161,6 @@ export class AuthService {
 
   async emailResending(email: string): Promise<any | null> {
     const userSearchData = { email: email, login: ' ' }; // search by login " " false for all login
-
     const userForEmailResending =
       await this.usersRepository.getOneByLoginOrEmail(userSearchData);
     if (!userForEmailResending) {
@@ -178,8 +168,7 @@ export class AuthService {
         { message: 'not found user for email resending', field: 'email' },
       ]);
     }
-    const emailIsConfirmed =
-      userForEmailResending.emailConfirmation?.isConfirmed;
+    const emailIsConfirmed = userForEmailResending?.isConfirmed;
     if (emailIsConfirmed) {
       throw new BadRequestException([
         { message: 'email allready confirmed', field: 'email' },
@@ -188,7 +177,7 @@ export class AuthService {
 
     const newConfirmationCode = randomUUID();
     const codeUpd = await this.usersRepository.updateConfirmationCode(
-      userForEmailResending._id,
+      userForEmailResending.id,
       newConfirmationCode,
     );
     if (!codeUpd) {
@@ -213,27 +202,27 @@ export class AuthService {
         { message: 'user for confirmation not exist', field: 'code' },
       ]);
     }
-    if (userForConfirmation.emailConfirmation.isConfirmed) {
+    if (userForConfirmation.isConfirmed) {
       throw new BadRequestException([
         { message: 'code already confirmed', field: 'code' },
       ]);
     }
-    if (userForConfirmation.emailConfirmation.expirationDate < new Date()) {
-      throw new BadRequestException();
-      // return {
-      //   status: ResultCode.ClientError,
-      //   errorMessage: JSON.stringify({
-      //     errorsMessages: [
-      //       { message: `Confirmation code ${code} expired`, field: 'code' },
-      //     ],
-      //   }),
-      // };
-    }
+    // if (userForConfirmation.expirationDate < new Date()) {
+    //   throw new BadRequestException();
+    //   // return {
+    //   //   status: ResultCode.ClientError,
+    //   //   errorMessage: JSON.stringify({
+    //   //     errorsMessages: [
+    //   //       { message: `Confirmation code ${code} expired`, field: 'code' },
+    //   //     ],
+    //   //   }),
+    //   // };
+    // }
     const isConfirmed = await this.usersRepository.confirmRegistration(
       userForConfirmation.id,
     );
     if (!isConfirmed) {
-      return null
+      return null;
       // return {
       //   status: ResultCode.Conflict,
       //   errorMessage: `Confirmation code ${code}`,
@@ -244,7 +233,6 @@ export class AuthService {
 
   async logout(userId: string, deviceId: string): Promise<any> {
     const claimantInfo = await this.usersRepository.getById(userId);
-
     if (!claimantInfo?.id) {
       return null;
     }
@@ -252,7 +240,7 @@ export class AuthService {
     if (!device) {
       return null;
     }
-    if (device.userId !== claimantInfo.id) {
+    if (device.userId !== claimantInfo.id.toString()) {
       return null;
       // status: ResultCode.Forbidden,
       // errorMessage: "Try to delete the deviceId of other user",

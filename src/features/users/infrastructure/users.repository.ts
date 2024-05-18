@@ -1,69 +1,62 @@
 import { Injectable } from '@nestjs/common';
-import { WithId, ObjectId } from 'mongodb';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { UserDocument, UserMongoose } from '../domain/user.entity';
-import { OutputUserType, User } from '../api/dto/output/user.output.model';
-import {
-  SortDataType,
-  searchDataType,
-} from '../api/dto/input/create-user.input.model';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { User } from 'src/features/sa/api/dto/output/user.output.model';
+import { DataSource } from 'typeorm';
+import { searchDataType } from '../api/dto/input/create-user.input.model';
+
+export type NewUserModelType = {
+  login: string;
+  email: string;
+  passwordHash: string;
+  passwordSalt: string;
+  createdAt: Date;
+  emailConfirmation: {
+    confirmationCode: string;
+    expirationDate: Date;
+    isConfirmed: boolean;
+  };
+};
 
 @Injectable()
 export class UsersRepository {
-  constructor(
-    @InjectModel(UserMongoose.name) private userModel: Model<UserDocument>,
-  ) {}
+  constructor(@InjectDataSource() private dataSource: DataSource) {}
 
-  async getAll(sortData: SortDataType): Promise<any> {
-    const {
-      searchEmailTerm,
-      searchLoginTerm,
-      sortBy,
-      sortDirection,
-      pageNumber,
-      pageSize,
-    } = sortData;
-
-    let filter = {};
-    if (searchEmailTerm) {
-      filter = {
-        email: {
-          $regex: searchEmailTerm,
-          $options: 'i',
-        },
-      };
-    }
-    if (searchLoginTerm && !searchEmailTerm) {
-      filter = {
-        login: {
-          $regex: searchLoginTerm,
-          $options: 'i',
-        },
-      };
-    }
-    if (searchLoginTerm && searchEmailTerm) {
-      filter = {
-        $or: [
-          { email: { $regex: searchEmailTerm, $options: 'i' } },
-          { login: { $regex: searchLoginTerm, $options: 'i' } },
-        ],
-      };
-    }
+  async getAll(sortData): Promise<any | null> {
     try {
-      const users: WithId<User>[] = await this.userModel
-        .find(filter)
-        .sort({ [sortBy]: sortDirection })
-        .skip((pageNumber - 1) * pageSize)
-        .limit(pageSize)
-        .lean();
-      const totalCount = await this.userModel.countDocuments(filter);
-      const pagesCount = Math.ceil(totalCount / pageSize);
+      const users = await this.dataSource.query(
+        `
+        SELECT * from "Users" 
+        WHERE "login" ILIKE  $1 OR "email" ILIKE $2 
+        ORDER BY "${sortData.sortBy}" ${sortData.sortDirection} 
+        LIMIT $3 OFFSET $4
+          `,
+        [
+          sortData.searchLoginTerm ? `%${sortData.searchLoginTerm}%` : '%',
+          sortData.searchEmailTerm ? `%${sortData.searchEmailTerm}%` : '%',
+          sortData.pageSize,
+          (sortData.pageNumber - 1) * sortData.pageSize,
+        ],
+      );
+      if (!users) {
+        return null;
+      }
+      const totalCount = await this.dataSource.query(
+        `SELECT COUNT(*) 
+        FROM "Users"
+        WHERE "login" ILIKE  $1 OR "email" ILIKE $2
+        `,
+        [
+          sortData.searchLoginTerm ? `%${sortData.searchLoginTerm}%` : '%',
+          sortData.searchEmailTerm ? `%${sortData.searchEmailTerm}%` : '%',
+        ],
+      );
+
+      const pagesCount = Math.ceil(totalCount[0].count / sortData.pageSize);
       return {
         pagesCount: pagesCount,
-        page: pageNumber,
-        pageSize: pageSize,
-        totalCount: totalCount,
+        page: sortData.pageNumber,
+        pageSize: sortData.pageSize,
+        totalCount: Number(totalCount[0].count),
         items: users.map(User.userWithOutEmailConfirmationMapper),
       };
     } catch (e) {
@@ -72,55 +65,60 @@ export class UsersRepository {
     }
   }
 
-  async confirmRegistration(userId: string): Promise<boolean> {
-    const user = await this.userModel.updateOne(
-      { _id: new ObjectId(userId) },
-      { $set: { 'emailConfirmation.isConfirmed': true } },
-    );
-    return user.modifiedCount === 1;
+  async getById(userId: string): Promise<any | null> {
+    try {
+      const user = await this.dataSource.query(
+        `SELECT * FROM "Users" WHERE id = $1`,
+        [userId],
+      );
+      if (!user.length) {
+        return null;
+      }
+      return user[0];
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
   }
 
-  async getById(userId: string): Promise<any> {
+  async addNewUserToRepo(newUserModal: NewUserModelType): Promise<any | null> {
     try {
-      const user = await this.userModel.findById(userId);
+      const user = await this.dataSource.query(
+        `
+      INSERT INTO "Users" ("login", "passwordHash", "passwordSalt", "email", "createdAt", "confirmationCode", "isConfirmed" )
+      VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *
+      `,
+        [
+          newUserModal.login,
+          newUserModal.passwordHash,
+          newUserModal.passwordSalt,
+          newUserModal.email,
+          newUserModal.createdAt,
+          newUserModal.emailConfirmation.confirmationCode,
+          newUserModal.emailConfirmation.isConfirmed,
+        ],
+      );
       if (!user) {
         return null;
       }
-      return User.userMapper(user);
+      return user[0].id;
     } catch (e) {
       console.log(e);
       return null;
     }
   }
 
-
-  async getByConfirmationCode(code: string): Promise<OutputUserType | null> {
-    const user = await this.userModel.findOne({
-      'emailConfirmation.confirmationCode': code,
-    });
-    if (!user) {
-      return null;
-    }
-    return User.userMapper(user);
-  }
-
-
-  async createWithOutConfirmation(newUserData: User): Promise<any> {
+  async confirmRegistration(userId: string): Promise<any | null> {
     try {
-      const newUserId = await this.userModel.create(newUserData);
-      await newUserId.save();
-      return newUserId._id.toString();
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  }
+      const user = await this.dataSource.query(
+        `UPDATE "Users" SET "isConfirmed" = true WHERE "id" = $1 RETURNING *`,
+        [userId],
+      );
 
-  async createUser(newUserData: User): Promise<any> {
-    try {
-      const newUserId = await this.userModel.create(newUserData);
-      await newUserId.save();
-      return newUserId._id.toString();
+      if (!user) {
+        return null;
+      }
+      return user;
     } catch (e) {
       console.log(e);
       return null;
@@ -128,61 +126,83 @@ export class UsersRepository {
   }
 
   async updateConfirmationCode(
-    userId: ObjectId,
-    newConfirmationCode: string,
-  ): Promise<boolean> {
-    const user = await this.userModel.updateOne(
-      { _id: new ObjectId(userId) },
-      { $set: { 'emailConfirmation.confirmationCode': newConfirmationCode } },
-    );
-    return user.modifiedCount === 1;
-  }
-
-  async deleteUserById(userId: string): Promise<any> {
+    userId: string,
+    confirmationCode: string,
+  ): Promise<any | null> {
     try {
-      const isDelete = await this.userModel.deleteOne({
-        _id: new ObjectId(userId),
-      });
-      return isDelete;
+      const user = await this.dataSource.query(
+        `UPDATE "Users" SET "confirmationCode" = $1 WHERE "id" = $2 RETURNING *`,
+        [confirmationCode, userId],
+      );
+      if (!user) {
+        return null;
+      }
+      return user;
     } catch (e) {
       console.log(e);
       return null;
     }
   }
 
-  async deleteAll(): Promise<any> {
+  async getOneByLoginOrEmail(searchData: searchDataType): Promise<any | null> {
     try {
-      const isDelete = await this.userModel.deleteMany();
-      return isDelete;
+      const user = await this.dataSource.query(
+        `
+        SELECT * FROM "Users" WHERE login = $1 OR email = $2 
+      `,
+        [searchData.login, searchData.email],
+      );
+      if (!user) {
+        return null;
+      }
+      return user[0];
     } catch (e) {
       console.log(e);
       return null;
     }
   }
 
-  async getOneByLoginOrEmail(
-    searchData: searchDataType,
-  ): Promise<WithId<User> | null> {
-    const filter = {
-      $or: [
-        { email: { $regex: searchData.email, $options: 'i' } },
-        { login: { $regex: searchData.login, $options: 'i' } },
-      ],
-    };
-    const user = await this.userModel.findOne(filter);
-    if (!user) {
+  async getByConfirmationCode(code: string): Promise<any | null> {
+    try {
+      const user = await this.dataSource.query(
+        `
+        SELECT * FROM "Users" WHERE "confirmationCode" = $1 
+      `,
+        [code],
+      );
+      return user[0];
+    } catch (e) {
+      console.log(e);
       return null;
     }
-    return user;
   }
 
-  // public async deleteUserById(userId: string) {
-  //   const isDelete = await this.userModel.deleteById(userId);
-  //   return isDelete;
-  // }
+  async deleteAll(): Promise<any | null> {
+    try {
+      const user = await this.dataSource.query(`DELETE FROM "Users"`);
+      if (!user) {
+        return null;
+      }
+      return !!user;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
 
-  // public async insert(user: User) {
-  //     const result: UserDocument[] = await this.userModel.insertMany(user);
-  //     return result[0];
-  // }
+  async deleteUserById(userId: string): Promise<any | null> {
+    try {
+      const user = await this.dataSource.query(
+        `DELETE FROM "Users" WHERE id = $1`,
+        [userId],
+      );
+      if (!user) {
+        return null;
+      }
+      return !!user;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
 }

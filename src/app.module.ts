@@ -23,7 +23,6 @@ import { UsersRepository } from './features/users/infrastructure/users.repositor
 import { PostLikesRepository } from './features/postLikes/infrastructure/postLikes.repo';
 import { UserMongoose, UserSchema } from './features/users/domain/user.entity';
 import { UsersController } from './features/users/api/users.controller';
-import { appSettings } from './settings/app-settings';
 import { AuthMiddleware } from './common/middlewares/auth/basicAuth-middleware';
 import { AuthController } from './features/auth/api/auth.controller';
 import { UsersService } from './features/users/application/users.service';
@@ -68,14 +67,9 @@ import {
   CommentLikeMoongoose,
   CommentLikeSchema,
 } from './features/commentLikes/domain/commentLikes.schema';
-import DatabaseModule from './database/postgress/database.module';
 import { SaController } from './features/sa/api/sa.controller';
-// import { SaService } from './features/sa/application/sa.service';
-// import UsersSQLRepository from './features/sa/infrastructure/users.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SaService } from './features/sa/application/sa.service';
-import { SaRepository } from './features/sa/infrastructure/users.repository';
-// import { UserSQL } from './features/sa/domain/userSQL.entity';
 
 @Module({
   imports: [
@@ -176,9 +170,6 @@ import { SaRepository } from './features/sa/infrastructure/users.repository';
     CommentLikesServices,
     CommentLikesRepository,
     SaService,
-    SaRepository,
-    // UsersSQLRepository,
-    // AuthJwtService,
   ],
   // exports: [JwtModule];
 })
