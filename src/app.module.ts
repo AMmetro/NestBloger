@@ -91,8 +91,8 @@ import { SaService } from './features/sa/application/sa.service';
       host: 'localhost',
       port: 5432,
       username: 'postgres',
-      password: 'admin',
-      database: 'nestBloger',
+      password: '1111',
+      database: 'nestBlogger',
       // entities: [UserSQL],
       // для ROW должно быть false
       autoLoadEntities: false,
