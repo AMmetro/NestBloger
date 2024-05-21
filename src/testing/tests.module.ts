@@ -1,10 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TestController } from './tests.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { BlogMongoose, BlogSchema } from 'src/blogs/blogs.schema';
-import { BlogsController } from 'src/blogs/blog.controller';
-import { BlogsService } from 'src/blogs/blogs.service';
-import { BlogRepository } from 'src/blogs/blog.repo';
 import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from 'src/features/users/infrastructure/users.repository';
 import { PostLikesRepository } from 'src/features/postLikes/infrastructure/postLikes.repo';
@@ -43,16 +39,21 @@ import {
   CommentLikeSchema,
 } from 'src/features/commentLikes/domain/commentLikes.schema';
 import { CommentLikesServices } from 'src/features/commentLikes/application/commentLikes.service';
-import { SaController } from 'src/features/sa/api/sa.controller';
+import { SaUsersController } from 'src/features/sa/api/sausers.controller';
 import { SaService } from 'src/features/sa/application/sa.service';
+import { BlogRepository } from 'src/features/blogs/infrastructure/blogs.repository';
+import { BlogsController } from 'src/features/blogs/api/blogs.controller';
+import { BlogsService } from 'src/features/blogs/application/blogs.service';
+// import { BlogsController } from 'src/features/blogs/api/blogs.controller';
+// import { BlogMongoose, BlogSchema } from 'src/2blogs/blogs.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: BlogMongoose.name, schema: BlogSchema },
+      // { name: BlogMongoose.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
       { name: PostLikeMoongoose.name, schema: PostLikeSchema },
-      { name: UserMongoose.name, schema: UserSchema },
+      // { name: UserMongoose.name, schema: UserSchema },
       { name: DevicesMongoose.name, schema: DevicesSchema },
       { name: PostCommentMoongoose.name, schema: PostCommentSchema },
       { name: CommentLikeMoongoose.name, schema: CommentLikeSchema },
@@ -64,7 +65,7 @@ import { SaService } from 'src/features/sa/application/sa.service';
     PostsController,
     UsersController,
     DevicesController,
-    SaController,
+    SaUsersController,
   ],
   providers: [
     BlogsService,

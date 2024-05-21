@@ -6,7 +6,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { BlogRepository } from 'src/blogs/blog.repo';
+import { BlogRepository } from 'src/features/blogs/infrastructure/blogs.repository';
 
 @ValidatorConstraint({ name: 'blogId', async: true })
 @Injectable()

@@ -8,11 +8,6 @@ import { OutputUserType } from '../api/dto/output/user.output.model';
 import { DevicesMongoose } from '../domain/devices.entity';
 import { Model } from 'mongoose';
 import { DevicesRepository } from '../infrastructure/devices.repository';
-// import { User } from '../users/api/dto/output/user.output.model';
-// import { UsersRepository } from '../users/infrastructure/users.repository';
-// import { RequestInputUserType } from '../users/api/dto/input/create-user.input.model';
-
-// Для провайдера всегда необходимо применять декоратор @Injectable() и регистрировать в модуле
 @Injectable()
 export class DevicesServices {
   constructor(

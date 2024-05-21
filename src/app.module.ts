@@ -14,11 +14,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TestsModule } from './testing/tests.module';
-import { BlogMongoose, BlogSchema } from './blogs/blogs.schema';
-import { BlogsService } from './blogs/blogs.service';
-import { BlogsController } from './blogs/blog.controller';
 import { TestController } from './testing/tests.controller';
-import { BlogRepository } from './blogs/blog.repo';
 import { UsersRepository } from './features/users/infrastructure/users.repository';
 import { PostLikesRepository } from './features/postLikes/infrastructure/postLikes.repo';
 import { UserMongoose, UserSchema } from './features/users/domain/user.entity';
@@ -67,9 +63,14 @@ import {
   CommentLikeMoongoose,
   CommentLikeSchema,
 } from './features/commentLikes/domain/commentLikes.schema';
-import { SaController } from './features/sa/api/sa.controller';
+import { SaUsersController } from './features/sa/api/sausers.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SaService } from './features/sa/application/sa.service';
+import { SaBlogsController } from './features/sa/api/sablogs.controller';
+import { BlogRepository } from './features/blogs/infrastructure/blogs.repository';
+// import { BlogMongoose, BlogSchema } from './2blogs/blogs.schema';
+import { BlogsController } from './features/blogs/api/blogs.controller';
+import { BlogsService } from './features/blogs/application/blogs.service';
 
 @Module({
   imports: [
@@ -91,8 +92,10 @@ import { SaService } from './features/sa/application/sa.service';
       host: 'localhost',
       port: 5432,
       username: 'postgres',
-      password: '1111',
-      database: 'nestBlogger',
+      // password: '1111',
+      password: 'admin',
+      // database: 'nestBlogger',
+      database: 'nestBloger',
       // entities: [UserSQL],
       // для ROW должно быть false
       autoLoadEntities: false,
@@ -117,10 +120,10 @@ import { SaService } from './features/sa/application/sa.service';
       'mongodb+srv://metroexpress:suradet842@cluster0.gkpqpve.mongodb.net/?retryWrites=true&w=majority',
     ),
     MongooseModule.forFeature([
-      { name: BlogMongoose.name, schema: BlogSchema },
+      // { name: BlogMongoose.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
       { name: PostLikeMoongoose.name, schema: PostLikeSchema },
-      { name: UserMongoose.name, schema: UserSchema },
+      // { name: UserMongoose.name, schema: UserSchema },
       { name: DevicesMongoose.name, schema: DevicesSchema },
       { name: RateLimitMongoose.name, schema: RateLimitSchema },
       { name: PostCommentMoongoose.name, schema: PostCommentSchema },
@@ -138,7 +141,8 @@ import { SaService } from './features/sa/application/sa.service';
     UsersController,
     AuthController,
     PostCommentsController,
-    SaController,
+    SaUsersController,
+    SaBlogsController,
   ],
   providers: [
     // {

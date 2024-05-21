@@ -71,7 +71,6 @@ export class PostsController {
   // @UseGuards(JwtAuthGuard)
   @UseGuards(OptioanlAuthGuard)
   async getOne(
-    // Установка guard на данный роут
     @Headers() headers,
     @Param('id') postId: string,
     // @Res({ passthrough: true }) res: Response,
@@ -80,12 +79,12 @@ export class PostsController {
   ) {
     // ----------------------------------------------------------------------------
     const optionalUserId = req.user?.userId || null;
-
     if (!postId) {
       throw new BadRequestException([
         { message: 'not found user id', field: 'userId' },
       ]);
     }
+
     const post = await this.postsService.composePostById(
       postId,
       optionalUserId,

@@ -27,7 +27,6 @@ export class CreatePostModel {
   blogId: string;
 }
 
-
 export class CreatePostForSpecifiedBlogModel {
   @IsString()
   @Trim()
@@ -47,20 +46,6 @@ export class CreatePostForSpecifiedBlogModel {
   // @IsString()
   // userId: string;
 }
-// export class UserCreateModel {
-//   @Trim()
-//   @IsString()
-//   @Length(3, 10, { message: 'length of login is not correct' })
-//   login: string;
-
-//   @IsOptionalEmail()
-//   email: string;
-
-//   @Trim()
-//   @IsString()
-//   @Length(6, 20, { message: 'Incorect length of password' })
-//   password: string;
-// }
 
 // export type QueryUserInputModel = {
 //   searchEmailTerm?: string;
@@ -85,8 +70,8 @@ export class CreatePostForSpecifiedBlogModel {
 //   pageSize: number;
 // };
 
-// export type RequestInputUserType = {
-//   login: string;
-//   password: string;
-//   email: string;
-// };
+export type RequestInputPostType = {
+  title: string;
+  shortDescription: string;
+  content: string;
+};

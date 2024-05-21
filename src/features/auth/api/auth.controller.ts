@@ -125,7 +125,6 @@ export class AuthController {
   }
 
   @Post('/login')
-  // @HttpCode(200)
   @UseGuards(LocalAuthGuard)
   async loginUser(
     // @Param('id') userId: string,

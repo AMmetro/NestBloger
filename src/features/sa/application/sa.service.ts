@@ -25,7 +25,6 @@ export class SaService {
       password: password,
       email: email,
     };
-
     const createdUser = await this.usersService.createNewUser(InputUserModel);
     if (!createdUser) {
       return null;

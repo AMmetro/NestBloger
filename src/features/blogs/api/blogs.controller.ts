@@ -12,16 +12,17 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
-import { BlogsService } from './blogs.service';
-import { Blog, IncomBlogDto } from './blog.types';
+
 import { Response } from 'express';
-import { BlogRepository } from './blog.repo';
 import { ObjectId } from 'mongodb';
 import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
 import { BasicAuthGuard } from 'src/common/guards/basic.guard';
 import { PostsService } from 'src/features/posts/application/post.service';
 import { OptioanlAuthGuard } from 'src/common/guards/optionalAuth.guard';
 import { CreatePostForSpecifiedBlogModel } from 'src/features/posts/api/dto/input/create-user.input.model';
+import { BlogsService } from 'src/features/blogs/application/blogs.service';
+import { BlogRepository } from 'src/features/blogs/infrastructure/blogs.repository';
+import { Blog, IncomBlogDto } from '../domain/blog.entity';
 
 @Controller('blogs')
 export class BlogsController {
@@ -32,6 +33,7 @@ export class BlogsController {
   ) {}
 
   @Get()
+  @UseGuards(OptioanlAuthGuard)
   findAll(@Query() reqQuery: any): any {
     const basicSortData = basicSortQuery(reqQuery);
     const sortData = {
@@ -42,7 +44,7 @@ export class BlogsController {
     return blogs;
   }
 
-  @Get(':id/posts')
+  @Get('/:id/posts')
   @UseGuards(OptioanlAuthGuard)
   async getBlogPosts(
     @Param('id') blogId: string,
@@ -78,7 +80,7 @@ export class BlogsController {
     return mappedCreatedBlog;
   }
 
-  @Post(':id/posts')
+  @Post('/:id/posts')
   @HttpCode(201)
   async createPost(
     @Param('id') blogId: string,
@@ -165,10 +167,10 @@ export class BlogsController {
     @Param('id') blogId: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    if (!ObjectId.isValid(blogId)) {
-      res.sendStatus(404);
-      return;
-    }
+    // if (!ObjectId.isValid(blogId)) {
+    //   res.sendStatus(404);
+    //   return;
+    // }
     const blog = await this.blogRepository.findById(blogId);
     if (!blog) {
       res.sendStatus(404);

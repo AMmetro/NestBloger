@@ -9,6 +9,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  Put,
   Query,
   Res,
   UnauthorizedException,
@@ -24,11 +25,11 @@ import { Request, Response } from 'express';
 import { SaService } from '../application/sa.service';
 import { BasicAuthGuard } from 'src/common/guards/basic.guard';
 
-@Controller('sa')
-export class SaController {
+@Controller('sa/users')
+export class SaUsersController {
   constructor(private readonly saService: SaService) {}
 
-  @Get('users')
+  @Get()
   @HttpCode(200)
   async getAllUsers(
     @Query() reqQuery: QueryUserInputModel,
@@ -48,7 +49,7 @@ export class SaController {
     return users;
   }
 
-  @Post('users')
+  @Post()
   @UseGuards(BasicAuthGuard)
   @HttpCode(201)
   async postUsers(
@@ -69,7 +70,7 @@ export class SaController {
     return createdUser;
   }
 
-  @Delete('users')
+  @Delete()
   @UseGuards(BasicAuthGuard)
   @HttpCode(200)
   async deleteAllUsers(@Res({ passthrough: true }) res: Response) {
@@ -81,7 +82,7 @@ export class SaController {
     return isDelete;
   }
 
-  @Delete('users/:id')
+  @Delete(':id')
   @UseGuards(BasicAuthGuard)
   @HttpCode(204)
   async deleteUser(

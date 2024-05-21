@@ -1,8 +1,6 @@
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { BlogRepository } from 'src/blogs/blog.repo';
-import { createPostDTO } from 'src/blogs/blog.types';
 
 import { PostLikesRepository } from 'src/features/postLikes/infrastructure/postLikes.repo';
 import { Post } from '../domain/post.entity';
@@ -14,6 +12,10 @@ import { OutputBasicSortQueryType } from 'src/base/utils/sortQeryUtils';
 import { PostCommentsRepository } from 'src/features/postComments/infrastructure/postComments.repo';
 import { CommentLikesRepository } from 'src/features/commentLikes/infrastructure/commentLikes.repo';
 import { CommentLikesServices } from 'src/features/commentLikes/application/commentLikes.service';
+import { BlogRepository } from 'src/features/blogs/infrastructure/blogs.repository';
+import { createPostDTO } from 'src/features/blogs/domain/blog.entity';
+import { randomUUID } from 'crypto';
+import { RequestInputPostType } from '../api/dto/input/create-user.input.model';
 
 @Injectable()
 export class PostsService {
@@ -35,6 +37,7 @@ export class PostsService {
       return null;
     }
     const newPost = {
+      id: randomUUID(),
       title: reqData.title,
       shortDescription: reqData.shortDescription,
       content: reqData.content,
@@ -204,13 +207,15 @@ export class PostsService {
     const allPosts = this.postRepository.findAll();
     return allPosts;
   }
-
-  async update(updatedPostId: string, updatePostModel: any): Promise<boolean> {
-    const postForUpd = this.postRepository.findById(updatedPostId);
+  async update(
+    updatedPostId: string,
+    updatePostModel: RequestInputPostType,
+  ): Promise<boolean> {
+    const postForUpd = await this.postRepository.findById(updatedPostId);
     if (!postForUpd) {
       return null;
     }
-    const postIsUpdated = this.postRepository.update(
+    const postIsUpdated = await this.postRepository.update(
       updatedPostId,
       updatePostModel,
     );

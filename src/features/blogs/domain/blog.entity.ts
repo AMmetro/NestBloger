@@ -3,6 +3,7 @@ import { Trim } from 'src/common/decorators/transform/trim';
 
 export class Blog {
   constructor(
+    public id: string,
     public name: string,
     public description: string,
     public websiteUrl: string,
