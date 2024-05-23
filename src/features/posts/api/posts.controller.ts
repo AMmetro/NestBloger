@@ -77,14 +77,12 @@ export class PostsController {
     @Res() res: Response,
     @Req() req: any,
   ) {
-    // ----------------------------------------------------------------------------
     const optionalUserId = req.user?.userId || null;
     if (!postId) {
       throw new BadRequestException([
         { message: 'not found user id', field: 'userId' },
       ]);
     }
-
     const post = await this.postsService.composePostById(
       postId,
       optionalUserId,

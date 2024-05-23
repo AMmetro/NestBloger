@@ -70,8 +70,25 @@ export class CreatePostForSpecifiedBlogModel {
 //   pageSize: number;
 // };
 
-export type RequestInputPostType = {
+// export type RequestInputPostType = {
+//   title: string;
+//   shortDescription: string;
+//   content: string;
+// };
+
+export class RequestInputPostType {
+  @Trim()
+  @IsString()
+  @Length(1, 30, { message: 'length of title is not correct' })
   title: string;
+
+  @Trim()
+  @IsString()
+  @Length(1, 100, { message: 'length of shortDescription is not correct' })
   shortDescription: string;
+
+  @Trim()
+  @IsString()
+  @Length(1, 1000, { message: 'Incorect length of content' })
   content: string;
-};
+}

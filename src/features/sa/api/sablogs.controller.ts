@@ -29,6 +29,7 @@ import { BlogsService } from 'src/features/blogs/application/blogs.service';
 import { IncomBlogDto } from 'src/features/blogs/domain/blog.entity';
 import { RequestInputPostType } from 'src/features/posts/api/dto/input/create-user.input.model';
 import { PostsService } from 'src/features/posts/application/post.service';
+import { PostRepository } from 'src/features/posts/infrastructure/post.repository';
 
 @Controller('sa/blogs')
 export class SaBlogsController {
@@ -37,6 +38,7 @@ export class SaBlogsController {
     private readonly blogsService: BlogsService,
     private readonly blogRepository: BlogRepository,
     private readonly postsService: PostsService,
+    private readonly postRepository: PostRepository,
   ) {}
 
   @Get()
@@ -103,6 +105,8 @@ export class SaBlogsController {
     if (!blogId) {
       throw new BadRequestException();
     }
+    const { title, shortDescription, content } = reqBody;
+
     const createdPost = await this.postsService.createPost(blogId, reqBody);
     if (!createdPost) {
       res.sendStatus(404);
@@ -121,6 +125,15 @@ export class SaBlogsController {
   ) {
     if (!params.blogId && !params.postId) {
       throw new BadRequestException();
+    }
+    const isBlogExist = await this.blogRepository.findById(params.blogId);
+    if (!isBlogExist) {
+      res.sendStatus(404);
+    }
+
+    const isPostExist = await this.postRepository.findById(params.postId);
+    if (!isPostExist) {
+      res.sendStatus(404);
     }
     const updatedPost = await this.postsService.update(params.postId, reqBody);
     if (!updatedPost) {
@@ -176,8 +189,33 @@ export class SaBlogsController {
       res.sendStatus(404);
       return;
     }
-    // ???????????????????????????????
     res.sendStatus(204);
-    // return isDelete;
+  }
+
+  @Delete('/:blogId/posts/:postId')
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(204)
+  async deletePostById(
+    @Param() params: { blogId: string; postId: string },
+    // @Res({ passthrough: true }) res: Response,
+    @Res() res: Response,
+  ) {
+    if (!params.blogId && !params.postId) {
+      throw new BadRequestException();
+    }
+    const isBlogExist = await this.blogRepository.findById(params.blogId);
+    if (!isBlogExist) {
+      res.sendStatus(404);
+    }
+    const isPostExist = await this.postRepository.findById(params.postId);
+    if (!isPostExist) {
+      res.sendStatus(404);
+    }
+    const isDelete = await this.postRepository.deleteById(params.postId);
+    if (!isDelete) {
+      res.sendStatus(404);
+      return;
+    }
+    res.sendStatus(204);
   }
 }

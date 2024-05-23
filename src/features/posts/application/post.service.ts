@@ -190,7 +190,8 @@ export class PostsService {
     postsRequestsSortData: any,
     userId: null | string,
   ): Promise<any | null> {
-    const allPostsObject = await this.postRepository.getBlogPosts(
+    // const allPostsObject = await this.postRepository.getBlogPosts(
+    const allPostsObject = await this.postRepository.findAllWithPagination(
       postsRequestsSortData,
     );
     if (!allPostsObject) {

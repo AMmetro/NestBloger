@@ -21,9 +21,6 @@ export class BlogRepository {
   constructor(@InjectDataSource() private dataSource: DataSource) {}
 
   async getAllByName(sortData): Promise<any | null> {
-    console.log('sortData222');
-    console.log(sortData);
-
     try {
       const users = await this.dataSource.query(
         `
@@ -38,10 +35,6 @@ export class BlogRepository {
           (sortData.pageNumber - 1) * sortData.pageSize,
         ],
       );
-
-      console.log("users------------------------");
-      console.log(users);
-
       if (!users) {
         return null;
       }

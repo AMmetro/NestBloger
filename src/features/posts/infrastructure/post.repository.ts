@@ -54,23 +54,45 @@ export class PostRepository {
     // }
   }
 
+  async findAllWithPagination(sortData): Promise<any | null> {
+    try {
+      const posts = await this.dataSource.query(
+        `
+        SELECT * from "Posts"
+        ORDER BY "${sortData.sortBy}" ${sortData.sortDirection}
+        LIMIT $1 OFFSET $2
+          `,
+        [sortData.pageSize, (sortData.pageNumber - 1) * sortData.pageSize],
+      );
+      if (!posts) {
+        return null;
+      }
+      const totalCount = await this.dataSource.query(
+        `SELECT COUNT(*)
+        FROM "Posts"
+        `,
+      );
+      const pagesCount = Math.ceil(totalCount[0].count / sortData.pageSize);
+      return {
+        pagesCount: pagesCount,
+        page: sortData.pageNumber,
+        pageSize: sortData.pageSize,
+        totalCount: Number(totalCount[0].count),
+        // items: users.map(User.userWithOutEmailConfirmationMapper),
+        items: posts,
+      };
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
   async findById(postId: string): Promise<any | null> {
     try {
-      const allposts = await this.dataSource.query(`SELECT * FROM "Posts"`);
-
-      console.log("allposts");
-      console.log(allposts);
-      console.log("postId");
-      console.log(postId);
-
       const post = await this.dataSource.query(
         `SELECT * FROM "Posts" WHERE "id" = $1`,
         [postId],
       );
-
-      console.log("post");
-      console.log(post);
-
       if (!post.length) {
         return null;
       }
@@ -186,10 +208,14 @@ export class PostRepository {
   async deleteById(blogId: string): Promise<any | null> {
     try {
       const isDeleted = await this.dataSource.query(
-        `DELETE FROM "Blogs" WHERE id = $1`,
+        `DELETE FROM "Posts" WHERE id = $1`,
         [blogId],
       );
-      if (!isDeleted) {
+
+      console.log("isDeleted");
+      console.log(isDeleted);
+
+      if (isDeleted[1] === 0) {
         return null;
       }
       return !!isDeleted;

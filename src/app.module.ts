@@ -102,6 +102,21 @@ import { BlogsService } from './features/blogs/application/blogs.service';
       // для ROW должно быть falseIncubator
       synchronize: false,
     }),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost',
+      port: 5432,
+      username: 'postgres',
+      // password: '1111',
+      password: 'admin',
+      // database: 'nestBlogger',
+      database: 'nestBloger',
+      // entities: [UserSQL],
+      // для ROW должно быть false
+      autoLoadEntities: false,
+      // для ROW должно быть falseIncubator
+      synchronize: false,
+    }),
 
     //** подключение к базе SQL напрямую без typeorm
     //* DatabaseModule.forRootAsync({
@@ -198,14 +213,14 @@ export class AppModule implements NestModule {
         { path: '/posts/:id', method: RequestMethod.DELETE },
         { path: '/posts', method: RequestMethod.POST },
       );
-    consumer.apply(RateLimitMiddleware).forRoutes(
-      { path: '/auth/login', method: RequestMethod.POST },
-      { path: '/auth/registration', method: RequestMethod.POST },
-      { path: '/auth/registration-confirmation', method: RequestMethod.POST },
-      {
-        path: '/auth/registration-email-resending',
-        method: RequestMethod.POST,
-      },
-    );
+    // consumer.apply(RateLimitMiddleware).forRoutes(
+    //   { path: '/auth/login', method: RequestMethod.POST },
+    //   { path: '/auth/registration', method: RequestMethod.POST },
+    //   { path: '/auth/registration-confirmation', method: RequestMethod.POST },
+    //   {
+    //     path: '/auth/registration-email-resending',
+    //     method: RequestMethod.POST,
+    //   },
+    // );
   }
 }
