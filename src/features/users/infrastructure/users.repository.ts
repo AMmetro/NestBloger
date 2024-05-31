@@ -83,7 +83,7 @@ export class UsersRepository {
 
   async addNewUserToRepo(newUserModal: NewUserModelType): Promise<any | null> {
     try {
-      const user = await this.dataSource.query(
+      const user = await this.dataSource.query( 
         `
       INSERT INTO "Users" ("login", "passwordHash", "passwordSalt", "email", "createdAt", "confirmationCode", "isConfirmed" )
       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *

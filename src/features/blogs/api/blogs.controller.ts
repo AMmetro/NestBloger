@@ -11,6 +11,7 @@ import {
   Query,
   UseGuards,
   Req,
+  NotFoundException,
 } from '@nestjs/common';
 
 import { Response } from 'express';
@@ -74,7 +75,7 @@ export class BlogsController {
   ): Promise<Blog> {
     const createdBlog = await this.blogsService.create(reqBody);
     if (!createdBlog) {
-      res.sendStatus(404);
+      throw new NotFoundException()
     }
     const mappedCreatedBlog = Blog.mapper(createdBlog);
     return mappedCreatedBlog;

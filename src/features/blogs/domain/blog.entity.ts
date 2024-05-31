@@ -13,7 +13,7 @@ export class Blog {
 
   static mapper(blog): MappedBlogType {
     return {
-      id: blog._id.toString(),
+      id: blog.id.toString(),
       name: blog.name,
       description: blog.description,
       websiteUrl: blog.websiteUrl,

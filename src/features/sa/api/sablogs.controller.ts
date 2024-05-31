@@ -105,8 +105,6 @@ export class SaBlogsController {
     if (!blogId) {
       throw new BadRequestException();
     }
-    const { title, shortDescription, content } = reqBody;
-
     const createdPost = await this.postsService.createPost(blogId, reqBody);
     if (!createdPost) {
       res.sendStatus(404);

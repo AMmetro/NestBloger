@@ -71,6 +71,8 @@ import { BlogRepository } from './features/blogs/infrastructure/blogs.repository
 // import { BlogMongoose, BlogSchema } from './2blogs/blogs.schema';
 import { BlogsController } from './features/blogs/api/blogs.controller';
 import { BlogsService } from './features/blogs/application/blogs.service';
+import { SaTablesController } from './features/sa/api/tables.controller';
+import { SaRepository } from './features/sa/infrastructure/sa.repository';
 
 @Module({
   imports: [
@@ -92,25 +94,10 @@ import { BlogsService } from './features/blogs/application/blogs.service';
       host: 'localhost',
       port: 5432,
       username: 'postgres',
-      // password: '1111',
-      password: 'admin',
-      // database: 'nestBlogger',
-      database: 'nestBloger',
-      // entities: [UserSQL],
-      // для ROW должно быть false
-      autoLoadEntities: false,
-      // для ROW должно быть falseIncubator
-      synchronize: false,
-    }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      // password: '1111',
-      password: 'admin',
-      // database: 'nestBlogger',
-      database: 'nestBloger',
+      password: '1111',
+      // password: 'admin',
+      database: 'nestBlogger',
+      // database: 'nestBloger',
       // entities: [UserSQL],
       // для ROW должно быть false
       autoLoadEntities: false,
@@ -158,6 +145,7 @@ import { BlogsService } from './features/blogs/application/blogs.service';
     PostCommentsController,
     SaUsersController,
     SaBlogsController,
+    SaTablesController,
   ],
   providers: [
     // {
@@ -189,6 +177,7 @@ import { BlogsService } from './features/blogs/application/blogs.service';
     CommentLikesServices,
     CommentLikesRepository,
     SaService,
+    SaRepository,
   ],
   // exports: [JwtModule];
 })

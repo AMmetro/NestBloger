@@ -15,12 +15,9 @@ import {
   Headers,
   NotFoundException,
 } from '@nestjs/common';
-// import { PostsService } from './posts.service';
 import { Response } from 'express';
 import { ObjectId } from 'mongodb';
-// import { PostRepository } from './posts.repo';
 import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
-// import { IncomLikeStatusDTO, likeStatusEnum } from 'src/features/postLikes/domain/postLikesTypes';
 import { PostsService } from '../application/post.service';
 import { PostRepository } from '../infrastructure/post.repository';
 import {
@@ -219,9 +216,6 @@ export class PostsController {
     @Res() res: Response,
     @Req() req: any,
   ): Promise<any> {
-    if (!ObjectId.isValid(postId)) {
-      return res.sendStatus(404);
-    }
     const userId = req.user.userId;
     if (!userId) {
       return res.sendStatus(401);

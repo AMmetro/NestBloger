@@ -120,6 +120,7 @@ export class PostRepository {
           newPostModal.createdAt,
         ],
       );
+
       if (!newPost) {
         return null;
       }
@@ -131,6 +132,7 @@ export class PostRepository {
   }
 
   async getBlogPosts(sortData: any, blogId?: string): Promise<any | null> {
+
     try {
       const posts = await this.dataSource.query(
         `
@@ -146,13 +148,17 @@ export class PostRepository {
         ],
       );
       if (!posts) {
-        return null;
+        return null; 
       }
       const totalCount = await this.dataSource.query(
-        `SELECT COUNT(*)
-        FROM "Posts"
+        `SELECT COUNT(*) FROM "Posts" WHERE "blogId" = $1
         `,
+        [blogId],
       );
+
+      console.log("totalCount");
+      console.log(totalCount);
+
       const pagesCount = Math.ceil(totalCount[0].count / sortData.pageSize);
       return {
         pagesCount: pagesCount,
