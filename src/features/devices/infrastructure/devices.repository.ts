@@ -1,102 +1,143 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/features/users/domain/user.entity';
+import { EntityManager, Repository } from 'typeorm';
 
-import {
-  Devices,
-  DevicesDocument,
-  DevicesMongoose,
-} from '../domain/devices.entity';
+
+
+// https://orkhan.gitbook.io/typeorm/docs/entity-manager-api
+
 
 @Injectable()
 export class DevicesRepository {
-  constructor(
-    @InjectModel(DevicesMongoose.name)
-    private devicesModel: Model<DevicesDocument>,
+  public constructor(
+    @InjectEntityManager()
+    private readonly entityManager: EntityManager,
   ) {}
 
-  async create(newDevices: any): Promise<any | null> {
-    try {
-      const createdDeviceId = await this.devicesModel.create(newDevices);
-      return createdDeviceId;
-      // return PostClass.mapper(post);
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
+  public async getAllAndCount(): Promise<any> {
+    // try {
+    //   const result = await this.entityManager.findAndCount(User, {
+    //     where: {},
+    //   });
+
+    //   return result;
+    // } catch (error) {
+    //   console.log(error);
+
+    //   return [[], 0];
+    // }
   }
 
-  async getById(deviceId: any): Promise<any | null> {
-    try {
-      const device = await this.devicesModel.findOne({ deviceId: deviceId });
-      if (!device) {
-        return null;
-      }
-      return Devices.mapper(device);
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
+  public async getUser(eee: any) {
+    // return this.findOne({ where: { id } });
+  }
+  create(eee: any) {
+    // return this.findOne({ where: { id } });
   }
 
-  async getAll(userId: string): Promise<any | null> {
-    try {
-      const devices = await this.devicesModel.find({ userId: userId });
-      return devices.map(Devices.allDevicesMapper);
-      // return device;
-      // return PostClass.mapper(post);
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
+  getById(eee: any) {
+    // return this.find();
+  }
+  getAll(eee: any) {
+    // return this.find();
+  }
+  refreshDeviceTokens(eee: any) {
+    // return this.find();
+  }
+  deleteDeviceById(eee: any) {
+    // return this.find();
+  }
+  deleteAll() {
+    // return this.find();
+  }
+  deleteAllOtherDevices(eee: any) {
+    // return this.find();
   }
 
-  async refreshDeviceTokens(
-    deviceId: string,
-    deviceLastActiveDate: Date,
-    tokenCreatedAt: Date,
-  ): Promise<boolean> {
-    const updateDevice = await this.devicesModel.updateOne(
-      { deviceId: deviceId },
-      {
-        $set: {
-          lastActiveDate: deviceLastActiveDate,
-          tokenCreatedAt: tokenCreatedAt,
-        },
-      },
-    );
-    return !!updateDevice.modifiedCount;
+  createUser(eee: any) {
+    // return this.save(user);
   }
 
-  async deleteDeviceById(deviceId: any): Promise<any | null> {
-    try {
-      const device = await this.devicesModel.deleteOne(deviceId);
-      return device;
-      // return PostClass.mapper(post);
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  }
-  async deleteAll(): Promise<any | null> {
-    try {
-      const device = await this.devicesModel.deleteMany();
-      return device;
-      // return PostClass.mapper(post);
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  }
 
-  async deleteAllOtherDevices(
-    userId: string,
-    deviceId: string
-  ): Promise<any | string> {
-    const deleteDevices = await this.devicesModel.deleteMany({
-      deviceId: { $ne: deviceId },
-      userId: userId,
-    });
-    return !!deleteDevices.deletedCount; 
-  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
+
+
+// export interface UserRepository extends Repository<User> {
+//   this: Repository<User>;
+//   getUsers(): Promise<User[]>;
+//   getUser(id: number): Promise<User>;
+//   createUser(user: { firstName: string; lastName: string; isActive: boolean });
+// }
+
+
+// @Injectable()
+// export class DevicesRepository {
+//   public constructor(
+//     @InjectRepository(User)
+//     private readonly posts: Repository<User>
+//   ) {}
+ 
+//   public async getAllAndCount(): Promise<[User[], number]> {
+//     try {
+//       const result = await this.posts.findAndCount();
+ 
+//       return result;
+//     } catch (error) {
+//       console.log(error);
+ 
+//       return [[], 0];
+//     }
+//   }
+ 
+//   // ... other methods
+// }
+
+
+// export const DevicesRepositoryOld: Pick<UserRepository, any> = {
+//   getUser(this: Repository<User>, id) {
+//     return this.findOne({ where: { id } });
+//   },
+//   create(this: Repository<User>, id) {
+//     return this.findOne({ where: { id } });
+//   },
+
+//   getById(this: Repository<User>) {
+//     return this.find();
+//   },
+//   getAll(this: Repository<User>) {
+//     return this.find();
+//   },
+//   refreshDeviceTokens(this: Repository<User>) {
+//     return this.find();
+//   },
+//   deleteDeviceById(this: Repository<User>) {
+//     return this.find();
+//   },
+//   deleteAll(this: Repository<User>) {
+//     return this.find();
+//   },
+//   deleteAllOtherDevices(this: Repository<User>) {
+//     return this.find();
+//   },
+
+//   createUser(this: Repository<User>, user) {
+//     return this.save(user);
+//   },
+// };

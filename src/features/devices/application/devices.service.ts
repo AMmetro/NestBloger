@@ -5,14 +5,15 @@ import { InjectModel } from '@nestjs/mongoose';
 // import { jwtServise } from 'src/base/utils/JWTservise';
 import { randomUUID } from 'crypto';
 import { OutputUserType } from '../api/dto/output/user.output.model';
-import { DevicesMongoose } from '../domain/devices.entity';
+// import { DevicesMongoose } from '../domain/devices.entity';
 import { Model } from 'mongoose';
 import { DevicesRepository } from '../infrastructure/devices.repository';
 @Injectable()
 export class DevicesServices {
   constructor(
-    @InjectModel(DevicesMongoose.name)
-    private devicesModel: Model<DevicesMongoose>,
+    // @InjectModel(DevicesMongoose.name)
+    // @InjectModel()
+    // private devicesModel: Model<DevicesMongoose>,
     private devicesRepository: DevicesRepository,
     // private usersRepository: UsersRepository,
   ) {}

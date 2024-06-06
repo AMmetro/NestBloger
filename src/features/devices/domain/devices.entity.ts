@@ -29,22 +29,56 @@ export class Devices {
   }
 }
 
-export type DevicesDocument = HydratedDocument<DevicesMongoose>;
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
-@Schema()
-export class DevicesMongoose {
-  @Prop()
-  userId: string;
-  @Prop()
+// В скобочках Entity можно задать имя для таблицы в БД, иначе возметься из имени класса.toLowerCase()
+// можно применить class naming strategy для авто-присваивания имен 
+@Entity()
+export class DevicesDB {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  userId: number;
+
+  @Column()
   ip: string;
-  @Prop()
+
+  @Column({ default: true })
   title: string;
-  @Prop()
-  lastActiveDate: Date;
-  @Prop()
+
+  @CreateDateColumn()
   tokenCreatedAt: Date;
-  @Prop()
-  deviceId: string;
+
+  @UpdateDateColumn()
+  lastActiveDate: Date;
+
+  @Column()
+  deviceId: number;
+ 
+  // @OneToMany(type => Photo, photo => photo.user)
+  // photos: Photo[];
+
 }
 
-export const DevicesSchema = SchemaFactory.createForClass(DevicesMongoose);
+
+// ----------------- mongo DB entity -------------------------------
+// export type DevicesDocument = HydratedDocument<DevicesMongoose>;
+
+// @Schema()
+// export class DevicesMongoose {
+//   @Prop()
+//   userId: string;
+//   @Prop()
+//   ip: string;
+//   @Prop()
+//   title: string;
+//   @Prop()
+//   lastActiveDate: Date;
+//   @Prop()
+//   tokenCreatedAt: Date;
+//   @Prop()
+//   deviceId: string;
+// }
+
+// export const DevicesSchema = SchemaFactory.createForClass(DevicesMongoose);

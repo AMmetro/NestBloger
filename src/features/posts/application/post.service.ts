@@ -16,12 +16,17 @@ import { BlogRepository } from 'src/features/blogs/infrastructure/blogs.reposito
 import { createPostDTO } from 'src/features/blogs/domain/blog.entity';
 import { randomUUID } from 'crypto';
 import { RequestInputPostType } from '../api/dto/input/create-user.input.model';
-import { log } from 'console';
 
+
+// export class UsersService {
+//   constructor(private usersRepository: UsersRepository) {}
+
+// @Injectable()
 @Injectable()
 export class PostsService {
   constructor(
-    @InjectModel(Post.name) private postModel: Model<Post>,
+    // @InjectModel(Post.name) private postModel: Model<Post>,
+    // @InjectModel
     private postRepository: PostRepository,
     private blogRepository: BlogRepository,
     private usersRepository: UsersRepository,
@@ -37,7 +42,6 @@ export class PostsService {
     if (!currentBlog) {
       return null;
     }
-  
     const newPost = {
       id: randomUUID(),
       title: reqData.title,
@@ -54,11 +58,6 @@ export class PostsService {
       newestLikes: [],
     };
     const createdPost = await this.postRepository.create(newPost);
-
-    console.log('currentBlog')
-    console.log(currentBlog)
-    console.log('createdPost')
-    console.log(createdPost)
 
     return { ...createdPost, extendedLikesInfo: extendedLikesInfo };
   }

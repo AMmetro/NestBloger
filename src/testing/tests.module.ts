@@ -4,18 +4,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from 'src/features/users/infrastructure/users.repository';
 import { PostLikesRepository } from 'src/features/postLikes/infrastructure/postLikes.repo';
-import {
-  UserMongoose,
-  UserSchema,
-} from 'src/features/users/domain/user.entity';
 import { UsersController } from 'src/features/users/api/users.controller';
 import { UsersService } from 'src/features/users/application/users.service';
 import { DevicesServices } from 'src/features/devices/application/devices.service';
-import {
-  DevicesMongoose,
-  DevicesSchema,
-} from 'src/features/devices/domain/devices.entity';
-import { DevicesRepository } from 'src/features/devices/infrastructure/devices.repository';
+// import {
+//   DevicesMongoose,
+//   DevicesSchema,
+// } from 'src/features/devices/domain/devices.entity';
+// import { DevicesRepository } from 'src/features/devices/infrastructure/devices.repository';
 import { DevicesController } from 'src/features/devices/api/devices.controller';
 import { PostsController } from 'src/features/posts/api/posts.controller';
 import { Post, PostSchema } from 'src/features/posts/domain/post.entity';
@@ -54,7 +50,7 @@ import { BlogsService } from 'src/features/blogs/application/blogs.service';
       { name: Post.name, schema: PostSchema },
       { name: PostLikeMoongoose.name, schema: PostLikeSchema },
       // { name: UserMongoose.name, schema: UserSchema },
-      { name: DevicesMongoose.name, schema: DevicesSchema },
+      // { name: DevicesMongoose.name, schema: DevicesSchema },
       { name: PostCommentMoongoose.name, schema: PostCommentSchema },
       { name: CommentLikeMoongoose.name, schema: CommentLikeSchema },
     ]),
@@ -64,7 +60,7 @@ import { BlogsService } from 'src/features/blogs/application/blogs.service';
     BlogsController,
     PostsController,
     UsersController,
-    DevicesController,
+    // DevicesController,
     SaUsersController,
   ],
   providers: [
@@ -76,8 +72,8 @@ import { BlogsService } from 'src/features/blogs/application/blogs.service';
     PostLikesServices,
     UsersRepository,
     UsersService,
-    DevicesServices,
-    DevicesRepository,
+    // DevicesServices,
+    // DevicesRepository,
     AuthService,
     JwtService,
     PostCommentsRepository,

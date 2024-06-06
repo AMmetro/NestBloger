@@ -1,4 +1,3 @@
-import { ConfigModule, ConfigService } from '@nestjs/config';
 // @@
 // @ так чтобы (построение зависимостей дерева графов) process.env при старте происходил в первую очередь
 // @ const configModule = ConfigModule.forRoot
@@ -17,7 +16,7 @@ import { TestsModule } from './testing/tests.module';
 import { TestController } from './testing/tests.controller';
 import { UsersRepository } from './features/users/infrastructure/users.repository';
 import { PostLikesRepository } from './features/postLikes/infrastructure/postLikes.repo';
-import { UserMongoose, UserSchema } from './features/users/domain/user.entity';
+import { User } from './features/users/domain/user.entity';
 import { UsersController } from './features/users/api/users.controller';
 import { AuthMiddleware } from './common/middlewares/auth/basicAuth-middleware';
 import { AuthController } from './features/auth/api/auth.controller';
@@ -25,10 +24,10 @@ import { UsersService } from './features/users/application/users.service';
 import { AuthService } from './features/auth/application/auth.service';
 import { DevicesServices } from './features/devices/application/devices.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import {
-  DevicesMongoose,
-  DevicesSchema,
-} from './features/devices/domain/devices.entity';
+// import {
+//   DevicesMongoose,
+//   DevicesSchema,
+// } from './features/devices/domain/devices.entity';
 import { DevicesRepository } from './features/devices/infrastructure/devices.repository';
 import { BasicStrategy } from './features/auth/strategies/basicStrategy';
 import { LocalStrategy } from './features/auth/strategies/localStrategy';
@@ -73,12 +72,31 @@ import { BlogsController } from './features/blogs/api/blogs.controller';
 import { BlogsService } from './features/blogs/application/blogs.service';
 import { SaTablesController } from './features/sa/api/tables.controller';
 import { SaRepository } from './features/sa/infrastructure/sa.repository';
+import databaseConf, { type DatabaseConfig } from './database/pgConfig/db.config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { DevicesDB } from './features/devices/domain/devices.entity';
+
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+    // определяет приорететност .env файлов из массива для загрузки
       envFilePath: ['.env.local', '.env'],
-    }), // определяет приорететност .env файлов из массива для загрузки
+      // ---- относиться к typeorm ---
+      isGlobal: true,
+      load: [databaseConf],
+      // ----------------------------
+    }), 
+    TypeOrmModule.forRootAsync({
+      useFactory(config: ConfigService<DatabaseConfig>) {
+        return config.get('database', {
+          infer: true,
+        });
+      },
+      inject: [ConfigService],
+    }),
+    TypeOrmModule.forFeature([User, DevicesDB]),
+ 
     // MongooseModule.forRoot(
     //   appSettings.env.isTesting()
     //     ? appSettings.api.MONGO_CONNECTION_URI_TESTING
@@ -87,50 +105,40 @@ import { SaRepository } from './features/sa/infrastructure/sa.repository';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({}),
 
-    // TypeOrmModule.forRoot(), UsersModule
+    //--------- прямой вариант подключения typeorm из доки-------
+    // TypeOrmModule.forRoot({
+    //   type: 'postgres',
+    //   host: 'localhost',
+    //   port: 5432,
+    //   username: 'postgres',
+    //   password: '1111',
+    //   // password: 'admin',
+    //   database: 'nestBlogger',
+    //   // database: 'nestBloger',
+    //   // entities: [User],
+    //   // для ROW SQL должно быть false
+    //   autoLoadEntities: true,
+    //   // иначе ипортировать entities вручную или через блок код:
+    //   // entities: ['./**/*.entity{.ts,.js}', Posts... ]
+    //   // для ROW SQL должно быть false
+    //   // отвечает за автомиграции + создает таблицы автоматом 
+    //   synchronize: true,
+    // }),
 
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: '1111',
-      // password: 'admin',
-      database: 'nestBlogger',
-      // database: 'nestBloger',
-      // entities: [UserSQL],
-      // для ROW должно быть false
-      autoLoadEntities: false,
-      // для ROW должно быть falseIncubator
-      synchronize: false,
-    }),
-
-    //** подключение к базе SQL напрямую без typeorm
-    //* DatabaseModule.forRootAsync({
-    //*   imports: [ConfigModule],
-    //*   inject: [ConfigService],
-    //*   useFactory: (configService: ConfigService) => ({
-    //*     host: configService.get('POSTGRES_HOST'),
-    //*     port: configService.get('POSTGRES_PORT'),
-    //*     database: configService.get('POSTGRES_DB'),
-    //*     user: 'admin',
-    //*     password: '1111',
-    //*   }),
-    //* }),
-    // **
     MongooseModule.forRoot(
       'mongodb+srv://metroexpress:suradet842@cluster0.gkpqpve.mongodb.net/?retryWrites=true&w=majority',
     ),
     MongooseModule.forFeature([
       // { name: BlogMongoose.name, schema: BlogSchema },
-      { name: Post.name, schema: PostSchema },
+      // { name: Post.name, schema: PostSchema },
       { name: PostLikeMoongoose.name, schema: PostLikeSchema },
       // { name: UserMongoose.name, schema: UserSchema },
-      { name: DevicesMongoose.name, schema: DevicesSchema },
+      // { name: DevicesMongoose.name, schema: DevicesSchema },
       { name: RateLimitMongoose.name, schema: RateLimitSchema },
       { name: PostCommentMoongoose.name, schema: PostCommentSchema },
       { name: CommentLikeMoongoose.name, schema: CommentLikeSchema },
     ]),
+
     // UsersModule,
     TestsModule,
     // AuthModule,

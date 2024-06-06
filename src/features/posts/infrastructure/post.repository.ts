@@ -105,8 +105,14 @@ export class PostRepository {
 
   async create(newPostModal: any): Promise<any | null> {
     try {
-      const newPost = await this.dataSource.query(
-        `
+
+      //@@
+      //@ const objForInser = Object.keys(newPostModal).map(key => `"${key}" = '${newPostModal[key]}'`).join()
+      //@ SET ${objForInser}
+      //@@
+
+      const newPost = await this.dataSource.query( 
+      `
       INSERT INTO "Posts" ("id","title","shortDescription","content","blogName","blogId","createdAt")
       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *
       `,
