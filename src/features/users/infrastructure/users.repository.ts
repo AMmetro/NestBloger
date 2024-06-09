@@ -25,7 +25,7 @@ export class UsersRepository {
     try {
       const users = await this.dataSource.query(
         `
-        SELECT * from "Users" 
+        SELECT * from "users" 
         WHERE "login" ILIKE  $1 OR "email" ILIKE $2 
         ORDER BY "${sortData.sortBy}" ${sortData.sortDirection} 
         LIMIT $3 OFFSET $4
@@ -42,7 +42,7 @@ export class UsersRepository {
       }
       const totalCount = await this.dataSource.query(
         `SELECT COUNT(*) 
-        FROM "Users"
+        FROM "users"
         WHERE "login" ILIKE  $1 OR "email" ILIKE $2
         `,
         [
@@ -68,7 +68,7 @@ export class UsersRepository {
   async getById(userId: string): Promise<any | null> {
     try {
       const user = await this.dataSource.query(
-        `SELECT * FROM "Users" WHERE id = $1`,
+        `SELECT * FROM "users" WHERE id = $1`,
         [userId],
       );
       if (!user.length) {
@@ -85,7 +85,7 @@ export class UsersRepository {
     try {
       const user = await this.dataSource.query( 
         `
-      INSERT INTO "Users" ("login", "passwordHash", "passwordSalt", "email", "createdAt", "confirmationCode", "isConfirmed" )
+      INSERT INTO "users" ("login", "passwordHash", "passwordSalt", "email", "createdAt", "confirmationCode", "isConfirmed" )
       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *
       `,
         [
@@ -111,7 +111,7 @@ export class UsersRepository {
   async confirmRegistration(userId: string): Promise<any | null> {
     try {
       const user = await this.dataSource.query(
-        `UPDATE "Users" SET "isConfirmed" = true WHERE "id" = $1 RETURNING *`,
+        `UPDATE "users" SET "isConfirmed" = true WHERE "id" = $1 RETURNING *`,
         [userId],
       );
 
@@ -131,7 +131,7 @@ export class UsersRepository {
   ): Promise<any | null> {
     try {
       const user = await this.dataSource.query(
-        `UPDATE "Users" SET "confirmationCode" = $1 WHERE "id" = $2 RETURNING *`,
+        `UPDATE "users" SET "confirmationCode" = $1 WHERE "id" = $2 RETURNING *`,
         [confirmationCode, userId],
       );
       if (!user) {
@@ -148,7 +148,7 @@ export class UsersRepository {
     try {
       const user = await this.dataSource.query(
         `
-        SELECT * FROM "Users" WHERE login = $1 OR email = $2 
+        SELECT * FROM "users" WHERE login = $1 OR email = $2 
       `,
         [searchData.login, searchData.email],
       );
@@ -166,7 +166,7 @@ export class UsersRepository {
     try {
       const user = await this.dataSource.query(
         `
-        SELECT * FROM "Users" WHERE "confirmationCode" = $1 
+        SELECT * FROM "users" WHERE "confirmationCode" = $1 
       `,
         [code],
       );
@@ -179,7 +179,7 @@ export class UsersRepository {
 
   async deleteAll(): Promise<any | null> {
     try {
-      const user = await this.dataSource.query(`DELETE FROM "Users"`);
+      const user = await this.dataSource.query(`DELETE FROM "users"`);
       if (!user) {
         return null;
       }
@@ -193,7 +193,7 @@ export class UsersRepository {
   async deleteUserById(userId: string): Promise<any | null> {
     try {
       const user = await this.dataSource.query(
-        `DELETE FROM "Users" WHERE id = $1`,
+        `DELETE FROM "users" WHERE id = $1`,
         [userId],
       );
       if (!user) {

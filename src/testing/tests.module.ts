@@ -11,7 +11,7 @@ import { DevicesServices } from 'src/features/devices/application/devices.servic
 //   DevicesMongoose,
 //   DevicesSchema,
 // } from 'src/features/devices/domain/devices.entity';
-// import { DevicesRepository } from 'src/features/devices/infrastructure/devices.repository';
+import { DevicesRepository } from 'src/features/devices/infrastructure/devices.repository';
 import { DevicesController } from 'src/features/devices/api/devices.controller';
 import { PostsController } from 'src/features/posts/api/posts.controller';
 import { Post, PostSchema } from 'src/features/posts/domain/post.entity';
@@ -60,7 +60,7 @@ import { BlogsService } from 'src/features/blogs/application/blogs.service';
     BlogsController,
     PostsController,
     UsersController,
-    // DevicesController,
+    DevicesController,
     SaUsersController,
   ],
   providers: [
@@ -72,8 +72,8 @@ import { BlogsService } from 'src/features/blogs/application/blogs.service';
     PostLikesServices,
     UsersRepository,
     UsersService,
-    // DevicesServices,
-    // DevicesRepository,
+    DevicesServices,
+    DevicesRepository,
     AuthService,
     JwtService,
     PostCommentsRepository,

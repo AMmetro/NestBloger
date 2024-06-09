@@ -20,6 +20,7 @@ export class SaService {
     email: string,
     password: string,
   ): Promise<any> {
+
     const InputUserModel = {
       login: login,
       password: password,

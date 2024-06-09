@@ -11,12 +11,12 @@ import {
 } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MongooseModule } from '@nestjs/mongoose';
+import { MongooseModule } from '@nestjs/mongoose'; 
 import { TestsModule } from './testing/tests.module';
 import { TestController } from './testing/tests.controller';
 import { UsersRepository } from './features/users/infrastructure/users.repository';
 import { PostLikesRepository } from './features/postLikes/infrastructure/postLikes.repo';
-import { User } from './features/users/domain/user.entity';
+import { Users } from './features/users/domain/user.entity';
 import { UsersController } from './features/users/api/users.controller';
 import { AuthMiddleware } from './common/middlewares/auth/basicAuth-middleware';
 import { AuthController } from './features/auth/api/auth.controller';
@@ -67,14 +67,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SaService } from './features/sa/application/sa.service';
 import { SaBlogsController } from './features/sa/api/sablogs.controller';
 import { BlogRepository } from './features/blogs/infrastructure/blogs.repository';
-// import { BlogMongoose, BlogSchema } from './2blogs/blogs.schema';
 import { BlogsController } from './features/blogs/api/blogs.controller';
 import { BlogsService } from './features/blogs/application/blogs.service';
 import { SaTablesController } from './features/sa/api/tables.controller';
 import { SaRepository } from './features/sa/infrastructure/sa.repository';
 import databaseConf, { type DatabaseConfig } from './database/pgConfig/db.config';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { DevicesDB } from './features/devices/domain/devices.entity';
+import { Devices } from './features/devices/domain/devices.entity';
 
 
 @Module({
@@ -95,7 +94,7 @@ import { DevicesDB } from './features/devices/domain/devices.entity';
       },
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User, DevicesDB]),
+    TypeOrmModule.forFeature([Users, Devices]),
  
     // MongooseModule.forRoot(
     //   appSettings.env.isTesting()
@@ -132,11 +131,11 @@ import { DevicesDB } from './features/devices/domain/devices.entity';
       // { name: BlogMongoose.name, schema: BlogSchema },
       // { name: Post.name, schema: PostSchema },
       { name: PostLikeMoongoose.name, schema: PostLikeSchema },
+      { name: CommentLikeMoongoose.name, schema: CommentLikeSchema },
       // { name: UserMongoose.name, schema: UserSchema },
       // { name: DevicesMongoose.name, schema: DevicesSchema },
       { name: RateLimitMongoose.name, schema: RateLimitSchema },
       { name: PostCommentMoongoose.name, schema: PostCommentSchema },
-      { name: CommentLikeMoongoose.name, schema: CommentLikeSchema },
     ]),
 
     // UsersModule,

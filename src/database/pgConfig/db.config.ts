@@ -14,5 +14,6 @@ export default (): DatabaseConfig => ({
     database: 'nestBlogger',
     autoLoadEntities: true,
     synchronize: true,
+    logging:['query']
   },
 });

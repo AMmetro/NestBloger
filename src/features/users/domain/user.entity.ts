@@ -1,27 +1,41 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import { Devices } from 'src/features/devices/domain/devices.entity';
 
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from 'typeorm'; 
 
 // В скобочках Entity можно задать имя для таблицы в БД, иначе возметься из имени класса.toLowerCase()
 // можно применить class naming strategy для авто-присваивания имен 
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn()
+export class Users {
+
+  @PrimaryGeneratedColumn("uuid")
   id: number;
 
   @Column()
-  firstName: string;
+  login: string;
 
   @Column()
-  lastName: string;
+  passwordHash: string;
 
-  @Column({ default: true })
-  isActive: boolean;
+  @Column()
+  email: string;
+
+  @Column()
+  passwordSalt: string;
+
+  @Column()
+  createdAt: Date; // @CreateDateColumn()
+  
+  @Column()
+  confirmationCode: string;
+
+  @Column()
+  isConfirmed: boolean;
+
+  @OneToMany(()=>Devices, (device)=> device.userId)
+  device: Devices[];
  
-  // @OneToMany(type => Photo, photo => photo.user)
-  // photos: Photo[];
-
 }
 
 // @@ ---------- entity for mongoDB ----------------------------------------

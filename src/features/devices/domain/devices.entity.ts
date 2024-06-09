@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import { Users } from 'src/features/users/domain/user.entity';
 
-export class Devices {
+export class Device {
   userId: string;
   ip: string;
   title: string;
@@ -29,22 +30,25 @@ export class Devices {
   }
 }
 
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 
-// В скобочках Entity можно задать имя для таблицы в БД, иначе возметься из имени класса.toLowerCase()
-// можно применить class naming strategy для авто-присваивания имен 
-@Entity()
-export class DevicesDB {
-  @PrimaryGeneratedColumn()
+/** В скобочках Entity можно задать имя для таблицы в БД, иначе возметься из имени класса.toLowerCase()
+* можно применить class NamingStrategy для авто-присваивания имен 
+* double click Entity для получения всех свойств
+**/ 
+@Entity('devices')
+export class Devices {
+  // ("uuid") или другие типы можно задать
+  @PrimaryGeneratedColumn("uuid") 
   id: number;
 
-  @Column()
+  @Column({nullable:true})
   userId: number;
 
-  @Column()
-  ip: string;
+  @Column({nullable:true})
+  ip: string;  // auto transformed to varchar (255)
 
-  @Column({ default: true })
+  @Column({nullable:true})
   title: string;
 
   @CreateDateColumn()
@@ -53,11 +57,13 @@ export class DevicesDB {
   @UpdateDateColumn()
   lastActiveDate: Date;
 
-  @Column()
+  @Column("uuid")
   deviceId: number;
  
-  // @OneToMany(type => Photo, photo => photo.user)
-  // photos: Photo[];
+  @ManyToOne(()=> Users, (user)=> user.device)
+  @JoinColumn({name:"userId"})
+  user: Users;
+
 
 }
 

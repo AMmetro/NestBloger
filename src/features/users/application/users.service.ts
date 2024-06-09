@@ -24,6 +24,7 @@ export class UsersService {
         isConfirmed: isConfirmed,
       },
     };
+
     const newUserId = await this.usersRepository.addNewUserToRepo(newUserModel);
     if (!newUserId) {
       return null;
