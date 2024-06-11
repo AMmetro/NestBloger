@@ -26,24 +26,26 @@ import { SaService } from '../application/sa.service';
 import { BasicAuthGuard } from 'src/common/guards/basic.guard';
 import { SaRepository } from '../infrastructure/sa.repository';
 import { DevicesRepository } from 'src/features/devices/infrastructure/devices.repository';
+import { PostCommentsRepository } from 'src/features/postComments/infrastructure/postComments.repo';
 
 @Controller('sa/tables')
 export class SaTablesController {
   constructor(
     private readonly saService: SaService,
     private readonly devicesRepository: DevicesRepository,
+    private readonly postCommentsRepository: PostCommentsRepository,
      private saRepository: SaRepository) {}
 
   // ----------------------------------------
-  @Get('test')
+  @Post('test')
   @UseGuards(BasicAuthGuard)
   @HttpCode(201)
   async test(
     @Body() reqBody: UserCreateModel,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const createdTable = await this.devicesRepository.deleteAllOtherDevices("47919084-b2ea-4f6c-8432-ab1348bcc613", "47a27c06-b598-4ed8-879d-70fb19774e4d");
-    // return createdTable;
+    const createdTable = await this.devicesRepository.getById("134c1d73-a949-4102-92c1-60769fa92dbb");
+    return createdTable;
   }
   // ------------------------------------
 

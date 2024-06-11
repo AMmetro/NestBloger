@@ -3,6 +3,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { User } from 'src/features/sa/api/dto/output/user.output.model';
 import { DataSource } from 'typeorm';
 import { searchDataType } from '../api/dto/input/create-user.input.model';
+import { ExtendedSortQueryType } from 'src/base/utils/sortQeryUtils';
 
 export type NewUserModelType = {
   login: string;
@@ -21,7 +22,7 @@ export type NewUserModelType = {
 export class UsersRepository {
   constructor(@InjectDataSource() private dataSource: DataSource) {}
 
-  async getAll(sortData): Promise<any | null> {
+  async getAll(sortData: ExtendedSortQueryType): Promise<any | null> {
     try {
       const users = await this.dataSource.query(
         `
@@ -158,7 +159,7 @@ export class UsersRepository {
       return user[0];
     } catch (e) {
       console.log(e);
-      return null;
+      return null;  
     }
   }
 
@@ -170,7 +171,7 @@ export class UsersRepository {
       `,
         [code],
       );
-      return user[0];
+      return user[0]
     } catch (e) {
       console.log(e);
       return null;

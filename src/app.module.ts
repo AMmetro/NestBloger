@@ -7,6 +7,7 @@ import {
   MiddlewareConsumer,
   Module,
   NestModule,
+  Post,
   RequestMethod,
 } from '@nestjs/common';
 import { AppController } from './app.controller';
@@ -37,7 +38,7 @@ import {
   RateLimitMongoose,
   RateLimitSchema,
 } from './features/rateLimit/domain/rateLimit.entity';
-import { Post, PostSchema } from './features/posts/domain/post.entity';
+// import { Post, PostSchema } from './features/posts/domain/post.entity';
 import { PostsController } from './features/posts/api/posts.controller';
 import { PostsService } from './features/posts/application/post.service';
 import { PostRepository } from './features/posts/infrastructure/post.repository';
@@ -53,6 +54,7 @@ import { PostCommentsRepository } from './features/postComments/infrastructure/p
 import {
   PostCommentMoongoose,
   PostCommentSchema,
+  PostComments,
 } from './features/postComments/domain/postsComment.schema';
 import { PostCommentsController } from './features/postComments/api/postComments.controller';
 import { PostCommentsService } from './features/postComments/application/postComments.service';
@@ -74,6 +76,7 @@ import { SaRepository } from './features/sa/infrastructure/sa.repository';
 import databaseConf, { type DatabaseConfig } from './database/pgConfig/db.config';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Devices } from './features/devices/domain/devices.entity';
+import { Posts } from './features/posts/domain/post.entity';
 
 
 @Module({
@@ -94,7 +97,7 @@ import { Devices } from './features/devices/domain/devices.entity';
       },
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([Users, Devices]),
+    TypeOrmModule.forFeature([Users, Devices, Posts, PostComments]),
  
     // MongooseModule.forRoot(
     //   appSettings.env.isTesting()

@@ -62,11 +62,17 @@ export class PostCommentsService {
       content: content,
       postId: commentedPostId,
       createdAt: new Date().toISOString(),
-      commentatorInfo: {
-        userId: commentatorInfo.id,
-        userLogin: commentatorInfo.login,
-      },
+      userId: commentatorInfo.id,
     };
+    // const newCommentModel = {
+    //   content: content,
+    //   postId: commentedPostId,
+    //   createdAt: new Date().toISOString(),
+    //   commentatorInfo: {
+    //     userId: commentatorInfo.id,
+    //     userLogin: commentatorInfo.login,
+    //   },
+    // };
     const createdComment =
       await this.postCommentsRepository.create(newCommentModel);
     if (!createdComment) {

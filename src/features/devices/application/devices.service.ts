@@ -21,6 +21,10 @@ export class DevicesServices {
   async createdDevice(newDevicesModel: any): Promise<any> {
     const createdDevice = await this.devicesRepository.create(newDevicesModel);
 
+    console.log("===createdDevice====");
+    console.log(createdDevice);
+
+
     return createdDevice;
   }
 

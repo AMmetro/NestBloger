@@ -25,6 +25,7 @@ import { Request, Response } from 'express';
 import { SaService } from '../application/sa.service';
 import { BasicAuthGuard } from 'src/common/guards/basic.guard';
 
+
 @Controller('sa/users')
 export class SaUsersController {
   constructor(private readonly saService: SaService) {}

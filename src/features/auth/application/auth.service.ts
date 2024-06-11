@@ -106,6 +106,7 @@ export class AuthService {
     );
 
     const newDevicesModel = {
+      user,
       userId: decodedRefreshToken.userId,
       deviceId: decodedRefreshToken.deviceId,
       ip: userIp,
@@ -260,7 +261,15 @@ export class AuthService {
     if (!user) {
       return null;
     }
+
+                                                        console.log("---user---");
+                                                        console.log(user);
+
     const device = await this.devicesServices.getDevice(deviceId);
+
+                                                          console.log("---device---");
+                                                          console.log(device);
+
     if (!device) {
       return null;
     }

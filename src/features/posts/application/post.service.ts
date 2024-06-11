@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { PostLikesRepository } from 'src/features/postLikes/infrastructure/postLikes.repo';
-import { Post } from '../domain/post.entity';
+// import { Post } from '../domain/post.entity';
 import { PostRepository } from '../infrastructure/post.repository';
 import { PostLikesServices } from 'src/features/postLikes/application/postLikes.service';
 import { UsersRepository } from 'src/features/users/infrastructure/users.repository';

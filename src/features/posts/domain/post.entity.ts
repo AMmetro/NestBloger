@@ -1,25 +1,58 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { Prop } from '@nestjs/mongoose';
+import { PostComments } from 'src/features/postComments/domain/postsComment.schema';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-export type PostDocument = HydratedDocument<Post>;
 
-@Schema()
-export class Post {
-  @Prop({ required: true })
+// В скобочках Entity можно задать имя для таблицы в БД, иначе возметься из имени класса.toLowerCase()
+// можно применить class naming strategy для авто-присваивания имен 
+@Entity()
+export class Posts {
+
+  @PrimaryGeneratedColumn("uuid") 
+  id: string;
+  
+  @Column()
   title: string;
-  @Prop({ required: true })
+
+  @Column()
   shortDescription: string;
-  @Prop({ required: true })
+
+  @Column()
   content: string;
-  @Prop({ required: true })
+
+  @Column()
   blogName: string;
-  @Prop({ required: true })
+
+  @Column("uuid")
   blogId: string;
+
   @Prop({ required: true })
-  createdAt: Date;
+  createdAt: Date; // @CreateDateColumn()
+
+  @OneToMany(()=> PostComments, (postComment)=> postComment.postId)
+  postComments: PostComments[];
+ 
 }
 
-export const PostSchema = SchemaFactory.createForClass(Post);
+// export type PostDocument = HydratedDocument<Post>;
+
+// @Schema()
+// export class Post {
+//   @Prop({ required: true })
+//   title: string;
+//   @Prop({ required: true })
+//   shortDescription: string;
+//   @Prop({ required: true })
+//   content: string;
+//   @Prop({ required: true })
+//   blogName: string;
+//   @Prop({ required: true })
+//   blogId: string;
+//   @Prop({ required: true })
+//   createdAt: Date;
+// }
+
+// export const PostSchema = SchemaFactory.createForClass(Post);
 
 
 

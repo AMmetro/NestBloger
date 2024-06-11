@@ -72,6 +72,10 @@ export class AuthController {
     @Req() request: any,
     @Res({ passthrough: true }) res: Response,
   ) {
+
+    console.log("------------request--------------");
+    console.log(request);
+
     const userId = request.user?.userId;
     const deviceId = request.user?.deviceId;
     if (!userId || !deviceId) {

@@ -9,22 +9,23 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } f
 @Entity()
 export class Users {
 
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn("uuid")    
   id: number;
 
-  @Column()
+  @Column({collation: "C"})
+  // @Column()
   login: string;
 
   @Column()
-  passwordHash: string;
-
+  passwordHash: string; 
+ 
   @Column()
-  email: string;
+  email: string; 
 
   @Column()
   passwordSalt: string;
 
-  @Column()
+  @Column({type: "timestamptz"}) 
   createdAt: Date; // @CreateDateColumn()
   
   @Column()
@@ -33,7 +34,7 @@ export class Users {
   @Column()
   isConfirmed: boolean;
 
-  @OneToMany(()=>Devices, (device)=> device.userId)
+  @OneToMany(()=>Devices, (device)=> device.user)
   device: Devices[];
  
 }

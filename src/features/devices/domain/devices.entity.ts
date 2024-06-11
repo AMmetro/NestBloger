@@ -30,20 +30,20 @@ export class Device {
   }
 }
 
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn, BaseEntity } from 'typeorm';
 
 /** В скобочках Entity можно задать имя для таблицы в БД, иначе возметься из имени класса.toLowerCase()
 * можно применить class NamingStrategy для авто-присваивания имен 
 * double click Entity для получения всех свойств
 **/ 
 @Entity('devices')
-export class Devices {
+export class Devices extends BaseEntity {
   // ("uuid") или другие типы можно задать
   @PrimaryGeneratedColumn("uuid") 
-  id: number;
+  id: string;
 
-  @Column({nullable:true})
-  userId: number;
+  // @Column({nullable:true})
+  // userId: number;
 
   @Column({nullable:true})
   ip: string;  // auto transformed to varchar (255)
@@ -58,13 +58,11 @@ export class Devices {
   lastActiveDate: Date;
 
   @Column("uuid")
-  deviceId: number;
+  deviceId: string;
  
   @ManyToOne(()=> Users, (user)=> user.device)
   @JoinColumn({name:"userId"})
   user: Users;
-
-
 }
 
 

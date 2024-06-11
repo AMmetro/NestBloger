@@ -16,6 +16,11 @@ export type OutputBasicSortQueryType = {
   pageSize: number;
 };
 
+export type ExtendedSortQueryType = OutputBasicSortQueryType & {
+  searchEmailTerm: string | null;
+  searchLoginTerm: string | null
+}
+
 export const basicSortQuery = (
   query: basicSortQueryType,
 ): OutputBasicSortQueryType => {

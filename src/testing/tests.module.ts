@@ -14,7 +14,7 @@ import { DevicesServices } from 'src/features/devices/application/devices.servic
 import { DevicesRepository } from 'src/features/devices/infrastructure/devices.repository';
 import { DevicesController } from 'src/features/devices/api/devices.controller';
 import { PostsController } from 'src/features/posts/api/posts.controller';
-import { Post, PostSchema } from 'src/features/posts/domain/post.entity';
+// import { Post, PostSchema } from 'src/features/posts/domain/post.entity';
 import { PostsService } from 'src/features/posts/application/post.service';
 import { PostRepository } from 'src/features/posts/infrastructure/post.repository';
 import {
@@ -47,7 +47,7 @@ import { BlogsService } from 'src/features/blogs/application/blogs.service';
   imports: [
     MongooseModule.forFeature([
       // { name: BlogMongoose.name, schema: BlogSchema },
-      { name: Post.name, schema: PostSchema },
+      // { name: Post.name, schema: PostSchema },
       { name: PostLikeMoongoose.name, schema: PostLikeSchema },
       // { name: UserMongoose.name, schema: UserSchema },
       // { name: DevicesMongoose.name, schema: DevicesSchema },

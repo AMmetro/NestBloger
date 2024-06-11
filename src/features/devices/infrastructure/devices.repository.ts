@@ -15,15 +15,30 @@ export class DevicesRepository {
 
   async create(newDevices: any) {
     const divece = new Devices();
-    divece.userId = newDevices.userId;
+    //divece.userId = newDevices.userId;
+    divece.user = newDevices.userId;
+    // divece.user = {id: newDevices.user.id};
     divece.ip = newDevices.ip;
     divece.title = newDevices.title;
     divece.tokenCreatedAt = newDevices.tokenCreatedAt;
     divece.lastActiveDate = newDevices.lastActiveDate;
     divece.deviceId = newDevices.deviceId;
     try {
-      const newDevice = await this.entityManager.create(Devices, divece);
-      return this.entityManager.save(divece);
+      const newDevice = await this.entityManager.getRepository(Devices).create(divece).save();
+        
+      console.log("=====newDevice=====");
+      console.log(newDevice);
+      //const xxx = await divece.save();
+
+      const allDevic = await this.entityManager.getRepository(Devices).find();
+
+      // console.log("=====xxx=====");
+      console.log("===allDevic==CREATE=");
+      console.log(allDevic);
+      //console.log(xxx);
+
+      return newDevice;
+  
     } catch (e) {
       console.log(e);
       return null;
@@ -31,12 +46,25 @@ export class DevicesRepository {
   }
 
   // ждет uuid тоесть стринг и с ним работает 
-    public async getById(deviceId: any): Promise<any> {
+    public async getById(deviceId: string): Promise<any> {
     try {
-      const device = await this.entityManager.findOne(Devices, { where: { deviceId } } );
+
+      const allDevic = await this.entityManager.getRepository(Devices).find();
+
+      // console.log("=====xxx=====");
+      console.log("===allDevic==getById=");
+      console.log(allDevic);
+
+      const device = await this.entityManager.findOne(Devices, { where: { id: deviceId } } );
+
+
+      console.log("=========device=======");
+      console.log(device);
+
       if (!device) {
             return null;
       }
+
       // убрать лишние поля
       // "id": "943ac172-9499-462f-b59d-e3ea722ff87f",
       // "userId": "9a3f88fe-48ae-4743-b2eb-6669d5a4136a",
@@ -56,9 +84,9 @@ export class DevicesRepository {
   public async getAll(userId: any) {
     try {
       const devices = await this.entityManager.findAndCount(Devices, {
-        select: ['userId', 'title', 'deviceId'], 
+        select: ['user', 'title', 'id'], 
         where: {
-          userId: userId
+          user: {id: userId}
         },
     });
       return devices;
@@ -101,8 +129,6 @@ export class DevicesRepository {
 
   async deleteAllOtherDevices(exceptDeviceId: any, userId: any) {
       try {
-        // DELETE FROM "devices" WHERE ("userId" = $1 AND "deviceId" != $2) 
-        // -- PARAMETERS: ["47a27c06-b598-4ed8-879d-70fb19774e4d","47919084-b2ea-4f6c-8432-ab1348bcc613"]
         const result = await this.entityManager.delete(Devices, {
           userId: userId,
           deviceId: Not(exceptDeviceId)
