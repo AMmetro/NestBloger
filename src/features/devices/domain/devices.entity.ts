@@ -30,7 +30,7 @@ export class Device {
   }
 }
 
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn, BaseEntity } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn, BaseEntity, PrimaryColumn } from 'typeorm';
 
 /** В скобочках Entity можно задать имя для таблицы в БД, иначе возметься из имени класса.toLowerCase()
 * можно применить class NamingStrategy для авто-присваивания имен 
@@ -38,31 +38,33 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateCol
 **/ 
 @Entity('devices')
 export class Devices extends BaseEntity {
-  // ("uuid") или другие типы можно задать
-  @PrimaryGeneratedColumn("uuid") 
-  id: string;
 
-  // @Column({nullable:true})
-  // userId: number;
+  @PrimaryColumn("uuid")  
+  deviceId: string;
 
-  @Column({nullable:true})
+  @Column({nullable:true})  
   ip: string;  // auto transformed to varchar (255)
 
   @Column({nullable:true})
   title: string;
-
+ 
   @CreateDateColumn()
-  tokenCreatedAt: Date;
+  tokenCreatedAt: Date; 
 
   @UpdateDateColumn()
-  lastActiveDate: Date;
+  lastActiveDate: Date;  
 
-  @Column("uuid")
-  deviceId: string;
- 
-  @ManyToOne(()=> Users, (user)=> user.device)
-  @JoinColumn({name:"userId"})
-  user: Users;
+  //**
+  //* поле со ссылкой на юзера, если его явно не задовать то создаться в таблие 
+  //* из связи ManyToOne автоматически 
+  //**
+  @Column() 
+  userId: string;
+
+  @ManyToOne(()=> Users, (incomData)=> incomData.device)
+  //* @JoinColumn({name:"userId_Custom"}) можно задать имя связи-ссылки иначе = user + Id  
+  @JoinColumn() 
+  user: Users; //* ссылка которую потом указываю при джоине например 
 }
 
 

@@ -73,9 +73,6 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
 
-    console.log("------------request--------------");
-    console.log(request);
-
     const userId = request.user?.userId;
     const deviceId = request.user?.deviceId;
     if (!userId || !deviceId) {
@@ -94,7 +91,7 @@ export class AuthController {
         secure: true,
       })
       .status(200)
-      .send({ accessToken: newAccessAndRefreshPair.AccessToken });
+      .send({ accessToken: newAccessAndRefreshPair.AccessToken });  
     return;
   }
 

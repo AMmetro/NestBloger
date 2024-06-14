@@ -127,16 +127,12 @@ import { Posts } from './features/posts/domain/post.entity';
     //   synchronize: true,
     // }),
 
-    MongooseModule.forRoot(
+    MongooseModule.forRoot( 
       'mongodb+srv://metroexpress:suradet842@cluster0.gkpqpve.mongodb.net/?retryWrites=true&w=majority',
     ),
     MongooseModule.forFeature([
-      // { name: BlogMongoose.name, schema: BlogSchema },
-      // { name: Post.name, schema: PostSchema },
       { name: PostLikeMoongoose.name, schema: PostLikeSchema },
       { name: CommentLikeMoongoose.name, schema: CommentLikeSchema },
-      // { name: UserMongoose.name, schema: UserSchema },
-      // { name: DevicesMongoose.name, schema: DevicesSchema },
       { name: RateLimitMongoose.name, schema: RateLimitSchema },
       { name: PostCommentMoongoose.name, schema: PostCommentSchema },
     ]),
@@ -212,14 +208,14 @@ export class AppModule implements NestModule {
         { path: '/posts/:id', method: RequestMethod.DELETE },
         { path: '/posts', method: RequestMethod.POST },
       );
-    // consumer.apply(RateLimitMiddleware).forRoutes(
-    //   { path: '/auth/login', method: RequestMethod.POST },
-    //   { path: '/auth/registration', method: RequestMethod.POST },
-    //   { path: '/auth/registration-confirmation', method: RequestMethod.POST },
-    //   {
-    //     path: '/auth/registration-email-resending',
-    //     method: RequestMethod.POST,
-    //   },
-    // );
+    consumer.apply(RateLimitMiddleware).forRoutes(
+      { path: '/auth/login', method: RequestMethod.POST },
+      { path: '/auth/registration', method: RequestMethod.POST },
+      { path: '/auth/registration-confirmation', method: RequestMethod.POST },
+      {
+        path: '/auth/registration-email-resending',
+        method: RequestMethod.POST,
+      },
+    );
   }
 }

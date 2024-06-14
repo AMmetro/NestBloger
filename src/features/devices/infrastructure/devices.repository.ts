@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'src/features/users/domain/user.entity';
 import { EntityManager, Not, Repository } from 'typeorm';
-import { Devices } from '../domain/devices.entity';
+import { Device, Devices } from '../domain/devices.entity';
 
 
 // https://orkhan.gitbook.io/typeorm/docs/entity-manager-api
@@ -13,28 +13,29 @@ export class DevicesRepository {
     private readonly entityManager: EntityManager,
   ) { }
 
-  async create(newDevices: any) {
+  async create(newDevices: Device) {
     const divece = new Devices();
-    //divece.userId = newDevices.userId;
-    divece.user = newDevices.userId;
-    // divece.user = {id: newDevices.user.id};
-    divece.ip = newDevices.ip;
+    //* задается значение для внешней ссылки если поле FK задано явно 
+    divece.userId = newDevices.userId;
+    //* если FK userId поле явно не задано, то в obj {user} нужно пробрасывать значение userId
+    //* для создания FK на связанную таблицу 
+    //* divece.user = newDevices.userId;
+    divece.deviceId = newDevices.deviceId;
+    divece.ip = newDevices.ip; 
     divece.title = newDevices.title;
     divece.tokenCreatedAt = newDevices.tokenCreatedAt;
     divece.lastActiveDate = newDevices.lastActiveDate;
-    divece.deviceId = newDevices.deviceId;
+
     try {
-      const newDevice = await this.entityManager.getRepository(Devices).create(divece).save();
+      // const newDevice = await this.entityManager.getRepository(Devices).create(divece).save();
+      const newDevice = await this.entityManager.getRepository(Devices).save(divece);
         
-      console.log("=====newDevice=====");
-      console.log(newDevice);
-      //const xxx = await divece.save();
-
+      // console.log("=====newDevice=====");
+      // console.log(newDevice); 
+  
       const allDevic = await this.entityManager.getRepository(Devices).find();
-
-      // console.log("=====xxx=====");
-      console.log("===allDevic==CREATE=");
-      console.log(allDevic);
+      // console.log("===allDevic==CREATE=");
+      // console.log(allDevic);
       //console.log(xxx);
 
       return newDevice;
@@ -45,34 +46,13 @@ export class DevicesRepository {
     }
   }
 
-  // ждет uuid тоесть стринг и с ним работает 
     public async getById(deviceId: string): Promise<any> {
     try {
-
-      const allDevic = await this.entityManager.getRepository(Devices).find();
-
-      // console.log("=====xxx=====");
-      console.log("===allDevic==getById=");
-      console.log(allDevic);
-
-      const device = await this.entityManager.findOne(Devices, { where: { id: deviceId } } );
-
-
-      console.log("=========device=======");
-      console.log(device);
-
+      // const allDevic = await this.entityManager.getRepository(Devices).find();
+      const device = await this.entityManager.findOne(Devices, { where: { deviceId } } );
       if (!device) {
             return null;
       }
-
-      // убрать лишние поля
-      // "id": "943ac172-9499-462f-b59d-e3ea722ff87f",
-      // "userId": "9a3f88fe-48ae-4743-b2eb-6669d5a4136a",
-      // "ip": "::1",
-      // "title": "axios/1.3.4",
-      // "tokenCreatedAt": "2024-06-07T17:50:00.000Z",
-      // "lastActiveDate": "2024-06-07T20:35:20.000Z",
-      // "deviceId": "9f586af2-d355-482f-b26e-dbd7c4550390"
              // return Devices.mapper(device);
       return device;
     } catch (e) {
@@ -83,8 +63,8 @@ export class DevicesRepository {
 
   public async getAll(userId: any) {
     try {
-      const devices = await this.entityManager.findAndCount(Devices, {
-        select: ['user', 'title', 'id'], 
+      const devices = await this.entityManager.find(Devices, {
+        select: ['user', 'ip', 'lastActiveDate', 'title', 'deviceId'], 
         where: {
           user: {id: userId}
         },
@@ -109,7 +89,15 @@ export class DevicesRepository {
 
   async deleteDeviceById(deviceId: any) {
     try {
-        const device = await this.entityManager.delete(Devices, { deviceId: deviceId });
+
+      console.log("---!!!!!!-----");
+
+        // const device = await this.entityManager.delete(Devices, { deviceId });
+        const device = await this.entityManager.getRepository(Devices).delete(deviceId);
+
+        console.log("---device2-----");
+        console.log(device);
+
         return {deletedCount: device.affected}
       } catch (e) {
         console.log(e);
@@ -127,13 +115,29 @@ export class DevicesRepository {
     }
   }
 
-  async deleteAllOtherDevices(exceptDeviceId: any, userId: any) {
+  async deleteAllOtherDevices(data: {userId: string, deviceId: string}) { 
       try {
-        const result = await this.entityManager.delete(Devices, {
-          userId: userId,
-          deviceId: Not(exceptDeviceId)
+        // const result = await this.entityManager.delete(Devices, {
+        //   userId: userId,
+        //   deviceId: Not(exceptDeviceId)
+
+
+        console.log("--exceptDeviceId");
+        console.log(data.deviceId);
+        console.log("--userId");
+        console.log(data.userId);
+
+        const result = await this.entityManager.getRepository(Devices).delete({
+          // userId: data.userId,
+          deviceId: Not(data.deviceId)
+      
         });
-        return !!result.affected;
+
+        console.log("-----result---");
+        console.log(result);
+
+        // если удалено 0 девайсов но их и не было то ошибка ?
+        return !!result.affected; 
       } catch (e) {
         console.log(e);
         return null;

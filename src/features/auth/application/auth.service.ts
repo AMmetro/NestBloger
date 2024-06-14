@@ -71,7 +71,7 @@ export class AuthService {
   }
 
   async loginUser(
-    authData: AuthUserInputModel,
+    authData: AuthUserInputModel, 
     userAgent: string,
     userIp: string,
   ): Promise<any> {
@@ -106,7 +106,6 @@ export class AuthService {
     );
 
     const newDevicesModel = {
-      user,
       userId: decodedRefreshToken.userId,
       deviceId: decodedRefreshToken.deviceId,
       ip: userIp,
@@ -114,6 +113,11 @@ export class AuthService {
       lastActiveDate: new Date(decodedRefreshToken!.exp * 1000),
       tokenCreatedAt: new Date(decodedRefreshToken!.iat * 1000),
     };
+
+    console.log("--newDevicesModel");
+    console.log(newDevicesModel);
+
+
     await this.devicesServices.createdDevice(newDevicesModel);
     return newAccessAndRefreshPair;
   }
@@ -237,10 +241,20 @@ export class AuthService {
     if (!claimantInfo?.id) {
       return null;
     }
+
+    console.log("--userId");
+    console.log(userId);
+    console.log("--deviceId");
+    console.log(deviceId);
+
     const device = await this.devicesServices.getDevice(deviceId);
     if (!device) {
       return null;
     }
+
+    console.log("--device");
+    console.log(device);
+
     if (device.userId !== claimantInfo.id.toString()) {
       return null;
       // status: ResultCode.Forbidden,
@@ -250,6 +264,8 @@ export class AuthService {
       deviceId,
       userId,
     );
+                                  console.log("---isDeleted11");
+                                  console.log(isDeleted);
     if (!isDeleted) {
       null;
     }

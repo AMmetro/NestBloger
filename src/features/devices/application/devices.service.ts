@@ -8,6 +8,7 @@ import { OutputUserType } from '../api/dto/output/user.output.model';
 // import { DevicesMongoose } from '../domain/devices.entity';
 import { Model } from 'mongoose';
 import { DevicesRepository } from '../infrastructure/devices.repository';
+import { Device } from '../domain/devices.entity';
 @Injectable()
 export class DevicesServices {
   constructor(
@@ -18,13 +19,8 @@ export class DevicesServices {
     // private usersRepository: UsersRepository,
   ) {}
 
-  async createdDevice(newDevicesModel: any): Promise<any> {
+  async createdDevice(newDevicesModel: Device): Promise<any> {
     const createdDevice = await this.devicesRepository.create(newDevicesModel);
-
-    console.log("===createdDevice====");
-    console.log(createdDevice);
-
-
     return createdDevice;
   }
 
@@ -33,8 +29,7 @@ export class DevicesServices {
     deviceId: string,
   ): Promise<any | string> {
     const deleteDevices = await this.devicesRepository.deleteAllOtherDevices(
-      userId,
-      deviceId,
+      {userId,   deviceId}
     );
 
     if (!deleteDevices) {
@@ -81,6 +76,10 @@ export class DevicesServices {
 
   async deleteDeviceById(deviceId: string, userId: string): Promise<any> {
     const device = await this.devicesRepository.getById(deviceId);
+    
+    console.log("---isDeleted33");
+    console.log(device);
+
     if (!device?.deviceId) {
       return null;
     }

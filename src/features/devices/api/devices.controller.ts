@@ -108,7 +108,7 @@ export class DevicesController {
     if (!userId || !deviceId) {
       throw new UnauthorizedException();
     }
-    const result = await this.devicesServices.deleteAllOtherDevices(
+    await this.devicesServices.deleteAllOtherDevices(
       userId,
       deviceId,
     );

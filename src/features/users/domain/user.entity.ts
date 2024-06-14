@@ -10,10 +10,9 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } f
 export class Users {
 
   @PrimaryGeneratedColumn("uuid")    
-  id: number;
+  id: string;
 
   @Column({collation: "C"})
-  // @Column()
   login: string;
 
   @Column()
@@ -34,7 +33,7 @@ export class Users {
   @Column()
   isConfirmed: boolean;
 
-  @OneToMany(()=>Devices, (device)=> device.user)
+  @OneToMany(()=>Devices, (incomClass)=> incomClass.user)
   device: Devices[];
  
 }
