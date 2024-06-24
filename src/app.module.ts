@@ -42,18 +42,19 @@ import {
 import { PostsController } from './features/posts/api/posts.controller';
 import { PostsService } from './features/posts/application/post.service';
 import { PostRepository } from './features/posts/infrastructure/post.repository';
-import {
-  PostLikeMoongoose,
-  PostLikeSchema,
-} from './features/postLikes/domain/postsLikes.schema';
+// import {
+//   PostLike,
+//   PostLikeMoongoose,
+//   PostLikeSchema,
+// } from './features/postLikes/domain/postsLikes.schema';
 import { PostLikesServices } from './features/postLikes/application/postLikes.service';
 import { JwtStrategy } from './features/auth/strategies/jwtStrategy';
 import { PassportModule } from '@nestjs/passport';
 import { CustomBlogIdvalidation } from './common/decorators/validate/isBlogExist';
 import { PostCommentsRepository } from './features/postComments/infrastructure/postComments.repo';
 import {
-  PostCommentMoongoose,
-  PostCommentSchema,
+  // PostCommentMoongoose,
+  // PostCommentSchema,
   PostComments,
 } from './features/postComments/domain/postsComment.schema';
 import { PostCommentsController } from './features/postComments/api/postComments.controller';
@@ -61,8 +62,9 @@ import { PostCommentsService } from './features/postComments/application/postCom
 import { CommentLikesServices } from './features/commentLikes/application/commentLikes.service';
 import { CommentLikesRepository } from './features/commentLikes/infrastructure/commentLikes.repo';
 import {
-  CommentLikeMoongoose,
-  CommentLikeSchema,
+  CommentLike,
+  // CommentLikeMoongoose,
+  // CommentLikeSchema,
 } from './features/commentLikes/domain/commentLikes.schema';
 import { SaUsersController } from './features/sa/api/sausers.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -77,6 +79,8 @@ import databaseConf, { type DatabaseConfig } from './database/pgConfig/db.config
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Devices } from './features/devices/domain/devices.entity';
 import { Posts } from './features/posts/domain/post.entity';
+import { PostLike } from './features/postLikes/domain/postsLikes.schema';
+import { BlogEntity } from './features/blogs/domain/blog.entity';
 
 
 @Module({
@@ -97,7 +101,7 @@ import { Posts } from './features/posts/domain/post.entity';
       },
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([Users, Devices, Posts, PostComments]),
+    TypeOrmModule.forFeature([Users, Devices, Posts, PostComments, PostLike, PostComments, CommentLike, BlogEntity]),
  
     // MongooseModule.forRoot(
     //   appSettings.env.isTesting()
@@ -131,10 +135,10 @@ import { Posts } from './features/posts/domain/post.entity';
       'mongodb+srv://metroexpress:suradet842@cluster0.gkpqpve.mongodb.net/?retryWrites=true&w=majority',
     ),
     MongooseModule.forFeature([
-      { name: PostLikeMoongoose.name, schema: PostLikeSchema },
-      { name: CommentLikeMoongoose.name, schema: CommentLikeSchema },
+      // { name: PostLikeMoongoose.name, schema: PostLikeSchema },
+      // { name: CommentLikeMoongoose.name, schema: CommentLikeSchema },
       { name: RateLimitMongoose.name, schema: RateLimitSchema },
-      { name: PostCommentMoongoose.name, schema: PostCommentSchema },
+      // { name: PostCommentMoongoose.name, schema: PostCommentSchema }, 
     ]),
 
     // UsersModule,
@@ -208,14 +212,14 @@ export class AppModule implements NestModule {
         { path: '/posts/:id', method: RequestMethod.DELETE },
         { path: '/posts', method: RequestMethod.POST },
       );
-    consumer.apply(RateLimitMiddleware).forRoutes(
-      { path: '/auth/login', method: RequestMethod.POST },
-      { path: '/auth/registration', method: RequestMethod.POST },
-      { path: '/auth/registration-confirmation', method: RequestMethod.POST },
-      {
-        path: '/auth/registration-email-resending',
-        method: RequestMethod.POST,
-      },
-    );
+    // consumer.apply(RateLimitMiddleware).forRoutes(
+    //   { path: '/auth/login', method: RequestMethod.POST },
+    //   { path: '/auth/registration', method: RequestMethod.POST },
+    //   { path: '/auth/registration-confirmation', method: RequestMethod.POST },
+    //   {
+    //     path: '/auth/registration-email-resending',
+    //     method: RequestMethod.POST,
+    //   },
+    // );
   }
 }

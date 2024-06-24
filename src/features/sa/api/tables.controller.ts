@@ -27,6 +27,7 @@ import { BasicAuthGuard } from 'src/common/guards/basic.guard';
 import { SaRepository } from '../infrastructure/sa.repository';
 import { DevicesRepository } from 'src/features/devices/infrastructure/devices.repository';
 import { PostCommentsRepository } from 'src/features/postComments/infrastructure/postComments.repo';
+import { CommentLikesRepository } from 'src/features/commentLikes/infrastructure/commentLikes.repo';
 
 @Controller('sa/tables')
 export class SaTablesController {
@@ -34,17 +35,39 @@ export class SaTablesController {
     private readonly saService: SaService,
     private readonly devicesRepository: DevicesRepository,
     private readonly postCommentsRepository: PostCommentsRepository,
+    private readonly commentLikesRepository: CommentLikesRepository,
      private saRepository: SaRepository) {}
 
   // ----------------------------------------
-  @Post('test')
+  @Get()
   @UseGuards(BasicAuthGuard)
   @HttpCode(201)
   async test(
     @Body() reqBody: UserCreateModel,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const createdTable = await this.devicesRepository.getById("134c1d73-a949-4102-92c1-60769fa92dbb");
+
+    // const newCommentLike = { 
+    //   userId:"3e08669a-2571-4d1a-9e87-068b0c3e2bfd",
+    //   myStatus:"Like",
+    //   addedAt: new Date(),
+    //   postCommentsId: "e18baf09-75b1-432a-a23f-6f2e9af71ee0",
+    //   commentId: "e18baf09-75b1-432a-a23f-6f2e9af71ee0"
+    // };
+    
+    // const updLike = { 
+    //   id:"a1202566-7afa-4790-a3ae-169c21be4089",
+    //   myStatus:"Dislike3",
+    // };
+
+    //   const newComment = { 
+    //   content:"222222222",
+    //   userId:"3e08669a-2571-4d1a-9e87-068b0c3e2bfd",
+    //   createdAt: new Date(),
+    //   postId: "1351dbb0-3619-4669-a2e9-498d61051987"
+    // };
+    
+    const createdTable = await this.postCommentsRepository.findComment("038d3d85-2f91-4cae-b114-489e0e29be47");
     return createdTable;
   }
   // ------------------------------------

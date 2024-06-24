@@ -1,22 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { SortDirection } from 'mongodb';
-import { OutputBasicSortQueryType } from 'src/base/utils/sortQeryUtils';
-// import { PostLikesRepository } from 'src/features/postLikes/infrastructure/postLikes.repo';
+import { GetBlogsSortDataType, OutputBasicSortQueryType } from 'src/base/utils/sortQeryUtils';
 import { PostsService } from 'src/features/posts/application/post.service';
 import { PostRepository } from 'src/features/posts/infrastructure/post.repository';
-// import { PostLikesServices } from 'src/features/postLikes/application/postLikes.service';
 import { BlogDto } from '../domain/blog.entity';
 import { BlogRepository } from '../infrastructure/blogs.repository';
 import { randomUUID } from 'crypto';
-import { UpdateBlogType } from '../api/dto/input/create-user.input.model';
+import { UpdateBlogType } from '../api/dto/input/create-blog.input.model';
+import { OutputBlogPostType } from '../api/dto/output/blog.output.model';
 
-type SortDataType = {
-  searchNameTerm?: string | null;
-  sortBy: string;
-  sortDirection: SortDirection;
-  pageNumber: number;
-  pageSize: number;
-};
 
 @Injectable()
 export class BlogsService {
@@ -28,7 +19,7 @@ export class BlogsService {
     private postsService: PostsService,
   ) {}
 
-  async findAll(sortData: SortDataType): Promise<any> {
+  async findAll(sortData: GetBlogsSortDataType): Promise<any> {
     const createdBlog = this.blogRepository.getAllByName(sortData);
     return createdBlog;
   }
@@ -50,7 +41,7 @@ export class BlogsService {
     blogId: string,
     basicSortData: OutputBasicSortQueryType,
     optionalUserId: string | null,
-  ): Promise<any> {
+  ): Promise<OutputBlogPostType> {
     const isBlogExist = await this.blogRepository.findById(blogId);
     if (!isBlogExist) {
       return null;
@@ -60,17 +51,10 @@ export class BlogsService {
       blogId,
     );
 
-    console.log("-----------blogPostsWithPagination---------");
-    console.log(blogPostsWithPagination);
-
     const postsWithLikes = await this.postsService.addLikesToPosts(
       blogPostsWithPagination.items,
       optionalUserId,
     );
-
-    console.log("-----------postsWithLikes---------");
-    console.log(postsWithLikes);
-
     return { ...blogPostsWithPagination, items: postsWithLikes };
   }
 

@@ -30,7 +30,7 @@ export class Device {
   }
 }
 
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn, BaseEntity, PrimaryColumn } from 'typeorm';
+import { Entity, Column, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn, BaseEntity, PrimaryColumn } from 'typeorm';
 
 /** В скобочках Entity можно задать имя для таблицы в БД, иначе возметься из имени класса.toLowerCase()
 * можно применить class NamingStrategy для авто-присваивания имен 

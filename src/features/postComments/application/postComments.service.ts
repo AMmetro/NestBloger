@@ -5,6 +5,7 @@ import { PostRepository } from 'src/features/posts/infrastructure/post.repositor
 import { PostLikesServices } from 'src/features/postLikes/application/postLikes.service';
 import { CommentLikesRepository } from 'src/features/commentLikes/infrastructure/commentLikes.repo';
 import { CommentLikesServices } from 'src/features/commentLikes/application/commentLikes.service';
+import { likeStatusEnum } from 'src/features/commentLikes/domain/commentLikesTypes';
 @Injectable()
 export class PostCommentsService {
   constructor(
@@ -22,15 +23,20 @@ export class PostCommentsService {
   ): Promise<any> {
     const postComments =
       await this.postCommentsRepository.findComment(commentId);
-
     if (!postComments) {
       return null;
     }
+
+
+
     const composedCommentLikes =
       await this.commentLikesServices.countCommentLikes(
         commentId,
         userOptionalId,
       );
+
+
+
     const resultComment = {
       id: commentId,
       content: postComments.content,
@@ -41,9 +47,13 @@ export class PostCommentsService {
       likesInfo: composedCommentLikes,
       createdAt: postComments.createdAt,
     };
+
+
+
     return resultComment;
   }
 
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   async createComment(
     commentedPostId: string,
     userCommentatorId: string,
@@ -53,40 +63,51 @@ export class PostCommentsService {
     if (!commentedPost) {
       return null;
     }
+
     const commentatorInfo =
       await this.usersRepository.getById(userCommentatorId);
     if (!commentatorInfo) {
       return null;
     }
+
     const newCommentModel = {
       content: content,
       postId: commentedPostId,
       createdAt: new Date().toISOString(),
       userId: commentatorInfo.id,
     };
-    // const newCommentModel = {
-    //   content: content,
-    //   postId: commentedPostId,
-    //   createdAt: new Date().toISOString(),
-    //   commentatorInfo: {
-    //     userId: commentatorInfo.id,
-    //     userLogin: commentatorInfo.login,
-    //   },
-    // };
     const createdComment =
       await this.postCommentsRepository.create(newCommentModel);
     if (!createdComment) {
       return null;
     }
+
+    // const enrichedCreatedComment = {...createdComment, commentatorInfo: {
+    //   userId: commentatorInfo.id,
+    //       userLogin: commentatorInfo.login,
+    // } }
+
+    // {
+    //   id: '11392174-6759-4353-bfcc-f856e14e31b1',
+    //   content: 'length_21-weqweqweqwq',
+    //   createdAt: '2024-06-21T21:13:10.018Z'
+    // }
     return {
       ...createdComment,
+      commentatorInfo: {
+        userId: commentatorInfo.id,
+        userLogin: commentatorInfo.login,
+      },
       likesInfo: {
         likesCount: 0,
         dislikesCount: 0,
-        myStatus: 'None',
+        myStatus: likeStatusEnum.None,
       },
     };
   }
+ // -------------------------------------------------------------------
+
+
 
   async updateComment(
     commentId: string,
@@ -98,6 +119,7 @@ export class PostCommentsService {
     if (!postCommentForUpdate) {
       return null;
     }
+
     if (postCommentForUpdate.commentatorInfo.userId !== userCommentatorId) {
       throw new ForbiddenException([
         { message: 'not found comment', field: 'comment' },
@@ -109,6 +131,7 @@ export class PostCommentsService {
     };
 
     const isUpdated = await this.postCommentsRepository.update(updCommentModel);
+
     if (!isUpdated) {
       return null;
     }

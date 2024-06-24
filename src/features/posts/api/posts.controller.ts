@@ -50,6 +50,7 @@ export class PostsController {
   async getAll(
     @Query() reqQuery: any,
     @Res({ passthrough: true }) res: Response,
+    // @Res() res: Response,
     @Req() req: any,
   ) {
     const optionalUserId = req.user?.userId || null;
@@ -98,7 +99,8 @@ export class PostsController {
   @HttpCode(201)
   async createPost(
     @Body() reqBody: CreatePostModel,
-    @Res({ passthrough: true }) res: Response,
+    // @Res({ passthrough: true }) res: Response,
+    @Res() res: Response,
   ): Promise<any> {
     const { title, shortDescription, content, blogId } = reqBody;
     const newPostModal = {
@@ -124,16 +126,20 @@ export class PostsController {
     @Param('id') postId: string,
     // @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
+    
     const userOptionalId = req.user?.userId || null;
     if (!postId) {
       return res.sendStatus(401);
     }
+
     const basicSortData = basicSortQuery(reqQuery);
+
     const result = await this.postsService.composePostComments(
       postId,
       basicSortData,
       userOptionalId,
     );
+
     if (!result) {
       throw new NotFoundException([
         { message: 'not found post', field: 'post' },
@@ -212,16 +218,20 @@ export class PostsController {
   @HttpCode(204)
   async likePost(
     @Param('postId') postId: string,
-    @Body() likeModel: IncomLikeStatusDTO,
+    @Body() likeModel: IncomLikeStatusDTO, 
     @Res() res: Response,
     @Req() req: any,
   ): Promise<any> {
+                                          // const userId = "0e3ef603-fc6d-4ede-86e0-479bf1e3a17f";
+
     const userId = req.user.userId;
+
     if (!userId) {
       return res.sendStatus(401);
     }
     const likeStatus = likeModel.likeStatus;
     if (!likeStatus || !likeStatusEnum.hasOwnProperty(likeStatus)) {
+    // if (!likeStatus) {
       throw new BadRequestException([
         { message: 'wrong like status', field: 'likeStatus' },
       ]);

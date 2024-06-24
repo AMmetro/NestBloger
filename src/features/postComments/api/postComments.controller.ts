@@ -191,9 +191,6 @@ export class PostCommentsController {
       userId,
     );
 
-    console.log('result in controler');
-    console.log(deletedComment);
-
     if (deletedComment === 403) {
       throw new ForbiddenException([
         { message: 'wrong user id', field: 'comment' },

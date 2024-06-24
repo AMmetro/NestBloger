@@ -29,15 +29,6 @@ export class DevicesRepository {
     try {
       // const newDevice = await this.entityManager.getRepository(Devices).create(divece).save();
       const newDevice = await this.entityManager.getRepository(Devices).save(divece);
-        
-      // console.log("=====newDevice=====");
-      // console.log(newDevice); 
-  
-      const allDevic = await this.entityManager.getRepository(Devices).find();
-      // console.log("===allDevic==CREATE=");
-      // console.log(allDevic);
-      //console.log(xxx);
-
       return newDevice;
   
     } catch (e) {
@@ -90,14 +81,8 @@ export class DevicesRepository {
   async deleteDeviceById(deviceId: any) {
     try {
 
-      console.log("---!!!!!!-----");
-
         // const device = await this.entityManager.delete(Devices, { deviceId });
         const device = await this.entityManager.getRepository(Devices).delete(deviceId);
-
-        console.log("---device2-----");
-        console.log(device);
-
         return {deletedCount: device.affected}
       } catch (e) {
         console.log(e);
@@ -120,22 +105,10 @@ export class DevicesRepository {
         // const result = await this.entityManager.delete(Devices, {
         //   userId: userId,
         //   deviceId: Not(exceptDeviceId)
-
-
-        console.log("--exceptDeviceId");
-        console.log(data.deviceId);
-        console.log("--userId");
-        console.log(data.userId);
-
         const result = await this.entityManager.getRepository(Devices).delete({
           // userId: data.userId,
-          deviceId: Not(data.deviceId)
-      
+          deviceId: Not(data.deviceId)   
         });
-
-        console.log("-----result---");
-        console.log(result);
-
         // если удалено 0 девайсов но их и не было то ошибка ?
         return !!result.affected; 
       } catch (e) {

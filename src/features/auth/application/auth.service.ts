@@ -44,7 +44,6 @@ export class AuthService {
       user.passwordSalt,
     );
     if (user.passwordHash !== userLogInPasswordHash || !user) {
-      console.log('user.passwordHash !== userLogInPasswordHash');
       return null;
     }
     return User.userWithOutEmailConfirmationMapper(user);
@@ -113,10 +112,6 @@ export class AuthService {
       lastActiveDate: new Date(decodedRefreshToken!.exp * 1000),
       tokenCreatedAt: new Date(decodedRefreshToken!.iat * 1000),
     };
-
-    console.log("--newDevicesModel");
-    console.log(newDevicesModel);
-
 
     await this.devicesServices.createdDevice(newDevicesModel);
     return newAccessAndRefreshPair;
@@ -241,20 +236,10 @@ export class AuthService {
     if (!claimantInfo?.id) {
       return null;
     }
-
-    console.log("--userId");
-    console.log(userId);
-    console.log("--deviceId");
-    console.log(deviceId);
-
     const device = await this.devicesServices.getDevice(deviceId);
     if (!device) {
       return null;
     }
-
-    console.log("--device");
-    console.log(device);
-
     if (device.userId !== claimantInfo.id.toString()) {
       return null;
       // status: ResultCode.Forbidden,
@@ -264,8 +249,6 @@ export class AuthService {
       deviceId,
       userId,
     );
-                                  console.log("---isDeleted11");
-                                  console.log(isDeleted);
     if (!isDeleted) {
       null;
     }
@@ -277,15 +260,7 @@ export class AuthService {
     if (!user) {
       return null;
     }
-
-                                                        console.log("---user---");
-                                                        console.log(user);
-
     const device = await this.devicesServices.getDevice(deviceId);
-
-                                                          console.log("---device---");
-                                                          console.log(device);
-
     if (!device) {
       return null;
     }

@@ -16,14 +16,17 @@ import {
 
 import { Response } from 'express';
 import { ObjectId } from 'mongodb';
-import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
+import { GetBlogsSortDataType, basicSortQuery, basicSortQueryType } from 'src/base/utils/sortQeryUtils';
 import { BasicAuthGuard } from 'src/common/guards/basic.guard';
 import { PostsService } from 'src/features/posts/application/post.service';
 import { OptioanlAuthGuard } from 'src/common/guards/optionalAuth.guard';
 import { CreatePostForSpecifiedBlogModel } from 'src/features/posts/api/dto/input/create-user.input.model';
 import { BlogsService } from 'src/features/blogs/application/blogs.service';
 import { BlogRepository } from 'src/features/blogs/infrastructure/blogs.repository';
-import { Blog, IncomBlogDto } from '../domain/blog.entity';
+import { Blog } from '../domain/blog.entity';
+import { OutputBlogPostType } from './dto/output/blog.output.model';
+import { IncomBlogDto } from './dto/input/create-blog.input.model';
+import { OutputBlogPostsType } from 'src/features/posts/api/dto/output/post.output.model';
 
 @Controller('blogs')
 export class BlogsController {
@@ -35,9 +38,9 @@ export class BlogsController {
 
   @Get()
   @UseGuards(OptioanlAuthGuard)
-  findAll(@Query() reqQuery: any): any {
+  findAll(@Query() reqQuery: basicSortQueryType): any { //OutputBlogPostType
     const basicSortData = basicSortQuery(reqQuery);
-    const sortData = {
+    const sortData: GetBlogsSortDataType = {
       ...basicSortData,
       searchNameTerm: reqQuery.searchNameTerm ?? null,
     };
@@ -49,10 +52,10 @@ export class BlogsController {
   @UseGuards(OptioanlAuthGuard)
   async getBlogPosts(
     @Param('id') blogId: string,
-    @Query() reqQuery: any,
+    @Query() reqQuery: basicSortQueryType,
     @Res({ passthrough: true }) res: Response,
     @Req() req: any,
-  ) {
+  ): Promise <any> { //OutputBlogPostsType
     const optionalUserId = req.user?.userId || null;
     const basicSortData = basicSortQuery(reqQuery);
     const blogPosts = await this.blogsService.composeBlogPosts(

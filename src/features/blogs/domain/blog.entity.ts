@@ -1,5 +1,35 @@
-import { IsString, Length, Matches } from 'class-validator';
-import { Trim } from 'src/common/decorators/transform/trim';
+
+import { Posts } from 'src/features/posts/domain/post.entity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+
+// В скобочках Entity можно задать имя для таблицы в БД, иначе возметься из имени класса.toLowerCase()
+// можно применить class naming strategy для авто-присваивания имен 
+@Entity("Blogs")
+export class BlogEntity { 
+ 
+  @PrimaryGeneratedColumn("uuid") 
+  id: string; 
+  
+  @Column({collation: "C"})
+  name: string;
+
+  @Column()
+  description: string; 
+
+  @Column()
+  websiteUrl: string;
+
+  @Column()
+  createdAt: Date;
+
+  @Column()
+  isMembership: boolean;
+
+  @OneToMany(()=> Posts, (postObj)=> postObj.blog)
+  post: Posts[];
+ 
+}
 
 export class Blog {
   constructor(
@@ -23,29 +53,6 @@ export class Blog {
   }
 }
 
-export class IncomBlogDto {
-  @IsString()
-  @Trim()
-  @Length(1, 15, { message: 'blog name length is not correct' })
-  name: string;
-
-  @IsString()
-  @Trim()
-  @Length(1, 500, { message: 'description length is not correct' })
-  description: string;
-
-  @IsString()
-  @Matches(
-    new RegExp(
-      '^https://([a-zA-Z0-9_-]+.)+[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*/?$',
-    ),
-    {
-      message: 'websiteUrl pattern is not correct',
-    },
-  )
-  @Length(1, 100, { message: 'websiteUrl length is not correct' })
-  websiteUrl: string;
-}
 export class BlogDto {
   constructor(
     public name: string,

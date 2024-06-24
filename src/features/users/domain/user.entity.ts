@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { Devices } from 'src/features/devices/domain/devices.entity';
+import { PostComments } from 'src/features/postComments/domain/postsComment.schema';
+import { PostLike } from 'src/features/postLikes/domain/postsLikes.schema';
 
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from 'typeorm'; 
 
@@ -31,40 +33,21 @@ export class Users {
   confirmationCode: string;
 
   @Column()
-  isConfirmed: boolean;
+  isConfirmed: boolean; 
 
   @OneToMany(()=>Devices, (incomClass)=> incomClass.user)
-  device: Devices[];
+  device: Devices[];  
+
+  /****************************************** 
+  ** не добовляется в таблицу (ДЛЯ OneToMany)
+  ******************************************/
+  @OneToMany(()=>PostLike, (pl)=> pl.user)
+  postLike: PostLike[]; 
+
+  @OneToMany(()=>PostComments, (pc)=> pc.user)
+  user: PostComments[]; 
+
+
  
 }
 
-// @@ ---------- entity for mongoDB ----------------------------------------
-// export type UserDocument = HydratedDocument<UserMongoose>;
-
-// @Schema()
-// export class EmailConfirmation {
-//   @Prop()
-//   confirmationCode: string;
-//   @Prop()
-//   expirationDate: Date;
-//   @Prop()
-//   isConfirmed: boolean;
-// }
-
-// @Schema()
-// export class UserMongoose {
-//   @Prop()
-//   login: string;
-//   @Prop()
-//   passwordHash: string;
-//   @Prop()
-//   passwordSalt: string;
-//   @Prop()
-//   createdAt: Date;
-//   @Prop()
-//   email: string;
-//   @Prop({ _id: false, type: EmailConfirmation })
-//   emailConfirmation: EmailConfirmation;
-// }
-
-// export const UserSchema = SchemaFactory.createForClass(UserMongoose);

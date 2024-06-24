@@ -7,6 +7,7 @@ export type basicSortQueryType = {
   sortDirection?: SortDirection;
   pageNumber?: number;
   pageSize?: number;
+  searchNameTerm?: string;
 };
 
 export type OutputBasicSortQueryType = {
@@ -15,6 +16,8 @@ export type OutputBasicSortQueryType = {
   pageNumber: number;
   pageSize: number;
 };
+
+export type GetBlogsSortDataType = OutputBasicSortQueryType & {searchNameTerm: string | null};
 
 export type ExtendedSortQueryType = OutputBasicSortQueryType & {
   searchEmailTerm: string | null;

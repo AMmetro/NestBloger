@@ -1,23 +1,29 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import { CommentLike } from '../domain/commentLikesTypes';
-import { CommentLikeMoongoose } from '../domain/commentLikes.schema';
+import { CommentLike as CommentLikeType } from '../domain/commentLikesTypes';
+import { InjectEntityManager } from '@nestjs/typeorm';
+import { EntityManager } from 'typeorm';
+import { CommentLike  } from '../domain/commentLikes.schema';
+// import { CommentLikeMoongoose } from '../domain/commentLikes.schema';
 
 @Injectable()
 export class CommentLikesRepository {
   constructor(
-    @InjectModel(CommentLikeMoongoose.name)
-    private commentLikeModel: Model<CommentLike>,
+    @InjectEntityManager()
+    private readonly entityManager: EntityManager,
+    // @InjectModel(CommentLikeMoongoose.name)
+    // private commentLikeModel: Model<CommentLike>,
   ) {}
 
   async findComment(id: string): Promise<any | null> {
     try {
-      const comment = await this.commentLikeModel.findById(id);
-      if (!comment) {
-        return null;
-      }
-      return comment;
+      const comment = await this.entityManager.find(CommentLike, {
+        where: {
+        id: id,
+        },
+        });
+      return comment
     } catch (e) {
       console.log(e);
       return null;
@@ -26,14 +32,18 @@ export class CommentLikesRepository {
 
   async findUserComment(userId: string, commentId): Promise<any | null> {
     try {
-      const comment = await this.commentLikeModel.findOne({
-        commentId: commentId,
+      const comment = await this.entityManager.find(CommentLike, {
+        where: {
+        postCommentsId: commentId,
         userId: userId,
-      });
-      if (!comment) {
-        return null;
-      }
-      return comment;
+        },
+        });
+
+        console.log("4444444444444444444");
+        console.log(comment);
+
+        return comment
+
     } catch (e) {
       console.log(e);
       return null;
@@ -42,40 +52,39 @@ export class CommentLikesRepository {
 
   async findAllComment(): Promise<any | null> {
     try {
-      const comment = await this.commentLikeModel.find();
-      if (!comment) {
-        return null;
-      }
-      return comment;
+      const comment = await this.entityManager.find(CommentLike, {});
+      return comment
+
     } catch (e) {
       console.log(e);
       return null;
     }
   }
 
-  async createLike(newComment: any): Promise<any | null> {
+  async createLike(newLike: CommentLikeType): Promise<any | null> {
     try {
-      const comment = await this.commentLikeModel.create(newComment);
-      if (!comment) {
-        return null;
-      }
-      return comment;
+      const newCommentLike = new CommentLike();
+      newCommentLike.postCommentsId = newLike.commentId;
+      newCommentLike.userId = newLike.userId; 
+      newCommentLike.myStatus = newLike.myStatus;
+      newCommentLike.addedAt = newLike.addedAt;
+
+      const comment = await this.entityManager.getRepository(CommentLike).create(newCommentLike);
+      await this.entityManager.save(comment);
+
     } catch (e) {
       console.log(e);
       return null;
     }
   }
 
-  async updLike(updLike: any): Promise<any | null> {
+  async updLike(updLike: {id: string, myStatus: string }): Promise<any | null> {
     try {
-      const like = await this.commentLikeModel.updateOne(
-        { _id: updLike._id },
-        { $set: { myStatus: updLike.myStatus } },
-      );
-      if (!like.modifiedCount) {
-        return null;
-      }
-      return !!like.modifiedCount;
+      /**
+       * updated like by likeId
+       */
+      const updResult = await this.entityManager.getRepository(CommentLike).update(updLike.id, {myStatus: updLike.myStatus});
+      return updResult.affected
     } catch (e) {
       console.log(e);
       return null;
@@ -83,15 +92,17 @@ export class CommentLikesRepository {
   }
 
   async countCommentLikes(
-    commentId: string,
+    postCommentId: string,
     myStatus: string,
   ): Promise<any | null> {
     try {
-      const likesCount = await this.commentLikeModel.countDocuments({
-        commentId: commentId,
-        myStatus: myStatus,
-      });
-      return likesCount;
+      const likesCount = await this.entityManager.getRepository(CommentLike).count({
+        where: {
+        postCommentsId: postCommentId,
+        myStatus: myStatus
+        }
+        });
+        return likesCount;
     } catch (e) {
       console.log(e);
       return null;
@@ -100,11 +111,13 @@ export class CommentLikesRepository {
 
   async findLike(commentId: string, userId: string): Promise<any | null> {
     try {
-      const like = await this.commentLikeModel.findOne({
-        commentId: commentId,
+      const comment = await this.entityManager.find(CommentLike, {
+        where: {
         userId: userId,
-      });
-      return like;
+        postCommentsId: commentId,
+        },
+        });
+      return comment
     } catch (e) {
       console.log(e);
       return null;
@@ -113,8 +126,8 @@ export class CommentLikesRepository {
 
   async deleteAll(): Promise<any | null> {
     try {
-      await this.commentLikeModel.deleteMany();
-      return true;
+      // await this.entityManager.getRepository(CommentLike).delete({});
+      const likesCount = await this.entityManager.getRepository(CommentLike).delete({});
     } catch (e) {
       console.log(e);
       return null;

@@ -2,7 +2,7 @@ import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CommentLikesRepository } from '../infrastructure/commentLikes.repo';
-import { PostLikeMoongoose } from 'src/features/postLikes/domain/postsLikes.schema';
+// import { PostLikeMoongoose } from 'src/features/postLikes/domain/postsLikes.schema';
 import { likeStatusEnum } from '../domain/commentLikesTypes';
 
 @Injectable()
@@ -47,6 +47,7 @@ export class CommentLikesServices {
       commentId,
       likeStatusEnum.Like,
     );
+
     const dislikesCount = await this.commentLikesRepository.countCommentLikes(
       commentId,
       likeStatusEnum.Dislike,

@@ -77,9 +77,6 @@ export class DevicesServices {
   async deleteDeviceById(deviceId: string, userId: string): Promise<any> {
     const device = await this.devicesRepository.getById(deviceId);
     
-    console.log("---isDeleted33");
-    console.log(device);
-
     if (!device?.deviceId) {
       return null;
     }

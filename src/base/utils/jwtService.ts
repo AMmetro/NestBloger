@@ -47,10 +47,6 @@ export class CookiesJwtAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromCookies(request);
 
-                                                              console.log("-------token---------");
-                                                              console.log(token);
-
-
     if (!token) {
       throw new UnauthorizedException();
       // если возвращать false то ошибка будет 403
@@ -63,17 +59,11 @@ export class CookiesJwtAuthGuard implements CanActivate {
         secret: appConfigLocal.JWT_ACSS_SECRET_LOCAL,
       });
 
-                                            console.log("--------payload-------");
-                                            console.log(payload);
-
       const deviceId = payload.deviceId;
       // const isDevice = await this.devicesRepository.find({
       //   deviceId: deviceId,
       // });
       const isDevice = await this.devicesRepository.getById(deviceId);
-
-                                                  console.log("-----isDevice---------");
-                                                  console.log(isDevice);
 
       if (!isDevice) {
         throw new UnauthorizedException();

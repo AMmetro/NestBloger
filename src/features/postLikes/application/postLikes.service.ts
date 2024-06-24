@@ -3,13 +3,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { likeStatusEnum } from 'src/features/postLikes/domain/postLikesTypes';
 import { PostLikesRepository } from 'src/features/postLikes/infrastructure/postLikes.repo';
-import { PostLikeMoongoose } from '../domain/postsLikes.schema';
+// import { PostLikeMoongoose } from '../domain/postsLikes.schema';
 
 @Injectable()
 export class PostLikesServices {
   constructor(
-    @InjectModel(PostLikeMoongoose.name)
-    private postLikesModel: Model<PostLikeMoongoose>,
+    // @InjectModel(PostLikeMoongoose.name)
+    // private postLikesModel: Model<PostLikeMoongoose>,
     private postLikesRepository: PostLikesRepository,
   ) {}
 
@@ -23,13 +23,15 @@ export class PostLikesServices {
       likeStatusEnum.Dislike,
     );
     let myStatus = likeStatusEnum.None;
+
     if (userId) {
       const requesterUserLike = await this.postLikesRepository.findLike(
         postId,
         userId,
       );
-      myStatus = requesterUserLike?.myStatus
-        ? requesterUserLike.myStatus
+
+      myStatus = requesterUserLike[0]?.myStatus
+        ? requesterUserLike[0].myStatus
         : likeStatusEnum.None;
     }
 
@@ -46,10 +48,24 @@ export class PostLikesServices {
     userId: string,
     sendedLikeStatus: string,
   ): Promise<any> {
-    const existingLikeForPost = await this.postLikesModel.findOne({
-      postId: postId,
-      userId: userId,
-    });
+
+    const existingLikeForPost = await this.postLikesRepository.findLike(
+      postId,
+      userId,
+    );
+
+    console.log("postId");
+    console.log(postId);
+    console.log("userId");
+    console.log(userId);
+    console.log("existingLikeForPost");
+    console.log(existingLikeForPost);
+
+    // было обращение к модели в самом сервисе
+    // const existingLikeForPost = await this.postLikesModel.findOne({
+    //   postId: postId,
+    //   userId: userId,
+    // }); 
     const newLike = {
       postId: postId,
       userId: userId,
@@ -57,16 +73,16 @@ export class PostLikesServices {
       addedAt: new Date(),
     };
 
-    if (!existingLikeForPost) {
-      const LikeInstance = new this.postLikesModel(newLike);
-      LikeInstance.save();
+     if (existingLikeForPost.length < 1) {
+      const createdLike = await this.postLikesRepository.createLike(newLike);
+      return createdLike;
+    }
+    if (existingLikeForPost[0].myStatus === sendedLikeStatus) {
       return newLike;
     }
-    if (existingLikeForPost.myStatus === sendedLikeStatus) {
-      return newLike;
-    }
-    existingLikeForPost.myStatus = sendedLikeStatus;
-    await existingLikeForPost.save();
-    return newLike;
+
+    const likeId = existingLikeForPost[0].id
+    const updateLike = await this.postLikesRepository.updateLike(newLike, likeId);
+    return !!updateLike.affected;
   }
 }

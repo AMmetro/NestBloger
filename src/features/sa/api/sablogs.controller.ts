@@ -15,7 +15,7 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { basicSortQuery } from 'src/base/utils/sortQeryUtils';
+import { basicSortQuery, basicSortQueryType } from 'src/base/utils/sortQeryUtils';
 import {
   QueryUserInputModel,
   UserCreateModel,
@@ -26,10 +26,10 @@ import { SaService } from '../application/sa.service';
 import { BasicAuthGuard } from 'src/common/guards/basic.guard';
 import { BlogRepository } from 'src/features/blogs/infrastructure/blogs.repository';
 import { BlogsService } from 'src/features/blogs/application/blogs.service';
-import { IncomBlogDto } from 'src/features/blogs/domain/blog.entity';
 import { RequestInputPostType } from 'src/features/posts/api/dto/input/create-user.input.model';
 import { PostsService } from 'src/features/posts/application/post.service';
 import { PostRepository } from 'src/features/posts/infrastructure/post.repository';
+import { IncomBlogDto } from 'src/features/blogs/api/dto/input/create-blog.input.model';
 
 @Controller('sa/blogs')
 export class SaBlogsController {
@@ -46,13 +46,12 @@ export class SaBlogsController {
   @UseGuards(BasicAuthGuard)
   async getAllBlogs(
     @Res({ passthrough: true }) res: Response,
-    @Query() reqQuery: QueryUserInputModel,
+    @Query() reqQuery: basicSortQueryType,
   ) {
     const basicSortData = basicSortQuery(reqQuery);
     const sortData = {
       ...basicSortData,
-      searchEmailTerm: reqQuery.searchEmailTerm ?? null,
-      searchLoginTerm: reqQuery.searchLoginTerm ?? null,
+      searchNameTerm: reqQuery.searchNameTerm ?? null,
     };
     const blog = await this.blogRepository.getAllByName(sortData);
     if (blog === null) {
@@ -87,6 +86,10 @@ export class SaBlogsController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const createdBlog = await this.blogsService.create(reqBody);
+
+    // console.log("3333333333333333333333333333333");
+    // console.log(createdBlog);
+
     if (!createdBlog) {
       res.sendStatus(404);
       return;
@@ -106,6 +109,10 @@ export class SaBlogsController {
       throw new BadRequestException();
     }
     const createdPost = await this.postsService.createPost(blogId, reqBody);
+
+    // console.log("4444444444444444444444");
+    // console.log(createdPost);
+
     if (!createdPost) {
       res.sendStatus(404);
       return;

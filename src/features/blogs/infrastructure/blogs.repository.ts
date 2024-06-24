@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { Blog, MappedBlogType } from '../domain/blog.entity';
+import { GetBlogsSortDataType } from 'src/base/utils/sortQeryUtils';
 
 export type NewUserModelType = {
   login: string;
@@ -20,7 +21,7 @@ export type NewUserModelType = {
 export class BlogRepository {
   constructor(@InjectDataSource() private dataSource: DataSource) {}
 
-  async getAllByName(sortData): Promise<any | null> {
+  async getAllByName(sortData:GetBlogsSortDataType): Promise<any | null> {
     try {
       const users = await this.dataSource.query(
         `

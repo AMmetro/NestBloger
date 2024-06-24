@@ -17,23 +17,20 @@ import { PostsController } from 'src/features/posts/api/posts.controller';
 // import { Post, PostSchema } from 'src/features/posts/domain/post.entity';
 import { PostsService } from 'src/features/posts/application/post.service';
 import { PostRepository } from 'src/features/posts/infrastructure/post.repository';
-import {
-  PostLikeMoongoose,
-  PostLikeSchema,
-} from 'src/features/postLikes/domain/postsLikes.schema';
+import { PostLike } from 'src/features/postLikes/domain/postsLikes.schema';
 import { PostLikesServices } from 'src/features/postLikes/application/postLikes.service';
 import { AuthService } from 'src/features/auth/application/auth.service';
 import { PostCommentsRepository } from 'src/features/postComments/infrastructure/postComments.repo';
-import {
-  PostCommentMoongoose,
-  PostCommentSchema,
-} from 'src/features/postComments/domain/postsComment.schema';
+// import {
+//   PostCommentMoongoose,
+//   PostCommentSchema,
+// } from 'src/features/postComments/domain/postsComment.schema';
 import { PostCommentsService } from 'src/features/postComments/application/postComments.service';
 import { CommentLikesRepository } from 'src/features/commentLikes/infrastructure/commentLikes.repo';
-import {
-  CommentLikeMoongoose,
-  CommentLikeSchema,
-} from 'src/features/commentLikes/domain/commentLikes.schema';
+// import {
+//   CommentLikeMoongoose,
+//   CommentLikeSchema,
+// } from 'src/features/commentLikes/domain/commentLikes.schema';
 import { CommentLikesServices } from 'src/features/commentLikes/application/commentLikes.service';
 import { SaUsersController } from 'src/features/sa/api/sausers.controller';
 import { SaService } from 'src/features/sa/application/sa.service';
@@ -48,11 +45,11 @@ import { BlogsService } from 'src/features/blogs/application/blogs.service';
     MongooseModule.forFeature([
       // { name: BlogMongoose.name, schema: BlogSchema },
       // { name: Post.name, schema: PostSchema },
-      { name: PostLikeMoongoose.name, schema: PostLikeSchema },
+      // { name: PostLikeMoongoose.name, schema: PostLikeSchema },
       // { name: UserMongoose.name, schema: UserSchema },
       // { name: DevicesMongoose.name, schema: DevicesSchema },
-      { name: PostCommentMoongoose.name, schema: PostCommentSchema },
-      { name: CommentLikeMoongoose.name, schema: CommentLikeSchema },
+      // { name: PostCommentMoongoose.name, schema: PostCommentSchema },
+      // { name: CommentLikeMoongoose.name, schema: CommentLikeSchema },
     ]),
   ],
   controllers: [
@@ -68,7 +65,6 @@ import { BlogsService } from 'src/features/blogs/application/blogs.service';
     PostsService,
     PostRepository,
     BlogRepository,
-    PostLikesRepository,
     PostLikesServices,
     UsersRepository,
     UsersService,
@@ -81,6 +77,9 @@ import { BlogsService } from 'src/features/blogs/application/blogs.service';
     CommentLikesRepository,
     CommentLikesServices,
     SaService,
+    PostLikesRepository,
+    // --- add postLikes class
+    // PostLike,
   ],
   // exports: [SaService],
 })

@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { RequestInputPostType } from '../api/dto/input/create-user.input.model';
+import { User } from 'src/features/sa/api/dto/output/user.output.model';
+import { Post } from '../api/dto/output/post.output.model';
 // import { Blog, MappedBlogType } from '../domain/blog.entity';
 
 export type NewUserModelType = {
@@ -73,13 +75,17 @@ export class PostRepository {
         `,
       );
       const pagesCount = Math.ceil(totalCount[0].count / sortData.pageSize);
+
+      console.log("posts");
+      console.log(posts);
+
       return {
         pagesCount: pagesCount,
         page: sortData.pageNumber,
         pageSize: sortData.pageSize,
         totalCount: Number(totalCount[0].count),
-        // items: users.map(User.userWithOutEmailConfirmationMapper),
-        items: posts,
+        items: posts.map(Post.mapper),
+        // items: posts,
       };
     } catch (e) {
       console.log(e);
@@ -89,10 +95,12 @@ export class PostRepository {
 
   async findById(postId: string): Promise<any | null> {
     try {
+
       const post = await this.dataSource.query(
         `SELECT * FROM "Posts" WHERE "id" = $1`,
         [postId],
       );
+
       if (!post.length) {
         return null;
       }
@@ -137,8 +145,7 @@ export class PostRepository {
     }
   }
 
-  async getBlogPosts(sortData: any, blogId?: string): Promise<any | null> {
-
+  async getBlogPosts(sortData: any, blogId: string): Promise<any | null> {
     try {
       const posts = await this.dataSource.query(
         `
@@ -161,9 +168,6 @@ export class PostRepository {
         `,
         [blogId],
       );
-
-      console.log("totalCount");
-      console.log(totalCount);
 
       const pagesCount = Math.ceil(totalCount[0].count / sortData.pageSize);
       return {

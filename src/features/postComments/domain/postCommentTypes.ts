@@ -14,15 +14,36 @@ export class PostComment {
     public commentatorInfo: { userId: string; userLogin: string },
   ) {}
 
-  static mapper(comment): PostComment {
+  static mapper(comment): any {
     return {
-      id: comment._id.toString(),
+      id: comment.id,
       content: comment.content,
-      createdAt: comment.createdAt.toISOString(),
-      commentatorInfo: {
-        userId: comment.commentatorInfo.userId,
-        userLogin: comment.commentatorInfo.userLogin,
-      },
+      createdAt: comment.createdAt, 
+      // commentatorInfo: {
+      //   userId: comment.commentatorInfo.userId,
+      //   userLogin: comment.commentatorInfo.userLogin,
+      // },
     };
   }
+  static mapperWithCommentator(comment): any {
+
+    const commentModel =  {
+      id: comment.id,
+      content: comment.content,
+      createdAt: comment.createdAt,
+      commentatorInfo: {
+        userId: comment.user.id,
+        userLogin: comment.user.login,
+      },
+    };
+
+    return commentModel;
+  }
 }
+
+export type newLikeType = {
+  postId: string,
+  userId: string,
+  myStatus: string,
+  addedAt: Date,
+};

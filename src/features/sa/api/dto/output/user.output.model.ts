@@ -30,7 +30,8 @@ export class User {
 
   static userWithOutEmailConfirmationMapper(user) {
     return {
-      id: user.id.toString(),
+      // id: user.id.toString(),
+      id: user.id,
       login: user.login,
       email: user.email,
       createdAt: user.createdAt.toISOString(),

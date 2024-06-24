@@ -13,10 +13,11 @@ export class IncomLikeStatusDTO {
 
 export class CommentLike {
   constructor(
-    public commentId: string,
+    // public postCommentsId: string,
     public userId: string,
     public myStatus: string,
     public addedAt: Date,
+    public commentId: string,
   ) {}
 
   static mapper(CommentLike) {
