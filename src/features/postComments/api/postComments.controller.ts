@@ -116,6 +116,7 @@ export class PostCommentsController {
     // @Res({ passthrough: true }) res: Response,
   ): Promise<any> {
     const userId = req.user?.userId || null;
+
     const likeStatus = likeModel.likeStatus;
     if (!likeStatus || !likeStatusEnum.hasOwnProperty(likeStatus)) {
       throw new BadRequestException([

@@ -38,11 +38,7 @@ export class CommentLikesRepository {
         userId: userId,
         },
         });
-
-        console.log("4444444444444444444");
-        console.log(comment);
-
-        return comment
+        return comment[0]
 
     } catch (e) {
       console.log(e);
@@ -69,8 +65,9 @@ export class CommentLikesRepository {
       newCommentLike.myStatus = newLike.myStatus;
       newCommentLike.addedAt = newLike.addedAt;
 
-      const comment = await this.entityManager.getRepository(CommentLike).create(newCommentLike);
-      await this.entityManager.save(comment);
+      const like = await this.entityManager.getRepository(CommentLike).create(newCommentLike)
+      const result = await this.entityManager.save(like);
+      return result
 
     } catch (e) {
       console.log(e);
@@ -84,6 +81,8 @@ export class CommentLikesRepository {
        * updated like by likeId
        */
       const updResult = await this.entityManager.getRepository(CommentLike).update(updLike.id, {myStatus: updLike.myStatus});
+      console.log("updResult"); 
+      console.log(updResult); 
       return updResult.affected
     } catch (e) {
       console.log(e);
@@ -111,13 +110,13 @@ export class CommentLikesRepository {
 
   async findLike(commentId: string, userId: string): Promise<any | null> {
     try {
-      const comment = await this.entityManager.find(CommentLike, {
+      const like = await this.entityManager.find(CommentLike, {
         where: {
         userId: userId,
         postCommentsId: commentId,
         },
         });
-      return comment
+      return like[0]
     } catch (e) {
       console.log(e);
       return null;

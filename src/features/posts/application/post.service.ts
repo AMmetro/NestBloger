@@ -123,6 +123,9 @@ export class PostsService {
       return null;
     }
 
+    console.log("aaaaaaaaaaaa");
+    console.log(postComments);
+
     const сommentsWithLikes = await Promise.all(
       postComments.items.map(async (comment) => {
         const countLikes = await this.commentLikesServices.countCommentLikes(
@@ -170,6 +173,9 @@ export class PostsService {
         // };
       }),
     );
+
+    console.log("bbbbbbbbbbbbbbbbbbb");
+    console.log(сommentsWithLikes);
 
     const postCommentsWithLikes = { ...postComments, items: сommentsWithLikes };
 
